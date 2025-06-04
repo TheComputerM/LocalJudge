@@ -5,7 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "bun run --watch src/api/index.ts",
-		"check": "biome check src"
+		"check": "biome check src",
+		"migrate": "bun run ./scripts/migrate.ts"
 	},
 	"dependencies": {
 		"better-auth": "^1.2.8",
