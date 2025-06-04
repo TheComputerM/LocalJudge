@@ -1,0 +1,23 @@
+{
+	"name": "localjudge",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "bun run --watch src/api/index.ts",
+		"check": "biome check src"
+	},
+	"dependencies": {
+		"better-auth": "^1.2.8",
+		"dotenv": "^16.5.0",
+		"drizzle-orm": "^0.44.2",
+		"elysia": "latest",
+		"zod": "^3.25.51"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"bun-types": "latest",
+		"drizzle-kit": "^0.31.1",
+		"lefthook": "^1.11.13"
+	}
+}

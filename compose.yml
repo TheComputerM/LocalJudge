@@ -1,0 +1,36 @@
+services:
+  judge0:
+    image: judge0/judge0:latest
+    volumes:
+      - ./.env:/judge0.conf:ro
+    ports:
+      - "2358:2358"
+    privileged: true
+    depends_on:
+      - db
+      - redis
+
+  judge0-worker:
+    image: judge0/judge0:latest
+    command: ["./scripts/workers"]
+    volumes:
+      - ./.env:/judge0.conf:ro
+    privileged: true
+    depends_on:
+      - judge0
+
+  db:
+    image: postgres:16.2
+    env_file: .env
+    volumes:
+      - ./init-operator-db.sh:/docker-entrypoint-initdb.d/init-operator-db.sh
+    ports:
+      - "5432:5432"
+  
+  redis:
+    image: redis:7.2.4
+    env_file: .env
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly no --requirepass "$$REDIS_PASSWORD"'
+    ]
