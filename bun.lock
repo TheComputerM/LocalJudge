@@ -19,7 +19,7 @@
         "@biomejs/biome": "1.9.4",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
-        "bun-types": "latest",
+        "bun-types": "^1.2.16",
         "drizzle-kit": "^0.31.1",
         "lefthook": "^1.11.13",
         "pg": "^8.16.0",
