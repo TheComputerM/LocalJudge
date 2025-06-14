@@ -8,12 +8,10 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
+# tanstack start
+/.nitro
+/.tanstack
+/.output
 
 # misc
 .DS_Store

@@ -4,22 +4,32 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "bun run --watch src/api/index.ts",
+		"dev": "vite dev",
+		"build": "vite build",
 		"check": "biome check src",
 		"migrate": "bun run ./scripts/migrate.ts"
 	},
 	"dependencies": {
 		"@elysiajs/swagger": "^1.3.0",
-		"better-auth": "^1.2.8",
+		"@tanstack/react-router": "^1.121.12",
+		"@tanstack/react-start": "^1.121.12",
+		"better-auth": "^1.2.9",
 		"drizzle-orm": "^0.44.2",
-		"elysia": "latest",
-		"zod": "^3.25.51"
+		"elysia": "^1.3.4",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"vite": "^6.3.5",
+		"zod": "^3.25.64"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
 		"bun-types": "latest",
 		"drizzle-kit": "^0.31.1",
 		"lefthook": "^1.11.13",
-		"pg": "^8.16.0"
+		"pg": "^8.16.0",
+		"typescript": "^5.8.3",
+		"vite-tsconfig-paths": "^5.1.4"
 	}
 }

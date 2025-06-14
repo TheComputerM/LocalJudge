@@ -1,9 +1,9 @@
 /**
  * Run `bunx --bun @better-auth/cli@latest generate` to generate src/db/auth-schema.ts
+ * You might need to install node-gyp to get it to work.
  */
 
 import { db } from "@/db";
-import { schema } from "@/db";
 import env from "@/lib/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -18,7 +18,6 @@ export const auth = betterAuth({
 	},
 	database: drizzleAdapter(db, {
 		provider: "pg",
-		schema,
 	}),
 	plugins: [admin()],
 });
