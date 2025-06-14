@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { user } from "@/db/auth-schema";
+import { user } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
 import env from "@/lib/env";
 import { sql } from "drizzle-orm";

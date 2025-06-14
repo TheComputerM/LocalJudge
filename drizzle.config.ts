@@ -5,13 +5,13 @@ import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
 	out: "./drizzle",
-	schema: ["./src/db/schema.ts", "./src/db/auth-schema.ts"],
+	schema: "./src/db/schema",
 	dialect: "postgresql",
 	dbCredentials: {
 		// TODO: change database settings based on container settings
 		host: "localhost",
 		port: env.POSTGRES_PORT,
-		database: env.POSTGRES_OPERATOR_DB,
+		database: env.POSTGRES_DB,
 		password: env.POSTGRES_PASSWORD,
 		user: env.POSTGRES_USER,
 		ssl: false,
