@@ -1,3 +1,4 @@
+import appCss from "@/styles/app.css?url";
 import {
 	HeadContent,
 	Outlet,
@@ -17,11 +18,18 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "LocalJudge",
+			},
+		],
+		links: [
+			{
+				rel: "stylesheet",
+				href: appCss,
 			},
 		],
 	}),
 	component: RootComponent,
+	notFoundComponent: () => <div>404 Not Found</div>,
 });
 
 function RootComponent() {
