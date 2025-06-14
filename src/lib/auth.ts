@@ -14,6 +14,7 @@ import { admin } from "better-auth/plugins";
 
 export const auth = betterAuth({
 	appName: "LocalJudge",
+	baseURL: env.BETTER_AUTH_URL,
 	secret: env.BETTER_AUTH_SECRET,
 	emailAndPassword: {
 		enabled: true,

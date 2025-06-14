@@ -6,6 +6,7 @@ const envSchema = z.object({
 	POSTGRES_USER: z.string().default("postgres"),
 	POSTGRES_DB: z.string().default("postgres"),
 	POSTGRES_PASSWORD: z.string(),
+	BETTER_AUTH_URL: z.string(),
 	BETTER_AUTH_SECRET: z.string(),
 	ADMIN_EMAIL: z.string(),
 	ADMIN_PASSWORD: z.string(),

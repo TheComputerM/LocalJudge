@@ -1,11 +1,17 @@
-import { auth } from "@/lib/auth";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
+import { betterAuthPlugin } from "./better-auth";
 
 export const app = new Elysia({ prefix: "/api" })
 	.use(
-		// visit `/swagger` to view generated documentation
-		swagger(),
+		swagger({
+			path: "/",
+			documentation: {
+				info: {
+					title: "LocalJudge Documentation",
+					version: "1.0.0",
+				},
+			},
+		}),
 	)
-	.mount(auth.handler)
-	.get("/", () => "Hello Elysia");
+	.use(betterAuthPlugin);
