@@ -1,4 +1,5 @@
 import appCss from "@/styles/app.css?url";
+import outfitFontCss from "@fontsource-variable/outfit?url";
 import {
 	HeadContent,
 	Outlet,
@@ -22,6 +23,10 @@ export const Route = createRootRoute({
 			},
 		],
 		links: [
+			{
+				rel: "stylesheet",
+				href: outfitFontCss,
+			},
 			{
 				rel: "stylesheet",
 				href: appCss,
