@@ -5,5 +5,11 @@ export const Route = createFileRoute("/admin/participant")({
 });
 
 function RouteComponent() {
-	return <div>Hello "/admin/participant"!</div>;
+	return (
+		<div>
+			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
+				Participants
+			</h1>
+		</div>
+	);
 }

@@ -7,6 +7,7 @@ import {
 import {
 	LucideBookText,
 	LucideCog,
+	LucideLayoutDashboard,
 	LucideTableProperties,
 	LucideUsers,
 } from "lucide-react";
@@ -31,6 +32,12 @@ export const Route = createFileRoute("/admin")({
 });
 
 const navLinks = linkOptions([
+	{
+		to: "/admin",
+		label: "Dashboard",
+		icon: LucideLayoutDashboard,
+		activeOptions: { exact: true },
+	},
 	{ to: "/admin/contest", label: "Contests", icon: LucideTableProperties },
 	{ to: "/admin/participant", label: "Participants", icon: LucideUsers },
 	{ to: "/admin/configuration", label: "Configuration", icon: LucideCog },
@@ -51,7 +58,7 @@ function AppSidebar() {
 							{navLinks.map((link) => (
 								<SidebarMenuItem key={link.to}>
 									<SidebarMenuButton asChild>
-										<Link to={link.to} activeProps={{ className: "bg-accent" }}>
+										<Link {...link} activeProps={{ className: "bg-accent" }}>
 											<link.icon />
 											{link.label}
 										</Link>
@@ -102,7 +109,7 @@ function RouteComponent() {
 						</BreadcrumbList>
 					</Breadcrumb> */}
 				</header>
-				<div>
+				<div className="container mx-auto p-4">
 					<Outlet />
 				</div>
 			</SidebarInset>
