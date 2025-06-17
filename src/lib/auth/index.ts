@@ -5,13 +5,13 @@
  * you might need to install node-gyp to get it to work.
  */
 
-import { db } from "@/db";
-import * as authSchema from "@/db/schema/auth";
-import env from "@/lib/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
 import { reactStartCookies } from "better-auth/react-start";
+import { db } from "@/db";
+import * as authSchema from "@/db/schema/auth";
+import env from "@/lib/env";
 
 export const auth = betterAuth({
 	appName: "LocalJudge",

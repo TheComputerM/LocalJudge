@@ -1,3 +1,6 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { z } from "zod/v4";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -9,9 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/client";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
-import { z } from "zod/v4";
 
 export const Route = createFileRoute("/login")({
 	validateSearch: z.object({
@@ -32,7 +32,6 @@ function LoginForm() {
 	const [email, setEmail] = useState("admin@admin.com");
 	const [password, setPassword] = useState("admin");
 	const [loading, setLoading] = useState(false);
-	const router = useRouter();
 
 	return (
 		<div className="flex flex-col gap-6 w-full max-w-sm">
@@ -60,10 +59,7 @@ function LoginForm() {
 										setLoading(false);
 									},
 									onSuccess: async () => {
-										await router.invalidate();
-									},
-									onError: async ({ error: { message } }) => {
-										alert(message);
+										// TODO: add proper redirect and reload
 									},
 								},
 							);
@@ -73,7 +69,6 @@ function LoginForm() {
 							<div className="grid gap-3">
 								<Label htmlFor="email">Email</Label>
 								<Input
-									id="email"
 									type="email"
 									placeholder="m@example.com"
 									required
@@ -84,7 +79,6 @@ function LoginForm() {
 							<div className="grid gap-3">
 								<Label htmlFor="password">Password</Label>
 								<Input
-									id="password"
 									type="password"
 									required
 									value={password}
@@ -95,6 +89,7 @@ function LoginForm() {
 								<Button type="submit" className="w-full" disabled={loading}>
 									Login
 								</Button>
+								{/* TODO: display social login buttons depending on config */}
 								<div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
 									<span className="bg-background text-muted-foreground relative z-10 px-2">
 										or continue with

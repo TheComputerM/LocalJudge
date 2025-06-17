@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
 import Elysia from "elysia";
+import { auth } from "@/lib/auth";
 
 export const betterAuthPlugin = new Elysia({
 	prefix: "/auth",

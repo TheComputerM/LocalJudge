@@ -1,5 +1,5 @@
-import { baseApp } from "@/api";
 import { createServerFileRoute } from "@tanstack/react-start/server";
+import { baseApp } from "@/api";
 
 const handle = ({ request }: { request: Request }) => baseApp.handle(request);
 

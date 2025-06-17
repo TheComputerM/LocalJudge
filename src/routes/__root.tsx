@@ -1,12 +1,12 @@
-import appCss from "@/styles/app.css?url";
 import outfitFontCss from "@fontsource-variable/outfit?url";
 import {
+	createRootRoute,
 	HeadContent,
 	Outlet,
 	Scripts,
-	createRootRoute,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
 	head: () => ({
