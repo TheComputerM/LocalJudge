@@ -14,6 +14,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminParticipantRouteImport } from './routes/admin/participant'
+import { Route as AdminContestRouteImport } from './routes/admin/contest'
+import { Route as AdminConfigurationRouteImport } from './routes/admin/configuration'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -33,6 +37,26 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminParticipantRoute = AdminParticipantRouteImport.update({
+  id: '/participant',
+  path: '/participant',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContestRoute = AdminContestRouteImport.update({
+  id: '/contest',
+  path: '/contest',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminConfigurationRoute = AdminConfigurationRouteImport.update({
+  id: '/configuration',
+  path: '/configuration',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -41,31 +65,63 @@ const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/admin/configuration': typeof AdminConfigurationRoute
+  '/admin/contest': typeof AdminContestRoute
+  '/admin/participant': typeof AdminParticipantRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/login': typeof LoginRoute
+  '/admin/configuration': typeof AdminConfigurationRoute
+  '/admin/contest': typeof AdminContestRoute
+  '/admin/participant': typeof AdminParticipantRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/admin/configuration': typeof AdminConfigurationRoute
+  '/admin/contest': typeof AdminContestRoute
+  '/admin/participant': typeof AdminParticipantRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/login'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/login'
+    | '/admin/configuration'
+    | '/admin/contest'
+    | '/admin/participant'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/login'
-  id: '__root__' | '/' | '/admin' | '/login'
+  to:
+    | '/'
+    | '/login'
+    | '/admin/configuration'
+    | '/admin/contest'
+    | '/admin/participant'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/login'
+    | '/admin/configuration'
+    | '/admin/contest'
+    | '/admin/participant'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 export interface FileServerRoutesByFullPath {
@@ -113,6 +169,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/participant': {
+      id: '/admin/participant'
+      path: '/participant'
+      fullPath: '/admin/participant'
+      preLoaderRoute: typeof AdminParticipantRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/contest': {
+      id: '/admin/contest'
+      path: '/contest'
+      fullPath: '/admin/contest'
+      preLoaderRoute: typeof AdminContestRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/configuration': {
+      id: '/admin/configuration'
+      path: '/configuration'
+      fullPath: '/admin/configuration'
+      preLoaderRoute: typeof AdminConfigurationRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -127,9 +211,25 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminConfigurationRoute: typeof AdminConfigurationRoute
+  AdminContestRoute: typeof AdminContestRoute
+  AdminParticipantRoute: typeof AdminParticipantRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminConfigurationRoute: AdminConfigurationRoute,
+  AdminContestRoute: AdminContestRoute,
+  AdminParticipantRoute: AdminParticipantRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
