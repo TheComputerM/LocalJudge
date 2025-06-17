@@ -7,18 +7,20 @@ export const betterAuthPlugin = new Elysia({
 })
 	.mount(auth.handler)
 	.macro({
-		auth: (role: "admin" | "user") => ({
+		auth: (role: "admin" | "user" | "any") => ({
 			async resolve({ status, request: { headers } }) {
-				const session = await auth.api.getSession({
+				const data = await auth.api.getSession({
 					headers,
 				});
 
-				if (!session) return status(401);
-				if (session.user.role !== role) return status(403);
+				if (!data) return status(401);
+				if (role !== "any" && data.user.role !== role) return status(403);
 
 				return {
-					user: session.user,
-					session: session.session,
+					auth: {
+						user: data.user,
+						session: data.session,
+					},
 				};
 			},
 		}),

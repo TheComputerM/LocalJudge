@@ -1,8 +1,9 @@
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { betterAuthPlugin } from "./better-auth";
+import { userApp } from "./user";
 
-export const app = new Elysia({ prefix: "/api" })
+export const baseApp = new Elysia({ prefix: "/api" })
 	.use(
 		swagger({
 			path: "/",
@@ -14,4 +15,7 @@ export const app = new Elysia({ prefix: "/api" })
 			},
 		}),
 	)
-	.use(betterAuthPlugin);
+	.use(betterAuthPlugin)
+	.use(userApp);
+
+export type App = typeof baseApp;

@@ -11,6 +11,7 @@ import env from "@/lib/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
+import { reactStartCookies } from "better-auth/react-start";
 
 export const auth = betterAuth({
 	appName: "LocalJudge",
@@ -24,5 +25,5 @@ export const auth = betterAuth({
 		schema: authSchema,
 		provider: "pg",
 	}),
-	plugins: [admin()],
+	plugins: [admin(), reactStartCookies()],
 });
