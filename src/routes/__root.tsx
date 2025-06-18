@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type { ReactNode } from "react";
+import { getThemeFn } from "@/lib/server/theme";
 import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
@@ -34,6 +35,9 @@ export const Route = createRootRoute({
 			},
 		],
 	}),
+	loader: async () => ({
+		theme: await getThemeFn(),
+	}),
 	component: RootComponent,
 	notFoundComponent: () => <div>404 Not Found</div>,
 });
@@ -48,8 +52,10 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+	const theme = Route.useLoaderData({ select: (data) => data.theme });
+
 	return (
-		<html lang="en">
+		<html className={theme} lang="en">
 			<head>
 				<HeadContent />
 			</head>

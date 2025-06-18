@@ -15,6 +15,7 @@ import {
 	LucideUsers,
 } from "lucide-react";
 import { appClient } from "@/api/client";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -143,6 +144,11 @@ function RouteComponent() {
 						</BreadcrumbList>
 					</Breadcrumb> */}
 					<div className="grow-1" />
+					<ThemeToggle />
+					<Separator
+						orientation="vertical"
+						className="mr-2 data-[orientation=vertical]:h-4"
+					/>
 					<SignOutButton />
 				</header>
 				<div className="container mx-auto p-4">
