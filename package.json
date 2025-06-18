@@ -21,6 +21,7 @@
 		"@radix-ui/react-tooltip": "^1.2.7",
 		"@tailwindcss/postcss": "^4.1.10",
 		"@tanstack/react-router": "^1.121.21",
+		"@tanstack/react-router-devtools": "^1.121.21",
 		"@tanstack/react-start": "^1.121.21",
 		"better-auth": "^1.2.9",
 		"class-variance-authority": "^0.7.1",
