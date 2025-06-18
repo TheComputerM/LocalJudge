@@ -12,7 +12,11 @@
 	"formatter": { "enabled": true, "indentStyle": "tab" },
 	"linter": {
 		"enabled": true,
-		"rules": { "recommended": true }
+		"includes": ["!src/components/{ui,magicui}/**/*.tsx"],
+		"rules": {
+			"recommended": true,
+			"nursery": { "useUniqueElementIds": "off" }
+		}
 	},
 	"javascript": { "formatter": { "quoteStyle": "double" } },
 	"assist": {
