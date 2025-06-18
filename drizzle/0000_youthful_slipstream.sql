@@ -1,28 +1,6 @@
-CREATE SCHEMA "operator";
---> statement-breakpoint
 CREATE SCHEMA "auth";
 --> statement-breakpoint
-CREATE TABLE "operator"."contest" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" text NOT NULL,
-	"start_time" timestamp NOT NULL,
-	"end_time" timestamp NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "operator"."problem" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"contest_id" integer NOT NULL,
-	"title" text NOT NULL,
-	"description" text NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "operator"."testcase" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"problem_id" integer NOT NULL,
-	"input" text NOT NULL,
-	"output" text NOT NULL,
-	"hidden" boolean DEFAULT false NOT NULL
-);
+CREATE SCHEMA "operator";
 --> statement-breakpoint
 CREATE TABLE "auth"."account" (
 	"id" text PRIMARY KEY NOT NULL,
@@ -75,6 +53,28 @@ CREATE TABLE "auth"."verification" (
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp,
 	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "operator"."contest" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar(32) NOT NULL,
+	"start_time" timestamp NOT NULL,
+	"end_time" timestamp NOT NULL,
+	"settings" jsonb
+);
+--> statement-breakpoint
+CREATE TABLE "operator"."problem" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"contest_id" uuid NOT NULL,
+	"title" varchar(32) NOT NULL,
+	"description" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "operator"."submission" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"problem_id" uuid NOT NULL,
+	"input" text NOT NULL,
+	"output" text NOT NULL
 );
 --> statement-breakpoint
 ALTER TABLE "auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
