@@ -3,14 +3,19 @@ import {
 	Link,
 	linkOptions,
 	Outlet,
+	redirect,
+	useRouter,
 } from "@tanstack/react-router";
 import {
 	LucideBookText,
 	LucideCog,
 	LucideLayoutDashboard,
+	LucideLogOut,
 	LucideTableProperties,
 	LucideUsers,
 } from "lucide-react";
+import { appClient } from "@/api/client";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
 	Sidebar,
@@ -26,8 +31,18 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/admin")({
+	beforeLoad: async ({ location }) => {
+		const { data } = await appClient.api.user.get();
+		if (!data || data.user.role !== "admin") {
+			throw redirect({
+				to: "/login",
+				search: { redirect: location.pathname },
+			});
+		}
+	},
 	component: RouteComponent,
 });
 
@@ -83,6 +98,25 @@ function AppSidebar() {
 	);
 }
 
+function SignOutButton() {
+	const router = useRouter();
+	async function signOut() {
+		await authClient.signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					router.invalidate();
+				},
+			},
+		});
+	}
+	return (
+		<Button variant="secondary" onClick={signOut}>
+			Sign Out
+			<LucideLogOut />
+		</Button>
+	);
+}
+
 function RouteComponent() {
 	return (
 		<SidebarProvider>
@@ -108,6 +142,8 @@ function RouteComponent() {
 							</BreadcrumbItem>
 						</BreadcrumbList>
 					</Breadcrumb> */}
+					<div className="grow-1" />
+					<SignOutButton />
 				</header>
 				<div className="container mx-auto p-4">
 					<Outlet />

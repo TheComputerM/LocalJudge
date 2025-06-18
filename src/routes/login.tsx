@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+// TODO: need to fix and refactor login page
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { z } from "zod/v4";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -14,9 +14,6 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/login")({
-	validateSearch: z.object({
-		redirect: z.string().optional().catch(""),
-	}),
 	component: RouteComponent,
 });
 
@@ -32,6 +29,7 @@ function LoginForm() {
 	const [email, setEmail] = useState("admin@admin.com");
 	const [password, setPassword] = useState("admin");
 	const [loading, setLoading] = useState(false);
+	const router = useRouter();
 
 	return (
 		<div className="flex flex-col gap-6 w-full max-w-sm">
@@ -49,7 +47,6 @@ function LoginForm() {
 								{
 									email,
 									password,
-									rememberMe: false,
 								},
 								{
 									onRequest: () => {
@@ -59,7 +56,13 @@ function LoginForm() {
 										setLoading(false);
 									},
 									onSuccess: async () => {
-										// TODO: add proper redirect and reload
+										await router.invalidate();
+										await router.navigate({
+											to: "/admin",
+										});
+									},
+									onError: ({ error: { message } }) => {
+										alert(`login error: ${message}`);
 									},
 								},
 							);

@@ -9,27 +9,14 @@
 		"ignoreUnknown": false,
 		"includes": ["**", "!**/routeTree.gen.ts", "!src/styles/app.css"]
 	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
+	"formatter": { "enabled": true, "indentStyle": "tab" },
 	"linter": {
 		"enabled": true,
-		"rules": {
-			"recommended": true
-		}
+		"rules": { "recommended": true }
 	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	},
+	"javascript": { "formatter": { "quoteStyle": "double" } },
 	"assist": {
 		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
-		}
+		"actions": { "source": { "organizeImports": "on" } }
 	}
 }
