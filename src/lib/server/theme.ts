@@ -3,9 +3,11 @@ import { getCookie, setCookie } from "@tanstack/react-start/server";
 
 const THEME_KEY = "ui-mode";
 
-export const getThemeFn = createServerFn().handler(async () => {
-	return getCookie(THEME_KEY) || "light";
-});
+export const getThemeFn = createServerFn({ method: "GET" }).handler(
+	async () => {
+		return getCookie(THEME_KEY) || "light";
+	},
+);
 
 export const setThemeFn = createServerFn({ method: "POST" })
 	.validator((data: unknown) => {

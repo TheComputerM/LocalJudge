@@ -1,6 +1,7 @@
-// TODO: need to fix and refactor login page
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import * as z from "zod/v4";
+import { localjudge } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -14,6 +15,26 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/login")({
+	validateSearch: z.object({
+		redirect: z.string().optional(),
+	}),
+	beforeLoad: async ({ search }) => {
+		const { data } = await localjudge.api.user.get();
+		if (data) {
+			const isAdmin = data.user.role === "admin";
+			let redirectPath = search.redirect || isAdmin ? "/admin" : "/app";
+
+			// If the user is not an admin but the redirect path
+			// includes "admin", redirect to "/app"
+			if (redirectPath.includes("admin") && !isAdmin) {
+				redirectPath = "/app";
+			}
+
+			throw redirect({
+				to: redirectPath,
+			});
+		}
+	},
 	component: RouteComponent,
 });
 
@@ -26,7 +47,7 @@ function RouteComponent() {
 }
 
 function LoginForm() {
-	const [email, setEmail] = useState("admin@admin.com");
+	const [email, setEmail] = useState("admin@localjudge.com");
 	const [password, setPassword] = useState("admin");
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
@@ -42,8 +63,9 @@ function LoginForm() {
 				</CardHeader>
 				<CardContent>
 					<form
-						onSubmit={async () => {
-							await authClient.signIn.email(
+						onSubmit={async (e) => {
+							e.preventDefault();
+							authClient.signIn.email(
 								{
 									email,
 									password,
@@ -55,14 +77,12 @@ function LoginForm() {
 									onResponse: () => {
 										setLoading(false);
 									},
-									onSuccess: async () => {
-										await router.invalidate();
-										await router.navigate({
-											to: "/admin",
-										});
+									onSuccess: () => {
+										router.invalidate();
 									},
-									onError: ({ error: { message } }) => {
-										alert(`login error: ${message}`);
+									onError: (ctx) => {
+										console.log(ctx);
+										alert(`login error: ${(ctx as any).responseText}`);
 									},
 								},
 							);
@@ -96,7 +116,7 @@ function LoginForm() {
 								</Button>
 								{/* TODO: display social login buttons depending on config */}
 								<div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-									<span className="bg-background text-muted-foreground relative z-10 px-2">
+									<span className="bg-card text-muted-foreground relative z-10 px-2">
 										or continue with
 									</span>
 								</div>

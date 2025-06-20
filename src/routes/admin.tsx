@@ -10,13 +10,12 @@ import {
 	LucideBookText,
 	LucideCog,
 	LucideLayoutDashboard,
-	LucideLogOut,
 	LucideTableProperties,
 	LucideUsers,
 } from "lucide-react";
-import { appClient } from "@/api/client";
+import { localjudge } from "@/api/client";
+import { SignOutButton } from "@/components/sign-out";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
 	Sidebar,
@@ -32,11 +31,10 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/admin")({
 	beforeLoad: async ({ location }) => {
-		const { data } = await appClient.api.user.get();
+		const { data } = await localjudge.api.user.get();
 		if (!data || data.user.role !== "admin") {
 			throw redirect({
 				to: "/login",
@@ -96,25 +94,6 @@ function AppSidebar() {
 				</SidebarMenu>
 			</SidebarFooter>
 		</Sidebar>
-	);
-}
-
-function SignOutButton() {
-	const router = useRouter();
-	async function signOut() {
-		await authClient.signOut({
-			fetchOptions: {
-				onSuccess: () => {
-					router.invalidate();
-				},
-			},
-		});
-	}
-	return (
-		<Button variant="secondary" onClick={signOut}>
-			Sign Out
-			<LucideLogOut />
-		</Button>
 	);
 }
 

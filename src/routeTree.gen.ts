@@ -12,6 +12,7 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
@@ -27,12 +28,18 @@ import { Route as AppContestContestIdLeaderboardRouteImport } from './routes/app
 import { Route as AppContestContestIdProblemIndexRouteImport } from './routes/app/contest/$contestId/problem/index'
 import { Route as AppContestContestIdProblemProblemIdRouteImport } from './routes/app/contest/$contestId/problem/$problemId'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
+import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -46,9 +53,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/app/',
-  path: '/app/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -71,9 +78,9 @@ const AdminContestIndexRoute = AdminContestIndexRouteImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 const AppContestContestIdRoute = AppContestContestIdRouteImport.update({
-  id: '/app/contest/$contestId',
-  path: '/app/contest/$contestId',
-  getParentRoute: () => rootRouteImport,
+  id: '/contest/$contestId',
+  path: '/contest/$contestId',
+  getParentRoute: () => AppRoute,
 } as any)
 const AdminContestNewRoute = AdminContestNewRouteImport.update({
   id: '/contest/new',
@@ -115,15 +122,21 @@ const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootServerRouteImport,
 } as any)
+const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/configuration': typeof AdminConfigurationRoute
   '/admin/participant': typeof AdminParticipantRoute
   '/admin/': typeof AdminIndexRoute
-  '/app': typeof AppIndexRoute
+  '/app/': typeof AppIndexRoute
   '/admin/contest/new': typeof AdminContestNewRoute
   '/app/contest/$contestId': typeof AppContestContestIdRouteWithChildren
   '/admin/contest': typeof AdminContestIndexRoute
@@ -152,6 +165,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/configuration': typeof AdminConfigurationRoute
   '/admin/participant': typeof AdminParticipantRoute
@@ -171,11 +185,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/app'
     | '/login'
     | '/admin/configuration'
     | '/admin/participant'
     | '/admin/'
-    | '/app'
+    | '/app/'
     | '/admin/contest/new'
     | '/app/contest/$contestId'
     | '/admin/contest'
@@ -203,6 +218,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/app'
     | '/login'
     | '/admin/configuration'
     | '/admin/participant'
@@ -221,30 +237,33 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
-  AppIndexRoute: typeof AppIndexRoute
-  AppContestContestIdRoute: typeof AppContestContestIdRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/$': typeof ApiSplatServerRoute
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/$': typeof ApiSplatServerRoute
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$'
+  fullPaths: '/api/$' | '/api/auth/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$'
-  id: '__root__' | '/api/$'
+  to: '/api/$' | '/api/auth/$'
+  id: '__root__' | '/api/$' | '/api/auth/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   ApiSplatServerRoute: typeof ApiSplatServerRoute
+  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -254,6 +273,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -272,10 +298,10 @@ declare module '@tanstack/react-router' {
     }
     '/app/': {
       id: '/app/'
-      path: '/app'
-      fullPath: '/app'
+      path: '/'
+      fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -307,10 +333,10 @@ declare module '@tanstack/react-router' {
     }
     '/app/contest/$contestId': {
       id: '/app/contest/$contestId'
-      path: '/app/contest/$contestId'
+      path: '/contest/$contestId'
       fullPath: '/app/contest/$contestId'
       preLoaderRoute: typeof AppContestContestIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AppRoute
     }
     '/admin/contest/new': {
       id: '/admin/contest/new'
@@ -363,6 +389,13 @@ declare module '@tanstack/react-start/server' {
       path: '/api/$'
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
   }
@@ -418,18 +451,30 @@ const AppContestContestIdRouteChildren: AppContestContestIdRouteChildren = {
 const AppContestContestIdRouteWithChildren =
   AppContestContestIdRoute._addFileChildren(AppContestContestIdRouteChildren)
 
+interface AppRouteChildren {
+  AppIndexRoute: typeof AppIndexRoute
+  AppContestContestIdRoute: typeof AppContestContestIdRouteWithChildren
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppIndexRoute: AppIndexRoute,
+  AppContestContestIdRoute: AppContestContestIdRouteWithChildren,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
-  AppIndexRoute: AppIndexRoute,
-  AppContestContestIdRoute: AppContestContestIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiSplatServerRoute: ApiSplatServerRoute,
+  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)
