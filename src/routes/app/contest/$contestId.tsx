@@ -11,6 +11,8 @@ import {
 	LucideMenu,
 	LucideTrophy,
 } from "lucide-react";
+import { localjudge } from "@/api/client";
+import { RefreshButton } from "@/components/refresh-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,8 +26,20 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/app/contest/$contestId")({
+	beforeLoad: async ({ params, abortController }) => {
+		const { data: contest, error } = await localjudge.api
+			.contest({ contestId: params.contestId })
+			.get({
+				fetch: { signal: abortController.signal },
+			});
+
+		if (error) throw error;
+
+		return { contest };
+	},
 	component: RouteComponent,
 });
 
@@ -56,6 +70,7 @@ function Navbar() {
 			<span className="inline-flex items-center gap-2 font-semibold">
 				<LucideGavel />
 				LocalJudge
+				<span className="text-xs text-muted-foreground">by TheComputerM</span>
 			</span>
 			<Popover>
 				<PopoverTrigger asChild>
@@ -117,8 +132,13 @@ function Navbar() {
 				</NavigationMenuList>
 			</NavigationMenu>
 			<div className="inline-flex items-center gap-2">
+				<RefreshButton />
 				<ThemeToggle />
-				<span>Time Left: 45min</span>
+				<Separator
+					orientation="vertical"
+					className="data-[orientation=vertical]:h-4"
+				/>
+				<span className="text-sm">45m left</span>
 			</div>
 		</header>
 	);

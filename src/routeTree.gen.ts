@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminParticipantRouteImport } from './routes/admin/participant'
+import { Route as AdminLanguagesRouteImport } from './routes/admin/languages'
 import { Route as AdminConfigurationRouteImport } from './routes/admin/configuration'
 import { Route as AdminContestIndexRouteImport } from './routes/admin/contest/index'
 import { Route as AppContestContestIdRouteImport } from './routes/app/contest/$contestId'
@@ -65,6 +66,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminParticipantRoute = AdminParticipantRouteImport.update({
   id: '/participant',
   path: '/participant',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLanguagesRoute = AdminLanguagesRouteImport.update({
+  id: '/languages',
+  path: '/languages',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminConfigurationRoute = AdminConfigurationRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/configuration': typeof AdminConfigurationRoute
+  '/admin/languages': typeof AdminLanguagesRoute
   '/admin/participant': typeof AdminParticipantRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin/configuration': typeof AdminConfigurationRoute
+  '/admin/languages': typeof AdminLanguagesRoute
   '/admin/participant': typeof AdminParticipantRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/configuration': typeof AdminConfigurationRoute
+  '/admin/languages': typeof AdminLanguagesRoute
   '/admin/participant': typeof AdminParticipantRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/admin/configuration'
+    | '/admin/languages'
     | '/admin/participant'
     | '/admin/'
     | '/app/'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/admin/configuration'
+    | '/admin/languages'
     | '/admin/participant'
     | '/admin'
     | '/app'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/admin/configuration'
+    | '/admin/languages'
     | '/admin/participant'
     | '/admin/'
     | '/app/'
@@ -317,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminParticipantRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/languages': {
+      id: '/admin/languages'
+      path: '/languages'
+      fullPath: '/admin/languages'
+      preLoaderRoute: typeof AdminLanguagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/configuration': {
       id: '/admin/configuration'
       path: '/configuration'
@@ -403,6 +422,7 @@ declare module '@tanstack/react-start/server' {
 
 interface AdminRouteChildren {
   AdminConfigurationRoute: typeof AdminConfigurationRoute
+  AdminLanguagesRoute: typeof AdminLanguagesRoute
   AdminParticipantRoute: typeof AdminParticipantRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminContestNewRoute: typeof AdminContestNewRoute
@@ -411,6 +431,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminConfigurationRoute: AdminConfigurationRoute,
+  AdminLanguagesRoute: AdminLanguagesRoute,
   AdminParticipantRoute: AdminParticipantRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminContestNewRoute: AdminContestNewRoute,

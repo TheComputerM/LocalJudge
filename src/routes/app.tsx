@@ -1,10 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { localjudge } from "@/api/client";
 
 export const Route = createFileRoute("/app")({
-	beforeLoad: async ({ location }) => {
-		const { data } = await localjudge.api.user.get();
-		if (!data) {
+	beforeLoad: async ({ location, context: { auth } }) => {
+		if (!auth) {
 			throw redirect({ to: "/login", search: { redirect: location.pathname } });
 		}
 	},

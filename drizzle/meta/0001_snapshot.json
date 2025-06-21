@@ -1,6 +1,6 @@
 {
-	"id": "6419e41b-990b-4361-8bda-5fef47a5ccdd",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "67695a7e-a04b-444b-8bb9-3f3b559aff58",
+	"prevId": "6419e41b-990b-4361-8bda-5fef47a5ccdd",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -556,22 +556,21 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"tokens": {
-					"name": "tokens",
-					"type": "varchar[]",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "'{}'"
-				},
 				"input": {
 					"name": "input",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
-				"language_id": {
-					"name": "language_id",
-					"type": "integer",
+				"language": {
+					"name": "language",
+					"type": "varchar(16)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"language_version": {
+					"name": "language_version",
+					"type": "varchar(16)",
 					"primaryKey": false,
 					"notNull": true
 				},

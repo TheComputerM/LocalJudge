@@ -1,7 +1,7 @@
+import { Type } from "@sinclair/typebox";
+import { Compile } from "@sinclair/typemap";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import * as z from "zod/v4";
-import { localjudge } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -15,14 +15,15 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/login")({
-	validateSearch: z.object({
-		redirect: z.string().optional(),
-	}),
-	beforeLoad: async ({ search }) => {
-		const { data } = await localjudge.api.user.get();
-		if (data) {
-			const isAdmin = data.user.role === "admin";
-			let redirectPath = search.redirect || isAdmin ? "/admin" : "/app";
+	validateSearch: Compile(
+		Type.Object({
+			redirect: Type.Optional(Type.String()),
+		}),
+	),
+	beforeLoad: async ({ search, context: { auth } }) => {
+		if (auth) {
+			const isAdmin = auth.user.role === "admin";
+			let redirectPath = search.redirect ?? (isAdmin ? "/admin" : "/app");
 
 			// If the user is not an admin but the redirect path
 			// includes "admin", redirect to "/app"
@@ -47,8 +48,8 @@ function RouteComponent() {
 }
 
 function LoginForm() {
-	const [email, setEmail] = useState("admin@localjudge.com");
-	const [password, setPassword] = useState("admin");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 

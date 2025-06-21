@@ -4,16 +4,16 @@ import {
 	linkOptions,
 	Outlet,
 	redirect,
-	useRouter,
 } from "@tanstack/react-router";
 import {
 	LucideBookText,
 	LucideCog,
 	LucideLayoutDashboard,
+	LucidePackage,
 	LucideTableProperties,
 	LucideUsers,
 } from "lucide-react";
-import { localjudge } from "@/api/client";
+import { RefreshButton } from "@/components/refresh-button";
 import { SignOutButton } from "@/components/sign-out";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Separator } from "@/components/ui/separator";
@@ -33,9 +33,8 @@ import {
 } from "@/components/ui/sidebar";
 
 export const Route = createFileRoute("/admin")({
-	beforeLoad: async ({ location }) => {
-		const { data } = await localjudge.api.user.get();
-		if (!data || data.user.role !== "admin") {
+	beforeLoad: async ({ location, context: { auth } }) => {
+		if (!auth || auth.user.role !== "admin") {
 			throw redirect({
 				to: "/login",
 				search: { redirect: location.pathname },
@@ -54,6 +53,7 @@ const navLinks = linkOptions([
 	},
 	{ to: "/admin/contest", label: "Contests", icon: LucideTableProperties },
 	{ to: "/admin/participant", label: "Participants", icon: LucideUsers },
+	{ to: "/admin/languages", label: "Languages", icon: LucidePackage },
 	{ to: "/admin/configuration", label: "Configuration", icon: LucideCog },
 ]);
 
@@ -61,7 +61,7 @@ function AppSidebar() {
 	return (
 		<Sidebar>
 			<SidebarHeader>
-				<div className="text-center rounded py-2 font-semibold bg-muted">
+				<div className="text-center rounded py-2 font-semibold bg-accent/50">
 					LocalJudge Admin
 				</div>
 			</SidebarHeader>
@@ -107,6 +107,7 @@ function Navbar() {
 			/>
 			{/* TODO: add breadcrumbs when implemented */}
 			<div className="grow-1" />
+			<RefreshButton />
 			<ThemeToggle />
 			<Separator
 				orientation="vertical"

@@ -1,3 +1,4 @@
+import jetbrainsMonoFontCss from "@fontsource-variable/jetbrains-mono?url";
 import outfitFontCss from "@fontsource-variable/outfit?url";
 import {
 	createRootRoute,
@@ -6,9 +7,19 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { createServerFn } from "@tanstack/react-start";
+import { getWebRequest } from "@tanstack/react-start/server";
 import type { ReactNode } from "react";
+import { auth } from "@/lib/auth";
 import { getThemeFn } from "@/lib/server/theme";
 import appCss from "@/styles/app.css?url";
+
+const getAuthFn = createServerFn().handler(async () => {
+	const data = await auth.api.getSession({
+		headers: getWebRequest().headers,
+	});
+	return data;
+});
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -31,15 +42,19 @@ export const Route = createRootRoute({
 			},
 			{
 				rel: "stylesheet",
+				href: jetbrainsMonoFontCss,
+			},
+			{
+				rel: "stylesheet",
 				href: appCss,
 			},
 		],
 	}),
+	beforeLoad: async () => ({ auth: await getAuthFn() }),
 	loader: async () => ({
 		theme: await getThemeFn(),
 	}),
 	component: RootComponent,
-	notFoundComponent: () => <div>404 Not Found</div>,
 });
 
 function RootComponent() {
@@ -52,9 +67,11 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+	const theme = Route.useLoaderData({ select: (data) => data.theme });
 	return (
-		<html className="dark" lang="en">
+		<html className={theme} lang="en" suppressHydrationWarning>
 			<head>
+				<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
 				<HeadContent />
 			</head>
 			<body>
