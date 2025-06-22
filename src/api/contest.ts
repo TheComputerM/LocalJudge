@@ -26,7 +26,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			},
 		},
 	)
-	.group("/:id", (app) =>
+	.group("/:contestId", (app) =>
 		app
 			.onBeforeHandle(async ({ params, auth }) => {
 				const isRegistered =
@@ -34,7 +34,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						userToContest,
 						and(
 							eq(userToContest.userId, auth.user.id),
-							eq(userToContest.contestId, params.id),
+							eq(userToContest.contestId, params.contestId),
 						),
 					)) > 0;
 
@@ -46,7 +46,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			})
 			.get("/", async ({ params }) => {
 				const data = await db.query.contest.findFirst({
-					where: eq(contest.id, params.id),
+					where: eq(contest.id, params.contestId),
 					with: {
 						problems: {
 							columns: {

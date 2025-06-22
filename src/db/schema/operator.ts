@@ -7,6 +7,7 @@ import {
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
+import type { ContestSettings } from "@/lib/contest/settings";
 import { user } from "./auth";
 import { userToContest } from "./junction";
 
@@ -17,7 +18,7 @@ export const contest = operatorSchema.table("contest", {
 	name: varchar("name", { length: 32 }).notNull(),
 	startTime: timestamp("start_time").notNull(),
 	endTime: timestamp("end_time").notNull(),
-	settings: jsonb("settings"),
+	settings: jsonb("settings").$type<ContestSettings>().notNull(),
 });
 
 export const contestRelations = relations(contest, ({ many }) => ({

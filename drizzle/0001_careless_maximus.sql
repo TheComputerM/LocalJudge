@@ -1,0 +1,1 @@
+ALTER TABLE "operator"."contest" ALTER COLUMN "settings" SET NOT NULL;

@@ -18,7 +18,14 @@ const [{ id: contestId }] = await db
 	.values({
 		name: "Test Contest",
 		startTime: new Date(),
-		endTime: new Date(Date.now() + 1000 * 60 * 60),
+		endTime: new Date(Date.now() + 1000 * 60 * 60 * 2),
+		settings: {
+			leaderboard: true,
+			submissions: {
+				limit: 0,
+				visible: true,
+			},
+		},
 	})
 	.returning({ id: contest.id });
 await db.insert(userToContest).values({

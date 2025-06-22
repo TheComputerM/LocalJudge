@@ -52,8 +52,9 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+	const theme = Route.useLoaderData({ select: (data) => data.theme });
 	return (
-		<html className="dark" lang="en">
+		<html className={theme} lang="en">
 			<head>
 				<HeadContent />
 			</head>
