@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { localjudge } from "@/api/client";
 import {
 	Sidebar,
 	SidebarContent,
@@ -13,11 +14,18 @@ import {
 } from "@/components/ui/sidebar";
 
 export const Route = createFileRoute("/app/contest/$contestId/problem")({
+	loader: async ({ params }) => {
+		const { data, error } = await localjudge.api
+			.contest({ id: params.contestId })
+			.get();
+		if (error) throw error;
+		return data;
+	},
 	component: RouteComponent,
 });
 
 function AppSidebar() {
-	const problemItems = [1, 2, 3];
+	const problems = Route.useLoaderData({ select: (data) => data.problems });
 	return (
 		<Sidebar variant="floating">
 			<SidebarContent>
@@ -25,16 +33,16 @@ function AppSidebar() {
 					<SidebarGroupLabel>Problems</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{problemItems.map((p) => (
-								<SidebarMenuItem key={p}>
+							{problems.map((p) => (
+								<SidebarMenuItem key={p.id}>
 									<SidebarMenuButton asChild>
 										<Link
 											from={Route.fullPath}
 											activeProps={{ className: "bg-accent" }}
 											to="./$problemId"
-											params={{ problemId: p.toString() }}
+											params={{ problemId: p.id }}
 										>
-											Problem {p}
+											{p.title}
 										</Link>
 									</SidebarMenuButton>
 								</SidebarMenuItem>

@@ -99,11 +99,11 @@ function ContestCard(props: {
 			</CardHeader>
 			<CardFooter className="flex justify-between text-sm">
 				<span>
+					{/* TODO: fix timezone issue */}
 					{format(props.startTime, "do MMM, HH:mm")} —{" "}
 					{format(props.endTime, "do MMM, HH:mm")}
 				</span>
 				<span>
-					{isContestOver ? "ended " : "started "}
 					{formatDistance(
 						isContestOver ? props.endTime : props.startTime,
 						currentTime,
