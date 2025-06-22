@@ -1,39 +1,27 @@
+import { Value } from "@sinclair/typebox/value";
+import { Zod } from "@sinclair/typemap";
 import { createFileRoute } from "@tanstack/react-router";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
 import { useAppForm } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { contest } from "@/db/schema";
-import { contestSettingsSchema } from "@/lib/contest/settings";
+import {
+	contestInsertSchema,
+	contestSettingsSchema,
+} from "@/db/typebox/contest";
 
 export const Route = createFileRoute("/admin/contest/new")({
 	component: RouteComponent,
 });
 
 function NewContestForm() {
-	const contestInsertSchema = createInsertSchema(contest);
-
-	const defaultValues: z.infer<typeof contestInsertSchema> = {
-		name: "",
-		startTime: new Date(),
-		endTime: new Date(Date.now() + 1000 * 60 * 60 * 2),
-		settings: {
-			leaderboard: true,
-			submissions: {
-				limit: 0,
-				visible: true,
-			},
-		},
-	};
-
 	const form = useAppForm({
-		defaultValues,
+		defaultValues: Value.Default(contestInsertSchema, {}),
 		validators: {
-			onChange: contestInsertSchema,
+			// TODO: https://github.com/sinclairzx81/typemap/issues/35
+			onChange: Zod(contestInsertSchema),
 		},
 		onSubmit: ({ value }) => {
-			const result = contestInsertSchema.parse(value);
+			const result = Value.Parse(contestInsertSchema, value);
 			console.log(result);
 		},
 	});
@@ -63,14 +51,14 @@ function NewContestForm() {
 			<form.AppField name="settings.leaderboard">
 				{(field) => {
 					const { title, description } =
-						contestSettingsSchema.shape.leaderboard.meta()!;
+						contestSettingsSchema.properties.leaderboard;
 					return <field.ToggleSwitch label={title} description={description} />;
 				}}
 			</form.AppField>
 			<form.AppField name="settings.submissions.limit">
 				{(field) => {
 					const { title, description } =
-						contestSettingsSchema.shape.submissions.shape.limit.meta()!;
+						contestSettingsSchema.properties.submissions.properties.limit;
 					return (
 						<field.NumberField
 							label={title}
@@ -83,7 +71,7 @@ function NewContestForm() {
 			<form.AppField name="settings.submissions.visible">
 				{(field) => {
 					const { title, description } =
-						contestSettingsSchema.shape.submissions.shape.visible.meta()!;
+						contestSettingsSchema.properties.submissions.properties.visible;
 					return <field.ToggleSwitch label={title} description={description} />;
 				}}
 			</form.AppField>

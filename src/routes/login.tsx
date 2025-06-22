@@ -1,6 +1,7 @@
+import { Type } from "@sinclair/typebox";
+import { Compile } from "@sinclair/typemap";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import * as z from "zod/v4";
 import { localjudge } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,9 +16,11 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/login")({
-	validateSearch: z.object({
-		redirect: z.string().optional(),
-	}),
+	validateSearch: Compile(
+		Type.Object({
+			redirect: Type.Optional(Type.String()),
+		}),
+	),
 	beforeLoad: async ({ search }) => {
 		const { data } = await localjudge.api.user.get();
 		if (data) {

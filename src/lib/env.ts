@@ -1,17 +1,18 @@
-import { z } from "zod/v4";
+import { Type } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
 
-const envSchema = z.object({
-	POSTGRES_HOST: z.string().default("localhost"),
-	POSTGRES_PORT: z.coerce.number().default(5432),
-	POSTGRES_USER: z.string().default("postgres"),
-	POSTGRES_DB: z.string().default("postgres"),
-	POSTGRES_PASSWORD: z.string(),
-	BETTER_AUTH_URL: z.string(),
-	BETTER_AUTH_SECRET: z.string(),
-	ADMIN_EMAIL: z.string(),
-	ADMIN_PASSWORD: z.string(),
+const envSchema = Type.Object({
+	POSTGRES_HOST: Type.String({ default: "localhost" }),
+	POSTGRES_PORT: Type.Number({ default: 5432 }),
+	POSTGRES_USER: Type.String({ default: "postgres" }),
+	POSTGRES_DB: Type.String({ default: "postgres" }),
+	POSTGRES_PASSWORD: Type.String(),
+	BETTER_AUTH_URL: Type.String(),
+	BETTER_AUTH_SECRET: Type.String(),
+	ADMIN_EMAIL: Type.String(),
+	ADMIN_PASSWORD: Type.String(),
 });
 
-const env = envSchema.parse(process.env);
+const env = Value.Parse(envSchema, process.env);
 
 export default env;

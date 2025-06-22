@@ -1,5 +1,4 @@
 import { parseArgs } from "node:util";
-import { z } from "zod/v4";
 
 const { values } = parseArgs({
 	args: Bun.argv,
@@ -11,5 +10,3 @@ const { values } = parseArgs({
 	},
 	strict: false,
 });
-
-const configSchema = z.object({});
