@@ -1,6 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import { Zod } from "@sinclair/typemap";
 import { createFileRoute } from "@tanstack/react-router";
+import { localjudge } from "@/api/client";
 import { useAppForm } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -20,9 +21,13 @@ function NewContestForm() {
 			// TODO: https://github.com/sinclairzx81/typemap/issues/35
 			onChange: Zod(contestInsertSchema),
 		},
-		onSubmit: ({ value }) => {
+		onSubmit: async ({ value }) => {
 			const result = Value.Parse(contestInsertSchema, value);
-			console.log(result);
+			const { data, error } = await localjudge.api.contest.post(result);
+			if (error) {
+				return;
+			}
+			console.log(data);
 		},
 	});
 

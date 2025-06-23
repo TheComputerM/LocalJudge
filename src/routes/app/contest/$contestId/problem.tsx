@@ -16,7 +16,7 @@ import {
 export const Route = createFileRoute("/app/contest/$contestId/problem")({
 	loader: async ({ params }) => {
 		const { data, error } = await localjudge.api
-			.contest({ id: params.contestId })
+			.contest({ contestId: params.contestId })
 			.get();
 		if (error) throw error;
 		return data;

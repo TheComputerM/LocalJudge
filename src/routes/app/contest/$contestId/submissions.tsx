@@ -5,7 +5,6 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -35,7 +34,7 @@ function Submissions() {
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead className="w-32">Id</TableHead>
+								<TableHead className="w-32">Testcase</TableHead>
 								<TableHead>Status</TableHead>
 							</TableRow>
 						</TableHeader>
