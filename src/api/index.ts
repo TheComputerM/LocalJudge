@@ -7,7 +7,8 @@ import { userApp } from "./user";
 export const baseApp = new Elysia({ prefix: "/api" })
 	.use(
 		swagger({
-			path: "/",
+			path: "/swagger",
+			specPath: "swagger/json",
 			documentation: {
 				info: {
 					title: "LocalJudge Documentation",
@@ -17,7 +18,7 @@ export const baseApp = new Elysia({ prefix: "/api" })
 		}),
 	)
 	.use(userApp)
-	.use(adminApp)
-	.use(contestApp);
+	.use(contestApp)
+	.use(adminApp);
 
 export type App = typeof baseApp;
