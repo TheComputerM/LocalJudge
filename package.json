@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"start": "bun --bun run .output/server/index.mjs",
 		"check": "biome check src",
 		"migrate": "bun run ./scripts/migrate.ts"
 	},
@@ -29,9 +30,9 @@
 		"@sinclair/typemap": "^0.10.0",
 		"@tailwindcss/postcss": "^4.1.10",
 		"@tanstack/react-form": "^1.12.3",
-		"@tanstack/react-router": "^1.121.27",
-		"@tanstack/react-router-devtools": "^1.121.27",
-		"@tanstack/react-start": "^1.121.32",
+		"@tanstack/react-router": "^1.121.34",
+		"@tanstack/react-router-devtools": "^1.121.34",
+		"@tanstack/react-start": "^1.121.34",
 		"better-auth": "^1.2.10",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -40,7 +41,7 @@
 		"drizzle-typebox": "^0.3.3",
 		"elysia": "^1.3.5",
 		"lucide-react": "^0.522.0",
-		"motion": "^12.18.1",
+		"motion": "^12.19.1",
 		"postcss": "^8.5.6",
 		"react": "^19.1.0",
 		"react-day-picker": "^9.7.0",
@@ -57,11 +58,14 @@
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
 		"bun-types": "^1.2.17",
-		"drizzle-kit": "^0.31.1",
+		"drizzle-kit": "^0.31.2",
 		"lefthook": "^1.11.14",
 		"pg": "^8.16.2",
 		"tw-animate-css": "^1.3.4",
 		"typescript": "^5.8.3",
 		"vite-tsconfig-paths": "^5.1.4"
+	},
+	"optionalDependencies": {
+		"@sinclair/typebox": "0.34.33"
 	}
 }
