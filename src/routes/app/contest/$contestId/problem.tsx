@@ -1,5 +1,4 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { localjudge } from "@/api/client";
 import {
 	Sidebar,
 	SidebarContent,
@@ -14,13 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export const Route = createFileRoute("/app/contest/$contestId/problem")({
-	loader: async ({ params }) => {
-		const { data, error } = await localjudge.api
-			.contest({ contestId: params.contestId })
-			.get();
-		if (error) throw error;
-		return data;
-	},
+	loader: async ({ context: { contest } }) => contest,
 	component: RouteComponent,
 });
 

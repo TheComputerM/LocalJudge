@@ -11,6 +11,7 @@ import {
 	LucideMenu,
 	LucideTrophy,
 } from "lucide-react";
+import { localjudge } from "@/api/client";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,17 @@ import {
 } from "@/components/ui/popover";
 
 export const Route = createFileRoute("/app/contest/$contestId")({
+	beforeLoad: async ({ params, abortController }) => {
+		const { data: contest, error } = await localjudge.api
+			.contest({ contestId: params.contestId })
+			.get({
+				fetch: { signal: abortController.signal },
+			});
+
+		if (error) throw error;
+
+		return { contest };
+	},
 	component: RouteComponent,
 });
 
