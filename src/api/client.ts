@@ -1,4 +1,4 @@
-import { treaty } from "@elysiajs/eden";
+import { type Treaty, treaty } from "@elysiajs/eden";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
 import { type App, baseApp } from ".";
@@ -15,4 +15,4 @@ const createClient = createIsomorphicFn()
 		}),
 	);
 
-export const localjudge = createClient();
+export const localjudge: Treaty.Create<App> = createClient();

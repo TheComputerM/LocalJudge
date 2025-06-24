@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import Elysia, { status } from "elysia";
 import { db } from "@/db";
-import { contest, userToContest } from "@/db/schema";
+import { contest, problem, userToContest } from "@/db/schema";
 import { contestInsertSchema } from "@/db/typebox/contest";
 import { betterAuthPlugin } from "./better-auth";
 
@@ -70,6 +70,13 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 							},
 						},
 					},
+				});
+				if (!data) return status(404);
+				return data;
+			})
+			.get("/problem/:problemId", async ({ params }) => {
+				const data = await db.query.problem.findFirst({
+					where: eq(problem.id, params.problemId),
 				});
 				if (!data) return status(404);
 				return data;

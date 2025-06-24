@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LucideCloudUpload } from "lucide-react";
+import { localjudge } from "@/api/client";
 import {
 	Accordion,
 	AccordionContent,
@@ -25,6 +26,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute(
 	"/app/contest/$contestId/problem/$problemId",
 )({
+	loader: async ({ params }) => {
+		const { data: problem, error } = await localjudge.api
+			.contest({ contestId: params.contestId })
+			.problem({ problemId: params.problemId })
+			.get();
+		if (error) throw error;
+
+		return { problem };
+	},
 	component: RouteComponent,
 });
 
@@ -85,6 +95,13 @@ function TestcaseList() {
 	);
 }
 
+function ProblemStatement() {
+	const description = Route.useLoaderData({
+		select: (data) => data.problem.description,
+	});
+	return <div>{description}</div>;
+}
+
 function Content() {
 	return (
 		<ResizablePanelGroup direction="horizontal" className="h-full">
@@ -94,7 +111,9 @@ function Content() {
 						<TabsTrigger value="statement">Statement</TabsTrigger>
 						<TabsTrigger value="testcases">Testcases</TabsTrigger>
 					</TabsList>
-					<TabsContent value="statement">TODO:</TabsContent>
+					<TabsContent value="statement">
+						<ProblemStatement />
+					</TabsContent>
 					<TabsContent value="testcases">
 						<TestcaseList />
 					</TabsContent>
