@@ -2,7 +2,6 @@ import { Type } from "@sinclair/typebox";
 import { Compile } from "@sinclair/typemap";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { localjudge } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -21,11 +20,10 @@ export const Route = createFileRoute("/login")({
 			redirect: Type.Optional(Type.String()),
 		}),
 	),
-	beforeLoad: async ({ search }) => {
-		const { data } = await localjudge.api.user.get();
-		if (data) {
-			const isAdmin = data.user.role === "admin";
-			let redirectPath = search.redirect || isAdmin ? "/admin" : "/app";
+	beforeLoad: async ({ search, context: { auth } }) => {
+		if (auth) {
+			const isAdmin = auth.user.role === "admin";
+			let redirectPath = search.redirect ?? (isAdmin ? "/admin" : "/app");
 
 			// If the user is not an admin but the redirect path
 			// includes "admin", redirect to "/app"

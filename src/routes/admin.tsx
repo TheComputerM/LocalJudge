@@ -13,7 +13,6 @@ import {
 	LucideTableProperties,
 	LucideUsers,
 } from "lucide-react";
-import { localjudge } from "@/api/client";
 import { RefreshButton } from "@/components/refresh-button";
 import { SignOutButton } from "@/components/sign-out";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -34,9 +33,8 @@ import {
 } from "@/components/ui/sidebar";
 
 export const Route = createFileRoute("/admin")({
-	beforeLoad: async ({ location }) => {
-		const { data } = await localjudge.api.user.get();
-		if (!data || data.user.role !== "admin") {
+	beforeLoad: async ({ location, context: { auth } }) => {
+		if (!auth || auth.user.role !== "admin") {
 			throw redirect({
 				to: "/login",
 				search: { redirect: location.pathname },

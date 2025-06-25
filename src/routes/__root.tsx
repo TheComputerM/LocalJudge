@@ -7,9 +7,19 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { createServerFn } from "@tanstack/react-start";
+import { getWebRequest } from "@tanstack/react-start/server";
 import type { ReactNode } from "react";
+import { auth } from "@/lib/auth";
 import { getThemeFn } from "@/lib/server/theme";
 import appCss from "@/styles/app.css?url";
+
+const getAuthFn = createServerFn().handler(async () => {
+	const data = await auth.api.getSession({
+		headers: getWebRequest().headers,
+	});
+	return data;
+});
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -40,6 +50,7 @@ export const Route = createRootRoute({
 			},
 		],
 	}),
+	beforeLoad: async () => ({ auth: await getAuthFn() }),
 	loader: async () => ({
 		theme: await getThemeFn(),
 	}),
