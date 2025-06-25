@@ -1,8 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import Elysia, { status } from "elysia";
+import Elysia, { status, t } from "elysia";
 import { db } from "@/db";
-import { contest, problem, userToContest } from "@/db/schema";
-import { contestInsertSchema } from "@/db/typebox/contest";
+import * as table from "@/db/schema";
 import { betterAuthPlugin } from "./better-auth";
 
 export const contestApp = new Elysia({ prefix: "/contest" })
@@ -13,7 +12,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 		async ({ auth }) => {
 			const contests = await db.query.userToContest.findMany({
 				columns: {},
-				where: eq(userToContest.userId, auth.user.id),
+				where: eq(table.userToContest.userId, auth.user.id),
 				with: {
 					contest: true,
 				},
@@ -29,16 +28,18 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 	)
 	.post(
 		"/",
-		async ({ body }) => {
-			if (body.startTime >= body.endTime) {
-				return status(400, "Start time must be before end time.");
-			}
-			const data = await db.insert(contest).values(body).returning();
-			return data[0];
+		async ({ auth, body }) => {
+			await db
+				.insert(table.userToContest)
+				.values({ userId: auth.user.id, contestId: body.code });
+			return status(201, {
+				message: "Successfully registered for the contest.",
+			});
 		},
 		{
-			auth: "admin",
-			body: contestInsertSchema,
+			body: t.Object({
+				code: t.String(),
+			}),
 		},
 	)
 	.group("/:contestId", (app) =>
@@ -46,22 +47,20 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			.onBeforeHandle(async ({ params, auth }) => {
 				const isRegistered =
 					(await db.$count(
-						userToContest,
+						table.userToContest,
 						and(
-							eq(userToContest.userId, auth.user.id),
-							eq(userToContest.contestId, params.contestId),
+							eq(table.userToContest.userId, auth.user.id),
+							eq(table.userToContest.contestId, params.contestId),
 						),
 					)) > 0;
 
 				if (!isRegistered) {
-					return status(403, {
-						message: "You are not registered for this contest.",
-					});
+					return status(403, "You are not registered for this contest.");
 				}
 			})
 			.get("/", async ({ params }) => {
 				const data = await db.query.contest.findFirst({
-					where: eq(contest.id, params.contestId),
+					where: eq(table.contest.id, params.contestId),
 					with: {
 						problems: {
 							columns: {
@@ -76,7 +75,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			})
 			.get("/problem/:problemId", async ({ params }) => {
 				const data = await db.query.problem.findFirst({
-					where: eq(problem.id, params.problemId),
+					where: eq(table.problem.id, params.problemId),
 				});
 				if (!data) return status(404);
 				return data;

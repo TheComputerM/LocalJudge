@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { contest, problem, userToContest } from "@/db/schema";
+import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 console.info("Creating test user...");
@@ -14,7 +14,7 @@ const { user } = await auth.api.createUser({
 
 console.info("Creating contest...");
 const [{ id: contestId }] = await db
-	.insert(contest)
+	.insert(table.contest)
 	.values({
 		name: "Test Contest",
 		startTime: new Date(),
@@ -27,15 +27,15 @@ const [{ id: contestId }] = await db
 			},
 		},
 	})
-	.returning({ id: contest.id });
-await db.insert(userToContest).values({
+	.returning({ id: table.contest.id });
+await db.insert(table.userToContest).values({
 	userId: user.id,
 	contestId,
 });
 
 console.info("Creating problems...");
 for (let i = 1; i <= 3; i++) {
-	await db.insert(problem).values({
+	await db.insert(table.problem).values({
 		title: `Test Problem ${i}`,
 		description: `very **cool** description for problem ${i}`,
 		contestId,
