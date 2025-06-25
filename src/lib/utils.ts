@@ -5,16 +5,18 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-type EdenResponse = { data: any; error: null } | { data: null; error: any };
-
+type ReponseWithError = { data: any; error: null } | { data: null; error: any };
 /**
- * A wrapper for the Eden API response to be used with SWR.
+ * A wrapper for promises that return error as a value, to make them
+ * reject the error
+ *
+ * can also be used with SWR
  *
  * ```ts
- * const { data, error } = useSWR("key", localjudgeSWR(localjudge.something.get()));
+ * const { data, error } = useSWR("key", () => rejectError(localjudge.something.get()));
  * ```
  */
-export const rejectError = <T extends EdenResponse>(
+export const rejectError = <T extends ReponseWithError>(
 	response: Promise<T>,
 ): Promise<NonNullable<T["data"]>> =>
 	response.then(

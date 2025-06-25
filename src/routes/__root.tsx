@@ -44,7 +44,6 @@ export const Route = createRootRoute({
 		theme: await getThemeFn(),
 	}),
 	component: RootComponent,
-	notFoundComponent: () => <div>404 Not Found</div>,
 });
 
 function RootComponent() {
