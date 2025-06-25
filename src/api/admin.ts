@@ -49,16 +49,20 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 		app
 			.get("/packages", async () => rejectError(piston("@get/packages")))
 			.get("/runtimes", async () => rejectError(piston("@get/runtimes")))
-			.guard({
-				body: t.Object({
-					language: t.String(),
-					version: t.String(),
-				}),
-			})
-			.post("/packages", async ({ body }) =>
-				rejectError(piston("@post/packages", { body })),
-			)
-			.delete("/packages", async ({ body }) =>
-				rejectError(piston("@delete/packages", { body })),
+			.guard(
+				{
+					body: t.Object({
+						language: t.String(),
+						version: t.String(),
+					}),
+				},
+				(app) =>
+					app
+						.post("/packages", async ({ body }) =>
+							rejectError(piston("@post/packages", { body })),
+						)
+						.delete("/packages", async ({ body }) =>
+							rejectError(piston("@delete/packages", { body })),
+						),
 			),
 	);

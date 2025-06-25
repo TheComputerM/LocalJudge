@@ -1,7 +1,9 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { LucideLoader2 } from "lucide-react";
-import { useState } from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { LucideDownload, LucideLoader2, LucideTrash } from "lucide-react";
+import { useRef, useState } from "react";
 import { localjudge } from "@/api/client";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -15,27 +17,10 @@ import { cn, rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/languages")({
 	loader: async () => {
-		const [runtimes, _packages] = await Promise.all([
+		const [runtimes, packages] = await Promise.all([
 			rejectError(localjudge.api.admin.piston.runtimes.get()),
 			rejectError(localjudge.api.admin.piston.packages.get()),
 		]);
-
-		const packages: Record<string, { version: string; installed: boolean }[]> =
-			_packages.reduce(
-				(acc, pkg) => {
-					const element = {
-						version: pkg.language_version,
-						installed: pkg.installed,
-					};
-					if (acc[pkg.language]) {
-						acc[pkg.language].push(element);
-					} else {
-						acc[pkg.language] = [element];
-					}
-					return acc;
-				},
-				{} as Record<string, { version: string; installed: boolean }[]>,
-			);
 
 		return { runtimes, packages };
 	},
@@ -51,6 +36,7 @@ function LanguagesList() {
 				<TableRow>
 					<TableHead>Language</TableHead>
 					<TableHead>Version</TableHead>
+					<TableHead>Runtime</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -58,6 +44,7 @@ function LanguagesList() {
 					<TableRow key={runtime.language}>
 						<TableCell>{runtime.language}</TableCell>
 						<TableCell>{runtime.version}</TableCell>
+						<TableCell>{runtime.runtime}</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
@@ -67,7 +54,7 @@ function LanguagesList() {
 
 function PackageActionButton(props: {
 	language: string;
-	version: string;
+	language_version: string;
 	installed: boolean;
 }) {
 	const [loading, setLoading] = useState(false);
@@ -84,57 +71,80 @@ function PackageActionButton(props: {
 					props.installed ? "delete" : "post"
 				]({
 					language: props.language,
-					version: props.version,
+					version: props.language_version,
 				});
 				await router.invalidate({
 					filter: (r) => r.fullPath === "/admin/languages",
+					sync: true,
 				});
 				setLoading(false);
 			}}
 		>
 			{loading && <LucideLoader2 className="animate-spin" />}
 			{props.installed ? "Remove" : "Install"}
+			{props.installed ? <LucideTrash /> : <LucideDownload />}
 		</Button>
 	);
 }
 
+/**
+ * Recursively get offset from top of page for element
+ */
+const getOffsetTop = (element: HTMLElement | null) => {
+	let offsetTop = 0;
+	while (element) {
+		offsetTop += element.offsetTop;
+		element = element.offsetParent as HTMLElement | null;
+	}
+	return offsetTop;
+};
+
 function PackageList() {
 	const packages = Route.useLoaderData({ select: (data) => data.packages });
+	const tableBodyRef = useRef<HTMLDivElement | null>(null);
+
+	const virtualizer = useWindowVirtualizer({
+		count: packages.length,
+		estimateSize: () => 56,
+		scrollMargin: tableBodyRef.current ? getOffsetTop(tableBodyRef.current) : 0,
+		overscan: 5,
+	});
+
 	return (
-		<Table>
-			<TableHeader>
-				<TableRow>
-					<TableHead>Package</TableHead>
-					<TableHead>Version</TableHead>
-					<TableHead className="text-right">Action</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				{Object.entries(packages).map((pkg) =>
-					pkg[1].map(({ version, installed }, i) => (
-						<TableRow
-							key={pkg[0] + version}
-							className={cn(
-								"hover:bg-transparent",
-								i < pkg[1].length - 1 && "border-none",
-							)}
-						>
-							{i === 0 && (
-								<TableCell rowSpan={pkg[1].length}>{pkg[0]}</TableCell>
-							)}
-							<TableCell>{version}</TableCell>
-							<TableCell className="text-right">
-								<PackageActionButton
-									language={pkg[0]}
-									version={version}
-									installed={installed}
-								/>
-							</TableCell>
-						</TableRow>
-					)),
-				)}
-			</TableBody>
-		</Table>
+		<div>
+			<div
+				ref={tableBodyRef}
+				className="w-full relative"
+				style={{
+					height: `${virtualizer.getTotalSize()}px`,
+					position: "relative",
+				}}
+			>
+				{virtualizer.getVirtualItems().map((item) => (
+					<div
+						key={item.key}
+						className={cn(
+							"absolute w-full flex items-center justify-between px-4",
+							item.index % 2 && "bg-muted rounded-lg",
+						)}
+						style={{
+							top: 0,
+							left: 0,
+							height: `${item.size}px`,
+							transform: `translateY(${item.start - virtualizer.options.scrollMargin}px)`,
+						}}
+					>
+						<div>
+							<span>{packages[item.index].language}</span>
+							<Badge className="ml-2">
+								{packages[item.index].language_version}
+							</Badge>
+						</div>
+						<PackageActionButton {...packages[item.index]} />
+					</div>
+				))}
+			</div>
+		</div>
 	);
 }
 

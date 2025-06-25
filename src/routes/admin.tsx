@@ -55,8 +55,8 @@ const navLinks = linkOptions([
 	},
 	{ to: "/admin/contest", label: "Contests", icon: LucideTableProperties },
 	{ to: "/admin/participant", label: "Participants", icon: LucideUsers },
-	{ to: "/admin/configuration", label: "Configuration", icon: LucideCog },
 	{ to: "/admin/languages", label: "Languages", icon: LucidePackage },
+	{ to: "/admin/configuration", label: "Configuration", icon: LucideCog },
 ]);
 
 function AppSidebar() {
