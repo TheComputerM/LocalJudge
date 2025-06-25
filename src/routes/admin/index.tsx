@@ -40,7 +40,7 @@ function RouteComponent() {
 				</Card>
 				<Card>
 					<CardHeader className="px-6">
-						<CardDescription>Perticipants</CardDescription>
+						<CardDescription>Participants</CardDescription>
 						<CardTitle className="text-2xl font-semibold tabular-nums">
 							{data.statistics.participants}
 						</CardTitle>
