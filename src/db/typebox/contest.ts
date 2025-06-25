@@ -1,24 +1,24 @@
-import { Type } from "@sinclair/typebox";
-import { createInsertSchema } from "drizzle-typebox";
+import { t } from "elysia";
 import { contest } from "../schema";
+import { createInsertSchema } from ".";
 
-export const contestSettingsSchema = Type.Object(
+export const contestSettingsSchema = t.Object(
 	{
-		leaderboard: Type.Boolean({
+		leaderboard: t.Boolean({
 			default: true,
 			title: "Leaderboard",
 			description:
 				"Allows the participants to view the leaderboard for the contest if true.",
 		}),
-		submissions: Type.Object(
+		submissions: t.Object(
 			{
-				limit: Type.Number({
+				limit: t.Number({
 					default: 0,
 					title: "Submission Limit",
 					description:
 						"The maximum number of submissions allowed per question by a participant. A value of 0 means unlimited submissions.",
 				}),
-				visible: Type.Boolean({
+				visible: t.Boolean({
 					default: true,
 					title: "Submission Visibility",
 					description:
@@ -31,7 +31,11 @@ export const contestSettingsSchema = Type.Object(
 	{ default: {} },
 );
 
-export const contestInsertSchema = createInsertSchema(contest, {
-	name: Type.String({ minLength: 1, maxLength: 32, default: "" }),
+const _contestInsert = createInsertSchema(contest, {
+	name: t.String({ minLength: 4, maxLength: 32, default: "" }),
 	settings: contestSettingsSchema,
 });
+
+export const contestSchema = {
+	insert: t.Omit(_contestInsert, ["id"]),
+};

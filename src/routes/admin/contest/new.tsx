@@ -5,29 +5,28 @@ import { localjudge } from "@/api/client";
 import { useAppForm } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-	contestInsertSchema,
-	contestSettingsSchema,
-} from "@/db/typebox/contest";
+import { contestSchema, contestSettingsSchema } from "@/db/typebox/contest";
 
 export const Route = createFileRoute("/admin/contest/new")({
 	component: RouteComponent,
 });
 
 function NewContestForm() {
+	const navigate = Route.useNavigate();
 	const form = useAppForm({
-		defaultValues: Value.Default(contestInsertSchema, {}),
+		defaultValues: Value.Default(contestSchema.insert, {}),
 		validators: {
 			// TODO: https://github.com/sinclairzx81/typemap/issues/35
-			onChange: Zod(contestInsertSchema),
+			onChange: Zod(contestSchema.insert),
 		},
 		onSubmit: async ({ value }) => {
-			const result = Value.Parse(contestInsertSchema, value);
-			const { data, error } = await localjudge.api.contest.post(result);
+			const result = Value.Parse(contestSchema.insert, value);
+			const { data, error } = await localjudge.api.admin.contest.post(result);
 			if (error) {
+				alert(JSON.stringify(error));
 				return;
 			}
-			console.log(data);
+			navigate({ to: "/admin/contest" });
 		},
 	});
 

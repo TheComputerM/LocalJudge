@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/card";
 
 export const Route = createFileRoute("/admin/")({
-	loader: async () => {
-		const { data } = await localjudge.api.admin.dashboard.get();
-		if (!data) {
-			throw new Error("Failed to fetch admin dashboard data");
-		}
+	loader: async ({ abortController }) => {
+		const { data, error } = await localjudge.api.admin.dashboard.get({
+			fetch: {
+				signal: abortController.signal,
+			},
+		});
+		if (error) throw error;
 		return data;
 	},
 	component: RouteComponent,

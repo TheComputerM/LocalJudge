@@ -16,6 +16,9 @@ import { Label } from "../ui/label";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
+/**
+ * Date and time picker component from https://time.rdsx.dev/
+ */
 export function DateTimePicker(props: { label: string }) {
 	const field = useFieldContext<Date>();
 	const {
@@ -115,7 +118,7 @@ export function DateTimePicker(props: { label: string }) {
 										</Button>
 									))}
 								</div>
-								{/* <ScrollBar orientation="horizontal" className="sm:hidden" /> */}
+								<ScrollBar orientation="horizontal" className="sm:hidden" />
 							</ScrollArea>
 						</div>
 					</div>

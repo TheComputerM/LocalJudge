@@ -1,15 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	format,
-	formatDistance,
-	formatDuration,
-	intervalToDuration,
-	isPast,
-	lightFormat,
-} from "date-fns";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { format, lightFormat } from "date-fns";
 import { LucideGavel } from "lucide-react";
-import { useMemo } from "react";
+import { useState } from "react";
 import { localjudge } from "@/api/client";
+import { ContestStatusBadge } from "@/components/contest-status-badge";
 import { SignOutButton } from "@/components/sign-out";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -55,6 +49,10 @@ function Navbar() {
 				</div>
 				<div className="flex flex-1 items-center justify-end gap-2">
 					<ThemeToggle />
+					<Separator
+						orientation="vertical"
+						className="mr-2 data-[orientation=vertical]:h-4"
+					/>
 					<SignOutButton />
 				</div>
 			</div>
@@ -63,11 +61,26 @@ function Navbar() {
 }
 
 function RegisterForm() {
+	const [code, setCode] = useState("");
+	const router = useRouter();
+
 	return (
-		<div className="flex gap-2">
-			<Input placeholder="Contest Code" />
-			<Button>Register</Button>
-		</div>
+		<form
+			className="flex gap-2"
+			onSubmit={async (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				await localjudge.api.contest.post({ code });
+				router.invalidate({ filter: (d) => d.fullPath === "/app/" });
+			}}
+		>
+			<Input
+				placeholder="Contest Code"
+				value={code}
+				onChange={(e) => setCode(e.target.value)}
+			/>
+			<Button type="submit">Register</Button>
+		</form>
 	);
 }
 
@@ -77,17 +90,15 @@ function ContestCard(props: {
 	startTime: Date;
 	endTime: Date;
 }) {
-	const currentTime = useTime();
-	const isContestOver = useMemo(() => isPast(props.endTime), [props.endTime]);
-
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle>{props.name}</CardTitle>
 				<CardDescription>
-					{formatDuration(
-						intervalToDuration({ start: props.startTime, end: props.endTime }),
-					)}
+					<ContestStatusBadge
+						startTime={props.startTime}
+						endTime={props.endTime}
+					/>
 				</CardDescription>
 				<CardAction>
 					<Button asChild>
@@ -103,13 +114,7 @@ function ContestCard(props: {
 					{format(props.startTime, "do MMM, HH:mm")} —{" "}
 					{format(props.endTime, "do MMM, HH:mm")}
 				</span>
-				<span>
-					{formatDistance(
-						isContestOver ? props.endTime : props.startTime,
-						currentTime,
-						{ addSuffix: true },
-					)}
-				</span>
+				<span></span>
 			</CardFooter>
 		</Card>
 	);

@@ -1,14 +1,47 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LucidePlus } from "lucide-react";
+import { localjudge } from "@/api/client";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardAction,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/admin/contest/")({
+	loader: async ({ abortController }) => {
+		const { data, error } = await localjudge.api.admin.contest.get({
+			fetch: {
+				signal: abortController.signal,
+			},
+		});
+		if (error) throw error;
+		return data;
+	},
 	component: RouteComponent,
 });
 
-function RouteComponent() {
+function ContestCard(props: { id: string; name: string }) {
 	return (
-		<div>
+		<Card>
+			<CardHeader>
+				<CardTitle>{props.name}</CardTitle>
+				<CardDescription>{props.id}</CardDescription>
+				<CardAction>
+					<Button variant="link">Inspect</Button>
+				</CardAction>
+			</CardHeader>
+		</Card>
+	);
+}
+
+function RouteComponent() {
+	const contests = Route.useLoaderData();
+	return (
+		<>
 			<div className="flex items-center justify-between mb-4">
 				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
 					Contests
@@ -19,7 +52,12 @@ function RouteComponent() {
 					</Link>
 				</Button>
 			</div>
-			No contests
-		</div>
+			<Separator className="my-6" />
+			<div className="grid gap-3">
+				{contests.map((contest) => (
+					<ContestCard key={contest.id} {...contest} />
+				))}
+			</div>
+		</>
 	);
 }

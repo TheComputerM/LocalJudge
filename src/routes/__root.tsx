@@ -56,6 +56,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 	return (
 		<html className={theme} lang="en">
 			<head>
+				<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
 				<HeadContent />
 			</head>
 			<body>
