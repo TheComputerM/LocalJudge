@@ -78,11 +78,9 @@ export const submission = operatorSchema.table("submission", {
 	problemId: uuid("problem_id")
 		.notNull()
 		.references(() => problem.id),
-	// tokens are used to reference judge0 submissions
-	// TODO: maybe look into converting it into a uuidv4 instead of varchar
-	tokens: varchar("tokens").array().notNull().default([]),
 	input: text("input").notNull(),
-	languageId: integer("language_id").notNull(),
+	language: varchar("language", { length: 16 }).notNull(),
+	languageVersion: varchar("language_version", { length: 16 }).notNull(),
 	createdAt: timestamp("created_at").defaultNow(),
 });
 

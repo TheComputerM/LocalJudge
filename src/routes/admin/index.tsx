@@ -10,7 +10,7 @@ import {
 
 export const Route = createFileRoute("/admin/")({
 	loader: async ({ abortController }) => {
-		const { data, error } = await localjudge.api.admin.dashboard.get({
+		const { data, error } = await localjudge.api.admin.overview.get({
 			fetch: {
 				signal: abortController.signal,
 			},

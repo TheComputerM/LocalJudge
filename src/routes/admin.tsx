@@ -4,12 +4,12 @@ import {
 	linkOptions,
 	Outlet,
 	redirect,
-	useRouter,
 } from "@tanstack/react-router";
 import {
 	LucideBookText,
 	LucideCog,
 	LucideLayoutDashboard,
+	LucidePackage,
 	LucideTableProperties,
 	LucideUsers,
 } from "lucide-react";
@@ -56,6 +56,7 @@ const navLinks = linkOptions([
 	{ to: "/admin/contest", label: "Contests", icon: LucideTableProperties },
 	{ to: "/admin/participant", label: "Participants", icon: LucideUsers },
 	{ to: "/admin/configuration", label: "Configuration", icon: LucideCog },
+	{ to: "/admin/languages", label: "Languages", icon: LucidePackage },
 ]);
 
 function AppSidebar() {

@@ -4,13 +4,15 @@ import Elysia, { status, t } from "elysia";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { contestSchema } from "@/db/typebox/contest";
+import { piston } from "@/lib/piston";
+import { rejectError } from "@/lib/utils";
 import { betterAuthPlugin } from "./better-auth";
 
 export const adminApp = new Elysia({ prefix: "/admin" })
 	.use(betterAuthPlugin)
 	.guard({ auth: "admin" })
 	.get("/contest", async () => {
-		return await db.select().from(table.contest);
+		return await db.query.contest.findMany();
 	})
 	.post(
 		"/contest",
@@ -28,7 +30,7 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 			},
 		},
 	)
-	.get("/dashboard", async () => {
+	.get("/overview", async () => {
 		const _stats = await Promise.all([
 			db.$count(table.contest),
 			db.$count(table.user, eq(table.user.role, "user")),
@@ -42,4 +44,21 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 				submissions: _stats[2],
 			},
 		};
-	});
+	})
+	.group("/piston", (app) =>
+		app
+			.get("/packages", async () => rejectError(piston("@get/packages")))
+			.get("/runtimes", async () => rejectError(piston("@get/runtimes")))
+			.guard({
+				body: t.Object({
+					language: t.String(),
+					version: t.String(),
+				}),
+			})
+			.post("/packages", async ({ body }) =>
+				rejectError(piston("@post/packages", { body })),
+			)
+			.delete("/packages", async ({ body }) =>
+				rejectError(piston("@delete/packages", { body })),
+			),
+	);
