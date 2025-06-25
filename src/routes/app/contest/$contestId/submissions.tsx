@@ -6,7 +6,6 @@ import {
 	AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export const Route = createFileRoute("/app/contest/$contestId/submissions")({
 	component: RouteComponent,
@@ -25,20 +24,13 @@ function Submissions() {
 				className="bg-background has-focus-visible:border-ring has-focus-visible:ring-ring/50 rounded-md border px-4 py-1 outline-none last:border-b has-focus-visible:ring-[3px]"
 			>
 				<AccordionTrigger className="py-2 text-[15px] leading-6 hover:no-underline focus-visible:ring-0">
-					<div>
-						Submission #1
-						<span className="ml-2 text-muted-foreground">(problem name)</span>
+					<div className="inline-flex items-center gap-2">
+						Problem Name
+						<span className="text-muted-foreground">(#1)</span>
 					</div>
 				</AccordionTrigger>
 				<AccordionContent className="pb-2">
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="w-32">Testcase</TableHead>
-								<TableHead>Status</TableHead>
-							</TableRow>
-						</TableHeader>
-					</Table>
+					TODO: testcase badges in a grid
 				</AccordionContent>
 			</AccordionItem>
 		</Accordion>

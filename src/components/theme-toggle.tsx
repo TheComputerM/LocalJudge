@@ -27,10 +27,10 @@ export function ThemeToggle({
 
 	return (
 		<Button
-			onClick={toggle}
 			variant="ghost"
 			size="icon"
 			{...props}
+			onClick={toggle}
 			className={cn("rounded-full", className)}
 		>
 			{darkMode ? <LucideSun /> : <LucideMoon />}

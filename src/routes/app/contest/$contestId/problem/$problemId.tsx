@@ -1,5 +1,7 @@
+import Editor from "@monaco-editor/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { LucideCloudUpload } from "lucide-react";
+import Markdown from "react-markdown";
 import { localjudge } from "@/api/client";
 import {
 	Accordion,
@@ -39,8 +41,18 @@ export const Route = createFileRoute(
 });
 
 function SubmitCode() {
+	const { contestId, problemId } = Route.useParams();
+	async function handleSubmit() {
+		const { data, error } = await localjudge.api
+			.contest({ contestId })
+			.problem({ problemId })
+			.post();
+		if (error) alert(JSON.stringify(error));
+		console.log(data);
+	}
+
 	return (
-		<Button variant="outline">
+		<Button variant="outline" onClick={handleSubmit}>
 			<LucideCloudUpload />
 			Submit
 		</Button>
@@ -49,12 +61,12 @@ function SubmitCode() {
 
 function LanguageSelect() {
 	return (
-		<Select>
+		<Select defaultValue="cpp">
 			<SelectTrigger className="w-32">
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
 			<SelectContent>
-				<SelectItem value="c++">C++</SelectItem>
+				<SelectItem value="cpp">C++</SelectItem>
 				<SelectItem value="java">Java</SelectItem>
 				<SelectItem value="dart">Dart</SelectItem>
 			</SelectContent>
@@ -82,9 +94,7 @@ function TestcaseList() {
 				<AccordionTrigger>Testcase 1</AccordionTrigger>
 				<AccordionContent className="grid grid-cols-2 gap-2 text-xs">
 					<div className="p-2 bg-muted rounded flex-1">
-						<pre className="text-wrap text-wrap max-h-48 overflow-y-auto">
-							Input
-						</pre>
+						<pre className="text-wrap max-h-48 overflow-y-auto">Input</pre>
 					</div>
 					<div className="p-2 bg-muted rounded flex-1">
 						<pre className="text-wrap max-h-48 overflow-y-auto">Output</pre>
@@ -96,10 +106,43 @@ function TestcaseList() {
 }
 
 function ProblemStatement() {
-	const description = Route.useLoaderData({
-		select: (data) => data.problem.description,
+	const problem = Route.useLoaderData({
+		select: (data) => data.problem,
 	});
-	return <div>{description}</div>;
+	return (
+		<>
+			<h1 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+				{problem.title}
+			</h1>
+			<Markdown>{problem.description}</Markdown>
+		</>
+	);
+}
+
+function CodeEditor() {
+	const problemId = Route.useParams({ select: (params) => params.problemId });
+
+	return (
+		<Editor
+			defaultLanguage="cpp"
+			theme="vs-dark"
+			options={{
+				folding: false,
+				lineNumbers: "off",
+				fontFamily: "'JetBrains Mono Variable'",
+			}}
+			defaultValue={`
+#include <bits/stdc++.h>
+int main() {
+	cout << "Hello" << "\\n";
+	return 0;
+}	
+			`.trim()}
+			onChange={(value) => {
+				sessionStorage.setItem(`code:${problemId}`, value ?? "");
+			}}
+		/>
+	);
 }
 
 function Content() {
@@ -120,7 +163,9 @@ function Content() {
 				</Tabs>
 			</ResizablePanel>
 			<ResizableHandle />
-			<ResizablePanel>Editor</ResizablePanel>
+			<ResizablePanel>
+				<CodeEditor />
+			</ResizablePanel>
 		</ResizablePanelGroup>
 	);
 }

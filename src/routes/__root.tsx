@@ -1,3 +1,4 @@
+import jetbrainsMonoFontCss from "@fontsource-variable/jetbrains-mono?url";
 import outfitFontCss from "@fontsource-variable/outfit?url";
 import {
 	createRootRoute,
@@ -28,6 +29,10 @@ export const Route = createRootRoute({
 			{
 				rel: "stylesheet",
 				href: outfitFontCss,
+			},
+			{
+				rel: "stylesheet",
+				href: jetbrainsMonoFontCss,
 			},
 			{
 				rel: "stylesheet",

@@ -28,6 +28,7 @@ const [{ id: contestId }] = await db
 		},
 	})
 	.returning({ id: table.contest.id });
+
 await db.insert(table.userToContest).values({
 	userId: user.id,
 	contestId,

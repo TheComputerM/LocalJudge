@@ -1,5 +1,5 @@
 {
-	"id": "5415fd34-04aa-44ef-908e-c64619cbf778",
+	"id": "6419e41b-990b-4361-8bda-5fef47a5ccdd",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -408,7 +408,7 @@
 					"name": "settings",
 					"type": "jsonb",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true
 				}
 			},
 			"indexes": {},
@@ -468,6 +468,71 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
+		"operator.result": {
+			"name": "result",
+			"schema": "operator",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"testcase_id": {
+					"name": "testcase_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"submission_id": {
+					"name": "submission_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"status": {
+					"name": "status",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"message": {
+					"name": "message",
+					"type": "varchar(256)",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"result_testcase_id_testcase_id_fk": {
+					"name": "result_testcase_id_testcase_id_fk",
+					"tableFrom": "result",
+					"tableTo": "testcase",
+					"schemaTo": "operator",
+					"columnsFrom": ["testcase_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"result_submission_id_submission_id_fk": {
+					"name": "result_submission_id_submission_id_fk",
+					"tableFrom": "result",
+					"tableTo": "submission",
+					"schemaTo": "operator",
+					"columnsFrom": ["submission_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
 		"operator.submission": {
 			"name": "submission",
 			"schema": "operator",
@@ -491,11 +556,31 @@
 					"primaryKey": false,
 					"notNull": true
 				},
+				"tokens": {
+					"name": "tokens",
+					"type": "varchar[]",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'{}'"
+				},
 				"input": {
 					"name": "input",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
+				},
+				"language_id": {
+					"name": "language_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
 				}
 			},
 			"indexes": {},

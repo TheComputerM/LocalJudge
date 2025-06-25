@@ -73,11 +73,23 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 				if (!data) return status(404);
 				return data;
 			})
-			.get("/problem/:problemId", async ({ params }) => {
-				const data = await db.query.problem.findFirst({
-					where: eq(table.problem.id, params.problemId),
-				});
-				if (!data) return status(404);
-				return data;
-			}),
+			.group("/problem/:problemId", (app) =>
+				app
+					.get("/", async ({ params }) => {
+						const data = await db.query.problem.findFirst({
+							where: eq(table.problem.id, params.problemId),
+						});
+						if (!data) return status(404);
+						return data;
+					})
+					.post("/", async ({}) => {
+						// TODO: submit code
+					})
+					.get("/testcase", async ({ params }) => {
+						const data = await db.query.testcase.findMany({
+							where: eq(table.testcase.problemId, params.problemId),
+						});
+						return data;
+					}),
+			),
 	);

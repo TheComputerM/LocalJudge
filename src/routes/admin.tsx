@@ -14,6 +14,7 @@ import {
 	LucideUsers,
 } from "lucide-react";
 import { localjudge } from "@/api/client";
+import { RefreshButton } from "@/components/refresh-button";
 import { SignOutButton } from "@/components/sign-out";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Separator } from "@/components/ui/separator";
@@ -107,6 +108,7 @@ function Navbar() {
 			/>
 			{/* TODO: add breadcrumbs when implemented */}
 			<div className="grow-1" />
+			<RefreshButton />
 			<ThemeToggle />
 			<Separator
 				orientation="vertical"

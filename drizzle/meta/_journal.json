@@ -5,15 +5,8 @@
 		{
 			"idx": 0,
 			"version": "7",
-			"when": 1750553069890,
-			"tag": "0000_milky_silver_centurion",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1750602490372,
-			"tag": "0001_careless_maximus",
+			"when": 1750848013355,
+			"tag": "0000_abnormal_shadowcat",
 			"breakpoints": true
 		}
 	]
