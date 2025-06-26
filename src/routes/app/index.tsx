@@ -18,12 +18,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useTime } from "@/hooks/use-time";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/")({
-	loader: async () => {
-		const { data: contests, error } = await localjudge.api.contest.get();
-		if (error) throw error;
-
+	loader: async ({ abortController }) => {
+		const contests = await rejectError(
+			localjudge.api.contest.get({
+				fetch: { signal: abortController.signal },
+			}),
+		);
 		return { contests };
 	},
 	component: RouteComponent,

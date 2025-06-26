@@ -24,16 +24,18 @@ import {
 } from "@/components/ui/select";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute(
 	"/app/contest/$contestId/problem/$problemId",
 )({
-	loader: async ({ params }) => {
-		const { data: problem, error } = await localjudge.api
-			.contest({ contestId: params.contestId })
-			.problem({ problemId: params.problemId })
-			.get();
-		if (error) throw error;
+	loader: async ({ params, abortController }) => {
+		const problem = await rejectError(
+			localjudge.api
+				.contest({ contestId: params.contestId })
+				.problem({ problemId: params.problemId })
+				.get({ fetch: { signal: abortController.signal } }),
+		);
 
 		return { problem };
 	},
