@@ -69,7 +69,7 @@ function RootComponent() {
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 	const theme = Route.useLoaderData({ select: (data) => data.theme });
 	return (
-		<html className={theme} lang="en">
+		<html className={theme} lang="en" suppressHydrationWarning>
 			<head>
 				<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
 				<HeadContent />

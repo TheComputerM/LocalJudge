@@ -2,28 +2,30 @@ import { LucideMoon, LucideSun } from "lucide-react";
 import { type ComponentProps, useEffect, useState } from "react";
 import { setThemeFn } from "@/lib/server/theme";
 import { cn } from "@/lib/utils";
-import { Route } from "@/routes/__root";
 import { Button } from "./ui/button";
 
 export function ThemeToggle({
 	className,
 	...props
 }: ComponentProps<typeof Button>) {
-	const defaultTheme = Route.useLoaderData({ select: (data) => data.theme });
-	const [darkMode, setDarkMode] = useState(defaultTheme === "dark");
-
-	function toggle() {
-		setDarkMode((mode) => !mode);
-	}
+	const [clientDarkMode, setDarkClientMode] = useState(false);
 
 	useEffect(() => {
 		const root = window.document.documentElement;
-		root.classList.remove("light", "dark");
-		const theme = darkMode ? "dark" : "light";
+		const darkMode = root.classList.contains("dark");
+		setDarkClientMode(darkMode);
+	}, []);
 
-		root.classList.add(theme);
-		setThemeFn({ data: theme });
-	}, [darkMode]);
+	function toggle() {
+		const root = window.document.documentElement;
+		const darkMode = root.classList.contains("dark");
+
+		setDarkClientMode(!darkMode);
+		root.classList.remove("light", "dark");
+		const newTheme = darkMode ? "light" : "dark";
+		root.classList.add(newTheme);
+		setThemeFn({ data: newTheme });
+	}
 
 	return (
 		<Button
@@ -33,7 +35,7 @@ export function ThemeToggle({
 			onClick={toggle}
 			className={cn("rounded-full", className)}
 		>
-			{darkMode ? <LucideSun /> : <LucideMoon />}
+			{clientDarkMode ? <LucideSun /> : <LucideMoon />}
 		</Button>
 	);
 }
