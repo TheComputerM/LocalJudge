@@ -10,9 +10,9 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 	.get(
 		"/",
 		async ({ auth }) => {
-			const contests = await db.query.userToContest.findMany({
+			const contests = await db.query.registration.findMany({
 				columns: {},
-				where: eq(table.userToContest.userId, auth.user.id),
+				where: eq(table.registration.userId, auth.user.id),
 				with: {
 					contest: true,
 				},
@@ -22,7 +22,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 		},
 		{
 			detail: {
-				description: "Get all contests the user is participating in.",
+				description: "Get all contests the user is participating in",
 			},
 		},
 	)
@@ -30,16 +30,17 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 		"/",
 		async ({ auth, body }) => {
 			await db
-				.insert(table.userToContest)
+				.insert(table.registration)
 				.values({ userId: auth.user.id, contestId: body.code });
-			return status(201, {
-				message: "Successfully registered for the contest.",
-			});
+			return status(201, "Successfully registered for the contest");
 		},
 		{
 			body: t.Object({
 				code: t.String(),
 			}),
+			detail: {
+				description: "Register the current user for a contest using its code",
+			},
 		},
 	)
 	.group("/:contestId", (app) =>
@@ -47,15 +48,15 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			.onBeforeHandle(async ({ params, auth }) => {
 				const isRegistered =
 					(await db.$count(
-						table.userToContest,
+						table.registration,
 						and(
-							eq(table.userToContest.userId, auth.user.id),
-							eq(table.userToContest.contestId, params.contestId),
+							eq(table.registration.userId, auth.user.id),
+							eq(table.registration.contestId, params.contestId),
 						),
 					)) > 0;
 
 				if (!isRegistered) {
-					return status(403, "You are not registered for this contest.");
+					return status(403, "You are not registered for this contest");
 				}
 			})
 			.get("/", async ({ params }) => {

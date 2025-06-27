@@ -29,7 +29,7 @@ const [{ id: contestId }] = await db
 	})
 	.returning({ id: table.contest.id });
 
-await db.insert(table.userToContest).values({
+await db.insert(table.registration).values({
 	userId: user.id,
 	contestId,
 });

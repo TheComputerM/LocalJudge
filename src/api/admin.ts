@@ -1,5 +1,5 @@
 import { isAfter } from "date-fns";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import Elysia, { status, t } from "elysia";
 import { db } from "@/db";
 import * as table from "@/db/schema";
@@ -11,14 +11,25 @@ import { betterAuthPlugin } from "./better-auth";
 export const adminApp = new Elysia({ prefix: "/admin" })
 	.use(betterAuthPlugin)
 	.guard({ auth: "admin" })
-	.get("/contest", async () => {
-		return await db.query.contest.findMany();
-	})
+	.get(
+		"/contest",
+		async () => {
+			return await db
+				.select()
+				.from(table.contest)
+				.orderBy(desc(table.contest.startTime));
+		},
+		{
+			detail: {
+				description: "Get all contests",
+			},
+		},
+	)
 	.post(
 		"/contest",
 		async ({ body }) => {
 			if (isAfter(body.startTime, body.endTime)) {
-				return status(400, "Start time cannot be after end time.");
+				return status(400, "Start time cannot be after end time");
 			}
 			const [data] = await db.insert(table.contest).values(body).returning();
 			return data;

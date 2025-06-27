@@ -1,5 +1,5 @@
 {
-	"id": "6419e41b-990b-4361-8bda-5fef47a5ccdd",
+	"id": "6dc5b1e1-c191-4b93-a8ab-543ac6060e63",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -324,8 +324,8 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"operator.users_to_contest": {
-			"name": "users_to_contest",
+		"operator.registration": {
+			"name": "registration",
 			"schema": "operator",
 			"columns": {
 				"user_id": {
@@ -336,16 +336,16 @@
 				},
 				"contest_id": {
 					"name": "contest_id",
-					"type": "uuid",
+					"type": "char(12)",
 					"primaryKey": false,
 					"notNull": true
 				}
 			},
 			"indexes": {},
 			"foreignKeys": {
-				"users_to_contest_user_id_user_id_fk": {
-					"name": "users_to_contest_user_id_user_id_fk",
-					"tableFrom": "users_to_contest",
+				"registration_user_id_user_id_fk": {
+					"name": "registration_user_id_user_id_fk",
+					"tableFrom": "registration",
 					"tableTo": "user",
 					"schemaTo": "auth",
 					"columnsFrom": ["user_id"],
@@ -353,9 +353,9 @@
 					"onDelete": "no action",
 					"onUpdate": "no action"
 				},
-				"users_to_contest_contest_id_contest_id_fk": {
-					"name": "users_to_contest_contest_id_contest_id_fk",
-					"tableFrom": "users_to_contest",
+				"registration_contest_id_contest_id_fk": {
+					"name": "registration_contest_id_contest_id_fk",
+					"tableFrom": "registration",
 					"tableTo": "contest",
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id"],
@@ -365,8 +365,8 @@
 				}
 			},
 			"compositePrimaryKeys": {
-				"users_to_contest_user_id_contest_id_pk": {
-					"name": "users_to_contest_user_id_contest_id_pk",
+				"registration_user_id_contest_id_pk": {
+					"name": "registration_user_id_contest_id_pk",
 					"columns": ["user_id", "contest_id"]
 				}
 			},
@@ -381,10 +381,9 @@
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "char(12)",
 					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
+					"notNull": true
 				},
 				"name": {
 					"name": "name",
@@ -416,7 +415,12 @@
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},
-			"checkConstraints": {},
+			"checkConstraints": {
+				"time_check": {
+					"name": "time_check",
+					"value": "(\"operator\".\"contest\".\"start_time\" < \"operator\".\"contest\".\"end_time\")"
+				}
+			},
 			"isRLSEnabled": false
 		},
 		"operator.problem": {
@@ -425,10 +429,9 @@
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "char(12)",
 					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
+					"notNull": true
 				},
 				"contest_id": {
 					"name": "contest_id",
@@ -556,22 +559,21 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"tokens": {
-					"name": "tokens",
-					"type": "varchar[]",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "'{}'"
-				},
 				"input": {
 					"name": "input",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
-				"language_id": {
-					"name": "language_id",
-					"type": "integer",
+				"language": {
+					"name": "language",
+					"type": "varchar(16)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"language_version": {
+					"name": "language_version",
+					"type": "varchar(16)",
 					"primaryKey": false,
 					"notNull": true
 				},

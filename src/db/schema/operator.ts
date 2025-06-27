@@ -1,6 +1,7 @@
 import { Static } from "@sinclair/typebox";
 import { relations, sql } from "drizzle-orm";
 import {
+	char,
 	check,
 	integer,
 	jsonb,
@@ -10,16 +11,20 @@ import {
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 import { contestSettingsSchema } from "../typebox/contest";
 import { user } from "./auth";
-import { userToContest } from "./junction";
+import { registration } from "./junction";
+
+const id = (name = "id") =>
+	char(name, { length: 12 }).$default(() => nanoid(12));
 
 export const operatorSchema = pgSchema("operator");
 
 export const contest = operatorSchema.table(
 	"contest",
 	{
-		id: uuid("id").primaryKey().defaultRandom(),
+		id: id().primaryKey(),
 		name: varchar("name", { length: 32 }).notNull(),
 		startTime: timestamp("start_time").notNull(),
 		endTime: timestamp("end_time").notNull(),
@@ -34,11 +39,11 @@ export const contest = operatorSchema.table(
 
 export const contestRelations = relations(contest, ({ many }) => ({
 	problems: many(problem),
-	userToContest: many(userToContest),
+	registrations: many(registration),
 }));
 
 export const problem = operatorSchema.table("problem", {
-	id: uuid("id").primaryKey().defaultRandom(),
+	id: id().primaryKey(),
 	contestId: uuid("contest_id")
 		.notNull()
 		.references(() => contest.id),

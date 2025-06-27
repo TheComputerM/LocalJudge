@@ -27,16 +27,15 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/contest/$contestId")({
 	beforeLoad: async ({ params, abortController }) => {
-		const { data: contest, error } = await localjudge.api
-			.contest({ contestId: params.contestId })
-			.get({
+		const contest = await rejectError(
+			localjudge.api.contest({ contestId: params.contestId }).get({
 				fetch: { signal: abortController.signal },
-			});
-
-		if (error) throw error;
+			}),
+		);
 
 		return { contest };
 	},

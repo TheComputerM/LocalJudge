@@ -5,22 +5,8 @@
 		{
 			"idx": 0,
 			"version": "7",
-			"when": 1750848013355,
-			"tag": "0000_abnormal_shadowcat",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1750864753853,
-			"tag": "0001_typical_abomination",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1750988066909,
-			"tag": "0002_cultured_ken_ellis",
+			"when": 1751003280912,
+			"tag": "0000_far_vindicator",
 			"breakpoints": true
 		}
 	]

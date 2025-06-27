@@ -6,35 +6,39 @@
  */
 
 import { relations } from "drizzle-orm";
-import { primaryKey, text, uuid } from "drizzle-orm/pg-core";
+import { char, primaryKey, text } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 import { contest, operatorSchema, submission } from "./operator";
 
 export const userRelations = relations(user, ({ many }) => ({
 	submissions: many(submission),
-	userToContest: many(userToContest),
+	registrations: many(registration),
 }));
 
-export const userToContest = operatorSchema.table(
-	"users_to_contest",
+/**
+ * Each row in this table indicates that a user has registered for a specific contest.
+ * The composite primary key ensures that a user cannot register for the same contest more than once.
+ */
+export const registration = operatorSchema.table(
+	"registration",
 	{
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id),
-		contestId: uuid("contest_id")
+		contestId: char("contest_id", { length: 12 })
 			.notNull()
 			.references(() => contest.id),
 	},
 	(t) => [primaryKey({ columns: [t.userId, t.contestId] })],
 );
 
-export const userToContestRelations = relations(userToContest, ({ one }) => ({
+export const registrationRelations = relations(registration, ({ one }) => ({
 	contest: one(contest, {
-		fields: [userToContest.contestId],
+		fields: [registration.contestId],
 		references: [contest.id],
 	}),
 	user: one(user, {
-		fields: [userToContest.userId],
+		fields: [registration.userId],
 		references: [user.id],
 	}),
 }));
