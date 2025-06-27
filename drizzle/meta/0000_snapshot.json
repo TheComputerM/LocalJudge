@@ -1,5 +1,5 @@
 {
-	"id": "28a2d92f-adfe-4a7b-84cd-e092b34b56b3",
+	"id": "2be9540f-98d1-49f8-a9f9-7f32f521c997",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -382,7 +382,7 @@
 					"primaryKey": true,
 					"notNull": true,
 					"generated": {
-						"as": "\"operator\".\"problem\".\"contest_id\" || '/' || \"operator\".\"problem\".\"index\"",
+						"as": "\"operator\".\"problem\".\"contest_id\" || '/' || \"operator\".\"problem\".\"number\"",
 						"type": "stored"
 					}
 				},
@@ -392,9 +392,9 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"index": {
-					"name": "index",
-					"type": "integer",
+				"number": {
+					"name": "number",
+					"type": "smallint",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -428,9 +428,9 @@
 			"uniqueConstraints": {},
 			"policies": {},
 			"checkConstraints": {
-				"valid_index": {
-					"name": "valid_index",
-					"value": "\"operator\".\"problem\".\"index\" > 0"
+				"valid_number": {
+					"name": "valid_number",
+					"value": "\"operator\".\"problem\".\"number\" > 0"
 				}
 			},
 			"isRLSEnabled": false
@@ -492,7 +492,7 @@
 			"columns": {
 				"testcase_id": {
 					"name": "testcase_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": false
 				},
@@ -620,10 +620,19 @@
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": true,
 					"notNull": true,
-					"default": "gen_random_uuid()"
+					"generated": {
+						"as": "\"operator\".\"testcase\".\"problem_id\" || '/' || \"operator\".\"testcase\".\"number\"",
+						"type": "stored"
+					}
+				},
+				"number": {
+					"name": "number",
+					"type": "smallint",
+					"primaryKey": false,
+					"notNull": true
 				},
 				"problem_id": {
 					"name": "problem_id",
@@ -654,7 +663,12 @@
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},
-			"checkConstraints": {},
+			"checkConstraints": {
+				"valid_number": {
+					"name": "valid_number",
+					"value": "\"operator\".\"testcase\".\"number\" > 0"
+				}
+			},
 			"isRLSEnabled": false
 		}
 	},

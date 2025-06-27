@@ -12,7 +12,7 @@ function RouteComponent() {
 		<Navigate
 			from={Route.fullPath}
 			to="./$number"
-			params={{ number: problems[0].index.toString() }}
+			params={{ number: problems[0].number.toString() }}
 		/>
 	);
 }

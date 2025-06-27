@@ -38,7 +38,7 @@ console.info("Creating problems...");
 for (let i = 1; i <= 3; i++) {
 	await db.insert(table.problem).values({
 		contestId,
-		index: i,
+		number: i,
 		title: `Test Problem ${i}`,
 		description: `very **cool** description for problem ${i}`,
 	});

@@ -70,10 +70,10 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						with: {
 							problems: {
 								columns: {
-									index: true,
+									number: true,
 									title: true,
 								},
-								orderBy: asc(table.problem.index),
+								orderBy: asc(table.problem.number),
 							},
 						},
 					});
@@ -87,10 +87,10 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 					},
 				},
 			)
-			.group("/problem/:index", (app) =>
+			.group("/problem/:problem", (app) =>
 				app
 					.get("/", async ({ params }) => {
-						const problemId = `${params.id}/${params.index}`;
+						const problemId = `${params.id}/${params.problem}`;
 						const data = await db.query.problem.findFirst({
 							where: eq(table.problem.id, problemId),
 						});
@@ -101,7 +101,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						// TODO: submit code
 					})
 					.get("/testcase", async ({ params }) => {
-						const problemId = `${params.id}/${params.index}`;
+						const problemId = `${params.id}/${params.problem}`;
 						const data = await db.query.testcase.findMany({
 							where: eq(table.testcase.problemId, problemId),
 						});

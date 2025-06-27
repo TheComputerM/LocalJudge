@@ -65,12 +65,12 @@ CREATE TABLE "operator"."contest" (
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."problem" (
-	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."problem"."contest_id" || '/' || "operator"."problem"."index") STORED NOT NULL,
+	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."problem"."contest_id" || '/' || "operator"."problem"."number") STORED NOT NULL,
 	"contest_id" text NOT NULL,
-	"index" integer NOT NULL,
+	"number" smallint NOT NULL,
 	"title" varchar(32) NOT NULL,
 	"description" text NOT NULL,
-	CONSTRAINT "valid_index" CHECK ("operator"."problem"."index" > 0)
+	CONSTRAINT "valid_number" CHECK ("operator"."problem"."number" > 0)
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."registration" (
@@ -80,7 +80,7 @@ CREATE TABLE "operator"."registration" (
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."result" (
-	"testcase_id" uuid,
+	"testcase_id" text,
 	"submission_id" uuid,
 	"status" integer NOT NULL,
 	"message" varchar(256) NOT NULL,
@@ -96,9 +96,11 @@ CREATE TABLE "operator"."submission" (
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."testcase" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."testcase"."problem_id" || '/' || "operator"."testcase"."number") STORED NOT NULL,
+	"number" smallint NOT NULL,
 	"problem_id" text NOT NULL,
-	"answer" text NOT NULL
+	"answer" text NOT NULL,
+	CONSTRAINT "valid_number" CHECK ("operator"."testcase"."number" > 0)
 );
 --> statement-breakpoint
 ALTER TABLE "auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

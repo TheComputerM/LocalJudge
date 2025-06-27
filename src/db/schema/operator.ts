@@ -6,6 +6,7 @@ import {
 	jsonb,
 	pgSchema,
 	primaryKey,
+	smallint,
 	text,
 	timestamp,
 	uuid,
@@ -76,17 +77,17 @@ export const problem = operatorSchema.table(
 	{
 		id: text("id")
 			.generatedAlwaysAs(
-				(): SQL => sql`${problem.contestId} || '/' || ${problem.index}`,
+				(): SQL => sql`${problem.contestId} || '/' || ${problem.number}`,
 			)
 			.primaryKey(),
 		contestId: text("contest_id")
 			.notNull()
 			.references(() => contest.id),
-		index: integer("index").notNull(),
+		number: smallint("number").notNull(),
 		title: varchar("title", { length: 32 }).notNull(),
 		description: text("description").notNull(),
 	},
-	(t) => [check("valid_index", sql`${t.index} > 0`)],
+	(t) => [check("valid_number", sql`${t.number} > 0`)],
 );
 
 export const problemRelations = relations(problem, ({ one, many }) => ({
@@ -101,13 +102,22 @@ export const problemRelations = relations(problem, ({ one, many }) => ({
 /**
  * Represents a test case for a problem in a contest.
  */
-export const testcase = operatorSchema.table("testcase", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	problemId: text("problem_id")
-		.notNull()
-		.references(() => problem.id),
-	answer: text("answer").notNull(),
-});
+export const testcase = operatorSchema.table(
+	"testcase",
+	{
+		id: text("id")
+			.generatedAlwaysAs(
+				(): SQL => sql`${testcase.problemId} || '/' || ${testcase.number}`,
+			)
+			.primaryKey(),
+		number: smallint("number").notNull(),
+		problemId: text("problem_id")
+			.notNull()
+			.references(() => problem.id),
+		answer: text("answer").notNull(),
+	},
+	(t) => [check("valid_number", sql`${t.number} > 0`)],
+);
 
 export const testcaseRelations = relations(testcase, ({ one, many }) => ({
 	problem: one(problem, {
@@ -150,7 +160,7 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 export const result = operatorSchema.table(
 	"result",
 	{
-		testcaseId: uuid("testcase_id").references(() => testcase.id),
+		testcaseId: text("testcase_id").references(() => testcase.id),
 		submissionId: uuid("submission_id").references(() => submission.id),
 		status: integer("status").notNull(),
 		message: varchar("message", { length: 256 }).notNull(),

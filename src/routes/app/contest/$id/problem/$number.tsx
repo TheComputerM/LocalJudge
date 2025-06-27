@@ -31,7 +31,7 @@ export const Route = createFileRoute("/app/contest/$id/problem/$number")({
 		const problem = await rejectError(
 			localjudge.api
 				.contest({ id: params.id })
-				.problem({ index: params.number })
+				.problem({ problem: params.number })
 				.get({ fetch: { signal: abortController.signal } }),
 		);
 
@@ -45,7 +45,7 @@ function SubmitCode() {
 	async function handleSubmit() {
 		const { data, error } = await localjudge.api
 			.contest({ id })
-			.problem({ index: number })
+			.problem({ problem: number })
 			.post();
 		if (error) alert(JSON.stringify(error));
 		console.log(data);

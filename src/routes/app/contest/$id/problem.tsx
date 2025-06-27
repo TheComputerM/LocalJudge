@@ -28,13 +28,13 @@ function AppSidebar() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{problems.map((problem) => (
-								<SidebarMenuItem key={problem.index}>
+								<SidebarMenuItem key={problem.number}>
 									<SidebarMenuButton asChild>
 										<Link
 											from={Route.fullPath}
 											activeProps={{ className: "bg-accent" }}
 											to="./$number"
-											params={{ number: problem.index.toString() }}
+											params={{ number: problem.number.toString() }}
 										>
 											{problem.title}
 										</Link>
