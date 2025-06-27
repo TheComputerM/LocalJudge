@@ -8,7 +8,9 @@
 		"build": "vite build",
 		"start": "bun --bun run .output/server/index.mjs",
 		"check": "biome check src",
-		"migrate": "bun run ./scripts/migrate.ts"
+		"db:migrate": "bun run ./scripts/migrate.ts",
+		"db:generate": "drizzle-kit generate",
+		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
 		"@better-fetch/fetch": "^1.1.18",
@@ -29,12 +31,12 @@
 		"@radix-ui/react-switch": "^1.2.5",
 		"@radix-ui/react-tabs": "^1.1.12",
 		"@radix-ui/react-tooltip": "^1.2.7",
-		"@sinclair/typemap": "^0.10.0",
-		"@tailwindcss/postcss": "^4.1.10",
+		"@sinclair/typemap": "^0.10.1",
+		"@tailwindcss/postcss": "^4.1.11",
 		"@tanstack/react-form": "^1.12.3",
-		"@tanstack/react-router": "^1.121.34",
-		"@tanstack/react-router-devtools": "^1.121.34",
-		"@tanstack/react-start": "^1.121.38",
+		"@tanstack/react-router": "^1.121.40",
+		"@tanstack/react-router-devtools": "^1.121.40",
+		"@tanstack/react-start": "^1.121.40",
 		"@tanstack/react-virtual": "^3.13.11",
 		"better-auth": "^1.2.10",
 		"class-variance-authority": "^0.7.1",
@@ -53,9 +55,8 @@
 		"react-resizable-panels": "^3.0.3",
 		"swr": "^2.3.3",
 		"tailwind-merge": "^3.3.1",
-		"tailwindcss": "^4.1.10",
-		"vite": "^6.3.5",
-		"zod": "^3.25.67"
+		"tailwindcss": "^4.1.11",
+		"vite": "^6.3.5"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.5",
@@ -63,7 +64,7 @@
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
 		"bun-types": "^1.2.17",
-		"drizzle-kit": "^0.31.2",
+		"drizzle-kit": "^0.31.3",
 		"lefthook": "^1.11.14",
 		"monaco-editor": "^0.52.2",
 		"pg": "^8.16.2",

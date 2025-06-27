@@ -1,6 +1,7 @@
 import { Static } from "@sinclair/typebox";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
+	check,
 	integer,
 	jsonb,
 	pgSchema,
@@ -15,15 +16,21 @@ import { userToContest } from "./junction";
 
 export const operatorSchema = pgSchema("operator");
 
-export const contest = operatorSchema.table("contest", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	name: varchar("name", { length: 32 }).notNull(),
-	startTime: timestamp("start_time").notNull(),
-	endTime: timestamp("end_time").notNull(),
-	settings: jsonb("settings")
-		.$type<Static<typeof contestSettingsSchema>>()
-		.notNull(),
-});
+export const contest = operatorSchema.table(
+	"contest",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		name: varchar("name", { length: 32 }).notNull(),
+		startTime: timestamp("start_time").notNull(),
+		endTime: timestamp("end_time").notNull(),
+		settings: jsonb("settings")
+			.$type<Static<typeof contestSettingsSchema>>()
+			.notNull(),
+	},
+	(table) => [
+		check("time_check", sql`(${table.startTime} < ${table.endTime})`),
+	],
+);
 
 export const contestRelations = relations(contest, ({ many }) => ({
 	problems: many(problem),

@@ -1,0 +1,1 @@
+ALTER TABLE "operator"."contest" ADD CONSTRAINT "time_check" CHECK (("operator"."contest"."start_time" < "operator"."contest"."end_time"));

@@ -15,6 +15,13 @@
 			"when": 1750864753853,
 			"tag": "0001_typical_abomination",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1750988066909,
+			"tag": "0002_cultured_ken_ellis",
+			"breakpoints": true
 		}
 	]
 }

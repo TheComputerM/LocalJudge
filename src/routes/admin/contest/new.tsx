@@ -1,5 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
-import { Zod } from "@sinclair/typemap";
+import { Compile } from "@sinclair/typemap";
 import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
 import { useAppForm } from "@/components/form";
@@ -16,8 +16,7 @@ function NewContestForm() {
 	const form = useAppForm({
 		defaultValues: Value.Default(contestSchema.insert, {}),
 		validators: {
-			// TODO: https://github.com/sinclairzx81/typemap/issues/35
-			onChange: Zod(contestSchema.insert),
+			onChange: Compile(contestSchema.insert),
 		},
 		onSubmit: async ({ value }) => {
 			const result = Value.Parse(contestSchema.insert, value);

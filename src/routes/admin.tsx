@@ -61,7 +61,7 @@ function AppSidebar() {
 	return (
 		<Sidebar>
 			<SidebarHeader>
-				<div className="text-center rounded py-2 font-semibold bg-accent/50">
+				<div className="text-center rounded py-2 font-semibold bg-muted/50">
 					LocalJudge Admin
 				</div>
 			</SidebarHeader>
