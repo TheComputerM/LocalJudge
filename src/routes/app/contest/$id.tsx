@@ -29,10 +29,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/app/contest/$contestId")({
+export const Route = createFileRoute("/app/contest/$id")({
 	beforeLoad: async ({ params, abortController }) => {
 		const contest = await rejectError(
-			localjudge.api.contest({ contestId: params.contestId }).get({
+			localjudge.api.contest({ id: params.id }).get({
 				fetch: { signal: abortController.signal },
 			}),
 		);

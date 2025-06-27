@@ -46,7 +46,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			},
 		},
 	)
-	.group("/:contestId", (app) =>
+	.group("/:id", (app) =>
 		app
 			.onBeforeHandle(async ({ params, auth }) => {
 				const isRegistered =
@@ -54,7 +54,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						table.registration,
 						and(
 							eq(table.registration.userId, auth.user.id),
-							eq(table.registration.contestId, params.contestId),
+							eq(table.registration.contestId, params.id),
 						),
 					)) > 0;
 
@@ -66,7 +66,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 				"/",
 				async ({ params }) => {
 					const data = await db.query.contest.findFirst({
-						where: eq(table.contest.id, params.contestId),
+						where: eq(table.contest.id, params.id),
 						with: {
 							problems: {
 								columns: {
@@ -90,7 +90,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			.group("/problem/:index", (app) =>
 				app
 					.get("/", async ({ params }) => {
-						const problemId = `${params.contestId}/${params.index}`;
+						const problemId = `${params.id}/${params.index}`;
 						const data = await db.query.problem.findFirst({
 							where: eq(table.problem.id, problemId),
 						});
@@ -101,7 +101,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						// TODO: submit code
 					})
 					.get("/testcase", async ({ params }) => {
-						const problemId = `${params.contestId}/${params.index}`;
+						const problemId = `${params.id}/${params.index}`;
 						const data = await db.query.testcase.findMany({
 							where: eq(table.testcase.problemId, problemId),
 						});

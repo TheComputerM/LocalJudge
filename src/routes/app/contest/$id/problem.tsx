@@ -12,7 +12,7 @@ import {
 	SidebarProvider,
 } from "@/components/ui/sidebar";
 
-export const Route = createFileRoute("/app/contest/$contestId/problem")({
+export const Route = createFileRoute("/app/contest/$id/problem")({
 	loader: async ({ context: { contest } }) => contest.problems,
 	component: RouteComponent,
 });

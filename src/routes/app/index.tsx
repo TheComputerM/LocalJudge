@@ -105,7 +105,7 @@ function ContestCard(props: {
 				</CardDescription>
 				<CardAction>
 					<Button asChild>
-						<Link to="/app/contest/$contestId" params={{ contestId: props.id }}>
+						<Link to="/app/contest/$id" params={{ id: props.id }}>
 							Enter
 						</Link>
 					</Button>

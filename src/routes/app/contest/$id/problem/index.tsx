@@ -1,6 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/app/contest/$contestId/problem/")({
+export const Route = createFileRoute("/app/contest/$id/problem/")({
 	loader: async ({ context: { contest } }) => contest,
 	component: RouteComponent,
 });

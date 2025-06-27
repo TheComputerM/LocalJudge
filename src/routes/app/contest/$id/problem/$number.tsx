@@ -26,27 +26,25 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/app/contest/$contestId/problem/$number")(
-	{
-		loader: async ({ params, abortController }) => {
-			const problem = await rejectError(
-				localjudge.api
-					.contest({ contestId: params.contestId })
-					.problem({ index: params.number })
-					.get({ fetch: { signal: abortController.signal } }),
-			);
+export const Route = createFileRoute("/app/contest/$id/problem/$number")({
+	loader: async ({ params, abortController }) => {
+		const problem = await rejectError(
+			localjudge.api
+				.contest({ id: params.id })
+				.problem({ index: params.number })
+				.get({ fetch: { signal: abortController.signal } }),
+		);
 
-			return { problem };
-		},
-		component: RouteComponent,
+		return { problem };
 	},
-);
+	component: RouteComponent,
+});
 
 function SubmitCode() {
-	const { contestId, number } = Route.useParams();
+	const { id, number } = Route.useParams();
 	async function handleSubmit() {
 		const { data, error } = await localjudge.api
-			.contest({ contestId })
+			.contest({ id })
 			.problem({ index: number })
 			.post();
 		if (error) alert(JSON.stringify(error));

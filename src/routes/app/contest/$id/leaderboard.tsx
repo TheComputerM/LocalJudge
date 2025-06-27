@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export const Route = createFileRoute("/app/contest/$contestId/leaderboard")({
+export const Route = createFileRoute("/app/contest/$id/leaderboard")({
 	component: RouteComponent,
 });
 
