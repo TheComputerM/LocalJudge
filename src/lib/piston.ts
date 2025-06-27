@@ -1,6 +1,7 @@
 import { createFetch, createSchema } from "@better-fetch/fetch";
 import { Type } from "@sinclair/typebox";
 import { Compile } from "@sinclair/typemap";
+import env from "./env";
 
 const schema = createSchema({
 	"@get/runtimes": {
@@ -57,6 +58,6 @@ const schema = createSchema({
 });
 
 export const piston = createFetch({
-	baseURL: "http://localhost:2000/api/v2",
+	baseURL: new URL("/api/v2", env.PISTON_URL).href,
 	schema,
 });

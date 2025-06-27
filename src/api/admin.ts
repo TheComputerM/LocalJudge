@@ -47,8 +47,8 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 	})
 	.group("/piston", (app) =>
 		app
-			.get("/packages", async () => rejectError(piston("@get/packages")))
 			.get("/runtimes", async () => rejectError(piston("@get/runtimes")))
+			.get("/packages", async () => rejectError(piston("@get/packages")))
 			.guard(
 				{
 					body: t.Object({
