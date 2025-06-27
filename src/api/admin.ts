@@ -1,16 +1,14 @@
 import { isAfter } from "date-fns";
 import { desc, eq } from "drizzle-orm";
-import Elysia, { status, t } from "elysia";
+import Elysia, { status } from "elysia";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { contestSchema } from "@/db/typebox/contest";
-import { piston } from "@/lib/piston";
-import { rejectError } from "@/lib/utils";
 import { betterAuthPlugin } from "./better-auth";
 
 export const adminApp = new Elysia({ prefix: "/admin" })
 	.use(betterAuthPlugin)
-	.guard({ auth: "admin" })
+	.guard({ auth: "admin", detail: { tags: ["Admin"] } })
 	.get(
 		"/contest",
 		async () => {
@@ -21,7 +19,8 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 		},
 		{
 			detail: {
-				description: "Get all contests",
+				summary: "Get contests",
+				description: "Get all contests present in the system",
 			},
 		},
 	)
@@ -37,7 +36,8 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 		{
 			body: contestSchema.insert,
 			detail: {
-				description: "Create a new contest",
+				summary: "Create new contest",
+				description: "Create a new contest with the given details",
 			},
 		},
 	)
@@ -55,25 +55,4 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 				submissions: _stats[2],
 			},
 		};
-	})
-	.group("/piston", (app) =>
-		app
-			.get("/runtimes", async () => rejectError(piston("@get/runtimes")))
-			.get("/packages", async () => rejectError(piston("@get/packages")))
-			.guard(
-				{
-					body: t.Object({
-						language: t.String(),
-						version: t.String(),
-					}),
-				},
-				(app) =>
-					app
-						.post("/packages", async ({ body }) =>
-							rejectError(piston("@post/packages", { body })),
-						)
-						.delete("/packages", async ({ body }) =>
-							rejectError(piston("@delete/packages", { body })),
-						),
-			),
-	);
+	});

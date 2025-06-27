@@ -18,8 +18,8 @@ import { cn, rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/admin/languages")({
 	loader: async () => {
 		const [runtimes, packages] = await Promise.all([
-			rejectError(localjudge.api.admin.piston.runtimes.get()),
-			rejectError(localjudge.api.admin.piston.packages.get()),
+			rejectError(localjudge.api.piston.runtimes.get()),
+			rejectError(localjudge.api.piston.packages.get()),
 		]);
 
 		return { runtimes, packages };
@@ -67,7 +67,7 @@ function PackageActionButton(props: {
 			disabled={loading}
 			onClick={async () => {
 				setLoading(true);
-				await localjudge.api.admin.piston.packages[
+				await localjudge.api.piston.packages[
 					props.installed ? "delete" : "post"
 				]({
 					language: props.language,

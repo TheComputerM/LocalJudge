@@ -6,7 +6,7 @@ import { betterAuthPlugin } from "./better-auth";
 
 export const contestApp = new Elysia({ prefix: "/contest" })
 	.use(betterAuthPlugin)
-	.guard({ auth: "any" })
+	.guard({ auth: "any", detail: { tags: ["Contest"] } })
 	.get(
 		"/",
 		async ({ auth }) => {
@@ -22,7 +22,8 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 		},
 		{
 			detail: {
-				description: "Get all contests the user is participating in",
+				summary: "Get contests",
+				description: "Get contests the user is participating in",
 			},
 		},
 	)
@@ -39,7 +40,9 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 				code: t.String(),
 			}),
 			detail: {
-				description: "Register the current user for a contest using its code",
+				summary: "Register for contest",
+				description:
+					"Register the current user for a contest using the contest ID",
 			},
 		},
 	)
@@ -59,21 +62,30 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 					return status(403, "You are not registered for this contest");
 				}
 			})
-			.get("/", async ({ params }) => {
-				const data = await db.query.contest.findFirst({
-					where: eq(table.contest.id, params.contestId),
-					with: {
-						problems: {
-							columns: {
-								id: true,
-								title: true,
+			.get(
+				"/",
+				async ({ params }) => {
+					const data = await db.query.contest.findFirst({
+						where: eq(table.contest.id, params.contestId),
+						with: {
+							problems: {
+								columns: {
+									id: true,
+									title: true,
+								},
 							},
 						},
+					});
+					if (!data) return status(404);
+					return data;
+				},
+				{
+					detail: {
+						summary: "Get contest details",
+						description: "Get details of a contest by using its ID",
 					},
-				});
-				if (!data) return status(404);
-				return data;
-			})
+				},
+			)
 			.group("/problem/:problemId", (app) =>
 				app
 					.get("/", async ({ params }) => {
