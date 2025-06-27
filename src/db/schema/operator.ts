@@ -1,11 +1,11 @@
 import { Static } from "@sinclair/typebox";
-import { relations, sql } from "drizzle-orm";
+import { relations, type SQL, sql } from "drizzle-orm";
 import {
-	char,
 	check,
 	integer,
 	jsonb,
 	pgSchema,
+	primaryKey,
 	text,
 	timestamp,
 	uuid,
@@ -14,27 +14,23 @@ import {
 import { nanoid } from "nanoid";
 import { contestSettingsSchema } from "../typebox/contest";
 import { user } from "./auth";
-import { registration } from "./junction";
-
-const id = (name = "id") =>
-	char(name, { length: 12 }).$default(() => nanoid(12));
 
 export const operatorSchema = pgSchema("operator");
 
 export const contest = operatorSchema.table(
 	"contest",
 	{
-		id: id().primaryKey(),
-		name: varchar("name", { length: 32 }).notNull(),
+		id: text("id")
+			.$default(() => nanoid(12))
+			.primaryKey(),
+		name: varchar("name", { length: 48 }).notNull(),
 		startTime: timestamp("start_time").notNull(),
 		endTime: timestamp("end_time").notNull(),
 		settings: jsonb("settings")
 			.$type<Static<typeof contestSettingsSchema>>()
 			.notNull(),
 	},
-	(table) => [
-		check("time_check", sql`(${table.startTime} < ${table.endTime})`),
-	],
+	(table) => [check("time_check", sql`${table.startTime} < ${table.endTime}`)],
 );
 
 export const contestRelations = relations(contest, ({ many }) => ({
@@ -42,14 +38,56 @@ export const contestRelations = relations(contest, ({ many }) => ({
 	registrations: many(registration),
 }));
 
-export const problem = operatorSchema.table("problem", {
-	id: id().primaryKey(),
-	contestId: uuid("contest_id")
-		.notNull()
-		.references(() => contest.id),
-	title: varchar("title", { length: 32 }).notNull(),
-	description: text("description").notNull(),
-});
+export const userRelations = relations(user, ({ many }) => ({
+	submissions: many(submission),
+	registrations: many(registration),
+}));
+
+/**
+ * Each row in this table indicates that a user has registered for a specific contest.
+ * The composite primary key ensures that a user cannot register for the same contest more than once.
+ */
+export const registration = operatorSchema.table(
+	"registration",
+	{
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id),
+		contestId: text("contest_id")
+			.notNull()
+			.references(() => contest.id),
+	},
+	(t) => [primaryKey({ columns: [t.userId, t.contestId] })],
+);
+
+export const registrationRelations = relations(registration, ({ one }) => ({
+	contest: one(contest, {
+		fields: [registration.contestId],
+		references: [contest.id],
+	}),
+	user: one(user, {
+		fields: [registration.userId],
+		references: [user.id],
+	}),
+}));
+
+export const problem = operatorSchema.table(
+	"problem",
+	{
+		id: text("id")
+			.generatedAlwaysAs(
+				(): SQL => sql`${problem.contestId} || '/' || ${problem.index}`,
+			)
+			.primaryKey(),
+		contestId: text("contest_id")
+			.notNull()
+			.references(() => contest.id),
+		index: integer("index").notNull(),
+		title: varchar("title", { length: 32 }).notNull(),
+		description: text("description").notNull(),
+	},
+	(t) => [check("valid_index", sql`${t.index} > 0`)],
+);
 
 export const problemRelations = relations(problem, ({ one, many }) => ({
 	contest: one(contest, {
@@ -65,7 +103,7 @@ export const problemRelations = relations(problem, ({ one, many }) => ({
  */
 export const testcase = operatorSchema.table("testcase", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	problemId: uuid("problem_id")
+	problemId: text("problem_id")
 		.notNull()
 		.references(() => problem.id),
 	answer: text("answer").notNull(),
@@ -87,13 +125,11 @@ export const submission = operatorSchema.table("submission", {
 	userId: text("user_id")
 		.notNull()
 		.references(() => user.id),
-	problemId: uuid("problem_id")
+	problemId: text("problem_id")
 		.notNull()
 		.references(() => problem.id),
 	input: text("input").notNull(),
 	language: varchar("language", { length: 16 }).notNull(),
-	languageVersion: varchar("language_version", { length: 16 }).notNull(),
-	createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const submissionRelations = relations(submission, ({ one, many }) => ({
@@ -111,13 +147,16 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 /**
  * Represents the result of a submission for a specific test case.
  */
-export const result = operatorSchema.table("result", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	testcaseId: uuid("testcase_id").references(() => testcase.id),
-	submissionId: uuid("submission_id").references(() => submission.id),
-	status: integer("status").notNull(),
-	message: varchar("message", { length: 256 }).notNull(),
-});
+export const result = operatorSchema.table(
+	"result",
+	{
+		testcaseId: uuid("testcase_id").references(() => testcase.id),
+		submissionId: uuid("submission_id").references(() => submission.id),
+		status: integer("status").notNull(),
+		message: varchar("message", { length: 256 }).notNull(),
+	},
+	(t) => [primaryKey({ columns: [t.testcaseId, t.submissionId] })],
+);
 
 export const resultRelations = relations(result, ({ one }) => ({
 	testcase: one(testcase, {

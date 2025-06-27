@@ -26,28 +26,28 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute(
-	"/app/contest/$contestId/problem/$problemId",
-)({
-	loader: async ({ params, abortController }) => {
-		const problem = await rejectError(
-			localjudge.api
-				.contest({ contestId: params.contestId })
-				.problem({ problemId: params.problemId })
-				.get({ fetch: { signal: abortController.signal } }),
-		);
+export const Route = createFileRoute("/app/contest/$contestId/problem/$number")(
+	{
+		loader: async ({ params, abortController }) => {
+			const problem = await rejectError(
+				localjudge.api
+					.contest({ contestId: params.contestId })
+					.problem({ index: params.number })
+					.get({ fetch: { signal: abortController.signal } }),
+			);
 
-		return { problem };
+			return { problem };
+		},
+		component: RouteComponent,
 	},
-	component: RouteComponent,
-});
+);
 
 function SubmitCode() {
-	const { contestId, problemId } = Route.useParams();
+	const { contestId, number } = Route.useParams();
 	async function handleSubmit() {
 		const { data, error } = await localjudge.api
 			.contest({ contestId })
-			.problem({ problemId })
+			.problem({ index: number })
 			.post();
 		if (error) alert(JSON.stringify(error));
 		console.log(data);
@@ -122,7 +122,7 @@ function ProblemStatement() {
 }
 
 function CodeEditor() {
-	const problemId = Route.useParams({ select: (params) => params.problemId });
+	const problemIndex = Route.useParams({ select: (params) => params.number });
 
 	return (
 		<Editor
@@ -141,7 +141,7 @@ int main() {
 }	
 			`.trim()}
 			onChange={(value) => {
-				sessionStorage.setItem(`code:${problemId}`, value ?? "");
+				sessionStorage.setItem(`code:${problemIndex}`, value ?? "");
 			}}
 		/>
 	);

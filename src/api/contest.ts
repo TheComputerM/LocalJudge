@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import Elysia, { status, t } from "elysia";
 import { db } from "@/db";
 import * as table from "@/db/schema";
@@ -70,9 +70,10 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						with: {
 							problems: {
 								columns: {
-									id: true,
+									index: true,
 									title: true,
 								},
+								orderBy: asc(table.problem.index),
 							},
 						},
 					});
@@ -86,11 +87,12 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 					},
 				},
 			)
-			.group("/problem/:problemId", (app) =>
+			.group("/problem/:index", (app) =>
 				app
 					.get("/", async ({ params }) => {
+						const problemId = `${params.contestId}/${params.index}`;
 						const data = await db.query.problem.findFirst({
-							where: eq(table.problem.id, params.problemId),
+							where: eq(table.problem.id, problemId),
 						});
 						if (!data) return status(404);
 						return data;
@@ -99,8 +101,9 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						// TODO: submit code
 					})
 					.get("/testcase", async ({ params }) => {
+						const problemId = `${params.contestId}/${params.index}`;
 						const data = await db.query.testcase.findMany({
-							where: eq(table.testcase.problemId, params.problemId),
+							where: eq(table.testcase.problemId, problemId),
 						});
 						return data;
 					}),

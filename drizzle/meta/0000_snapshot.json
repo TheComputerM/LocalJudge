@@ -1,5 +1,5 @@
 {
-	"id": "6dc5b1e1-c191-4b93-a8ab-543ac6060e63",
+	"id": "28a2d92f-adfe-4a7b-84cd-e092b34b56b3",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -324,6 +324,117 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
+		"operator.contest": {
+			"name": "contest",
+			"schema": "operator",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "varchar(48)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"start_time": {
+					"name": "start_time",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"end_time": {
+					"name": "end_time",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"settings": {
+					"name": "settings",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"time_check": {
+					"name": "time_check",
+					"value": "\"operator\".\"contest\".\"start_time\" < \"operator\".\"contest\".\"end_time\""
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"operator.problem": {
+			"name": "problem",
+			"schema": "operator",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"generated": {
+						"as": "\"operator\".\"problem\".\"contest_id\" || '/' || \"operator\".\"problem\".\"index\"",
+						"type": "stored"
+					}
+				},
+				"contest_id": {
+					"name": "contest_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"index": {
+					"name": "index",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"title": {
+					"name": "title",
+					"type": "varchar(32)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"problem_contest_id_contest_id_fk": {
+					"name": "problem_contest_id_contest_id_fk",
+					"tableFrom": "problem",
+					"tableTo": "contest",
+					"schemaTo": "operator",
+					"columnsFrom": ["contest_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"valid_index": {
+					"name": "valid_index",
+					"value": "\"operator\".\"problem\".\"index\" > 0"
+				}
+			},
+			"isRLSEnabled": false
+		},
 		"operator.registration": {
 			"name": "registration",
 			"schema": "operator",
@@ -336,7 +447,7 @@
 				},
 				"contest_id": {
 					"name": "contest_id",
-					"type": "char(12)",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				}
@@ -375,113 +486,10 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"operator.contest": {
-			"name": "contest",
-			"schema": "operator",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "char(12)",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"name": {
-					"name": "name",
-					"type": "varchar(32)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"start_time": {
-					"name": "start_time",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"end_time": {
-					"name": "end_time",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"settings": {
-					"name": "settings",
-					"type": "jsonb",
-					"primaryKey": false,
-					"notNull": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {
-				"time_check": {
-					"name": "time_check",
-					"value": "(\"operator\".\"contest\".\"start_time\" < \"operator\".\"contest\".\"end_time\")"
-				}
-			},
-			"isRLSEnabled": false
-		},
-		"operator.problem": {
-			"name": "problem",
-			"schema": "operator",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "char(12)",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"contest_id": {
-					"name": "contest_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"title": {
-					"name": "title",
-					"type": "varchar(32)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"description": {
-					"name": "description",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"problem_contest_id_contest_id_fk": {
-					"name": "problem_contest_id_contest_id_fk",
-					"tableFrom": "problem",
-					"tableTo": "contest",
-					"schemaTo": "operator",
-					"columnsFrom": ["contest_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
 		"operator.result": {
 			"name": "result",
 			"schema": "operator",
 			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
 				"testcase_id": {
 					"name": "testcase_id",
 					"type": "uuid",
@@ -530,7 +538,12 @@
 					"onUpdate": "no action"
 				}
 			},
-			"compositePrimaryKeys": {},
+			"compositePrimaryKeys": {
+				"result_testcase_id_submission_id_pk": {
+					"name": "result_testcase_id_submission_id_pk",
+					"columns": ["testcase_id", "submission_id"]
+				}
+			},
 			"uniqueConstraints": {},
 			"policies": {},
 			"checkConstraints": {},
@@ -555,7 +568,7 @@
 				},
 				"problem_id": {
 					"name": "problem_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -570,19 +583,6 @@
 					"type": "varchar(16)",
 					"primaryKey": false,
 					"notNull": true
-				},
-				"language_version": {
-					"name": "language_version",
-					"type": "varchar(16)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false,
-					"default": "now()"
 				}
 			},
 			"indexes": {},
@@ -627,7 +627,7 @@
 				},
 				"problem_id": {
 					"name": "problem_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},

@@ -32,7 +32,7 @@ export const contestSettingsSchema = t.Object(
 );
 
 const _contestInsert = createInsertSchema(contest, {
-	name: t.String({ minLength: 4, maxLength: 32, default: "" }),
+	name: t.String({ minLength: 4, maxLength: 48, default: "" }),
 	settings: contestSettingsSchema,
 });
 
