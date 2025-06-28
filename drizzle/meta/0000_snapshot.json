@@ -1,5 +1,5 @@
 {
-	"id": "6419e41b-990b-4361-8bda-5fef47a5ccdd",
+	"id": "2be9540f-98d1-49f8-a9f9-7f32f521c997",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -324,71 +324,19 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"operator.users_to_contest": {
-			"name": "users_to_contest",
-			"schema": "operator",
-			"columns": {
-				"user_id": {
-					"name": "user_id",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"contest_id": {
-					"name": "contest_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"users_to_contest_user_id_user_id_fk": {
-					"name": "users_to_contest_user_id_user_id_fk",
-					"tableFrom": "users_to_contest",
-					"tableTo": "user",
-					"schemaTo": "auth",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				},
-				"users_to_contest_contest_id_contest_id_fk": {
-					"name": "users_to_contest_contest_id_contest_id_fk",
-					"tableFrom": "users_to_contest",
-					"tableTo": "contest",
-					"schemaTo": "operator",
-					"columnsFrom": ["contest_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {
-				"users_to_contest_user_id_contest_id_pk": {
-					"name": "users_to_contest_user_id_contest_id_pk",
-					"columns": ["user_id", "contest_id"]
-				}
-			},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
 		"operator.contest": {
 			"name": "contest",
 			"schema": "operator",
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
+					"notNull": true
 				},
 				"name": {
 					"name": "name",
-					"type": "varchar(32)",
+					"type": "varchar(48)",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -416,7 +364,12 @@
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},
-			"checkConstraints": {},
+			"checkConstraints": {
+				"time_check": {
+					"name": "time_check",
+					"value": "\"operator\".\"contest\".\"start_time\" < \"operator\".\"contest\".\"end_time\""
+				}
+			},
 			"isRLSEnabled": false
 		},
 		"operator.problem": {
@@ -425,14 +378,23 @@
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": true,
 					"notNull": true,
-					"default": "gen_random_uuid()"
+					"generated": {
+						"as": "\"operator\".\"problem\".\"contest_id\" || '/' || \"operator\".\"problem\".\"number\"",
+						"type": "stored"
+					}
 				},
 				"contest_id": {
 					"name": "contest_id",
-					"type": "uuid",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"number": {
+					"name": "number",
+					"type": "smallint",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -465,6 +427,62 @@
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},
+			"checkConstraints": {
+				"valid_number": {
+					"name": "valid_number",
+					"value": "\"operator\".\"problem\".\"number\" > 0"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"operator.registration": {
+			"name": "registration",
+			"schema": "operator",
+			"columns": {
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"contest_id": {
+					"name": "contest_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"registration_user_id_user_id_fk": {
+					"name": "registration_user_id_user_id_fk",
+					"tableFrom": "registration",
+					"tableTo": "user",
+					"schemaTo": "auth",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"registration_contest_id_contest_id_fk": {
+					"name": "registration_contest_id_contest_id_fk",
+					"tableFrom": "registration",
+					"tableTo": "contest",
+					"schemaTo": "operator",
+					"columnsFrom": ["contest_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"registration_user_id_contest_id_pk": {
+					"name": "registration_user_id_contest_id_pk",
+					"columns": ["user_id", "contest_id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
@@ -472,16 +490,9 @@
 			"name": "result",
 			"schema": "operator",
 			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
 				"testcase_id": {
 					"name": "testcase_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": false
 				},
@@ -527,7 +538,12 @@
 					"onUpdate": "no action"
 				}
 			},
-			"compositePrimaryKeys": {},
+			"compositePrimaryKeys": {
+				"result_testcase_id_submission_id_pk": {
+					"name": "result_testcase_id_submission_id_pk",
+					"columns": ["testcase_id", "submission_id"]
+				}
+			},
 			"uniqueConstraints": {},
 			"policies": {},
 			"checkConstraints": {},
@@ -552,16 +568,9 @@
 				},
 				"problem_id": {
 					"name": "problem_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
-				},
-				"tokens": {
-					"name": "tokens",
-					"type": "varchar[]",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "'{}'"
 				},
 				"input": {
 					"name": "input",
@@ -569,18 +578,11 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"language_id": {
-					"name": "language_id",
-					"type": "integer",
+				"language": {
+					"name": "language",
+					"type": "varchar(16)",
 					"primaryKey": false,
 					"notNull": true
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false,
-					"default": "now()"
 				}
 			},
 			"indexes": {},
@@ -618,14 +620,23 @@
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": true,
 					"notNull": true,
-					"default": "gen_random_uuid()"
+					"generated": {
+						"as": "\"operator\".\"testcase\".\"problem_id\" || '/' || \"operator\".\"testcase\".\"number\"",
+						"type": "stored"
+					}
+				},
+				"number": {
+					"name": "number",
+					"type": "smallint",
+					"primaryKey": false,
+					"notNull": true
 				},
 				"problem_id": {
 					"name": "problem_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -652,7 +663,12 @@
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},
-			"checkConstraints": {},
+			"checkConstraints": {
+				"valid_number": {
+					"name": "valid_number",
+					"value": "\"operator\".\"testcase\".\"number\" > 0"
+				}
+			},
 			"isRLSEnabled": false
 		}
 	},

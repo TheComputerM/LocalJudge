@@ -12,7 +12,7 @@ import {
 	SidebarProvider,
 } from "@/components/ui/sidebar";
 
-export const Route = createFileRoute("/app/contest/$contestId/problem")({
+export const Route = createFileRoute("/app/contest/$id/problem")({
 	loader: async ({ context: { contest } }) => contest.problems,
 	component: RouteComponent,
 });
@@ -28,13 +28,13 @@ function AppSidebar() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{problems.map((problem) => (
-								<SidebarMenuItem key={problem.id}>
+								<SidebarMenuItem key={problem.number}>
 									<SidebarMenuButton asChild>
 										<Link
 											from={Route.fullPath}
 											activeProps={{ className: "bg-accent" }}
-											to="./$problemId"
-											params={{ problemId: problem.id }}
+											to="./$number"
+											params={{ number: problem.number.toString() }}
 										>
 											{problem.title}
 										</Link>

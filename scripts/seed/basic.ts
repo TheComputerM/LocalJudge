@@ -1,6 +1,8 @@
-import { db } from "@/db";
+import { taskRunnerDB as db, reset } from "scripts/utils";
 import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
+
+await reset(db);
 
 console.info("Creating test user...");
 const { user } = await auth.api.createUser({
@@ -29,7 +31,7 @@ const [{ id: contestId }] = await db
 	})
 	.returning({ id: table.contest.id });
 
-await db.insert(table.userToContest).values({
+await db.insert(table.registration).values({
 	userId: user.id,
 	contestId,
 });
@@ -37,8 +39,9 @@ await db.insert(table.userToContest).values({
 console.info("Creating problems...");
 for (let i = 1; i <= 3; i++) {
 	await db.insert(table.problem).values({
+		contestId,
+		number: i,
 		title: `Test Problem ${i}`,
 		description: `very **cool** description for problem ${i}`,
-		contestId,
 	});
 }

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 
-export const Route = createFileRoute("/app/contest/$contestId/submissions")({
+export const Route = createFileRoute("/app/contest/$id/submissions")({
 	component: RouteComponent,
 });
 

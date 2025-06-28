@@ -1,24 +1,34 @@
 import { isAfter } from "date-fns";
-import { eq } from "drizzle-orm";
-import Elysia, { status, t } from "elysia";
+import { desc, eq } from "drizzle-orm";
+import Elysia, { status } from "elysia";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { contestSchema } from "@/db/typebox/contest";
-import { piston } from "@/lib/piston";
-import { rejectError } from "@/lib/utils";
 import { betterAuthPlugin } from "./better-auth";
 
 export const adminApp = new Elysia({ prefix: "/admin" })
 	.use(betterAuthPlugin)
-	.guard({ auth: "admin" })
-	.get("/contest", async () => {
-		return await db.query.contest.findMany();
-	})
+	.guard({ auth: "admin", detail: { tags: ["Admin"] } })
+	.get(
+		"/contest",
+		async () => {
+			return await db
+				.select()
+				.from(table.contest)
+				.orderBy(desc(table.contest.startTime));
+		},
+		{
+			detail: {
+				summary: "Get contests",
+				description: "Get all contests present in the system",
+			},
+		},
+	)
 	.post(
 		"/contest",
 		async ({ body }) => {
 			if (isAfter(body.startTime, body.endTime)) {
-				return status(400, "Start time cannot be after end time.");
+				return status(400, "Start time cannot be after end time");
 			}
 			const [data] = await db.insert(table.contest).values(body).returning();
 			return data;
@@ -26,7 +36,8 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 		{
 			body: contestSchema.insert,
 			detail: {
-				description: "Create a new contest",
+				summary: "Create new contest",
+				description: "Create a new contest with the given details",
 			},
 		},
 	)
@@ -44,25 +55,4 @@ export const adminApp = new Elysia({ prefix: "/admin" })
 				submissions: _stats[2],
 			},
 		};
-	})
-	.group("/piston", (app) =>
-		app
-			.get("/packages", async () => rejectError(piston("@get/packages")))
-			.get("/runtimes", async () => rejectError(piston("@get/runtimes")))
-			.guard(
-				{
-					body: t.Object({
-						language: t.String(),
-						version: t.String(),
-					}),
-				},
-				(app) =>
-					app
-						.post("/packages", async ({ body }) =>
-							rejectError(piston("@post/packages", { body })),
-						)
-						.delete("/packages", async ({ body }) =>
-							rejectError(piston("@delete/packages", { body })),
-						),
-			),
-	);
+	});

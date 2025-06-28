@@ -55,56 +55,59 @@ CREATE TABLE "auth"."verification" (
 	"updated_at" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE "operator"."users_to_contest" (
-	"user_id" text NOT NULL,
-	"contest_id" uuid NOT NULL,
-	CONSTRAINT "users_to_contest_user_id_contest_id_pk" PRIMARY KEY("user_id","contest_id")
-);
---> statement-breakpoint
 CREATE TABLE "operator"."contest" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" varchar(32) NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"name" varchar(48) NOT NULL,
 	"start_time" timestamp NOT NULL,
 	"end_time" timestamp NOT NULL,
-	"settings" jsonb NOT NULL
+	"settings" jsonb NOT NULL,
+	CONSTRAINT "time_check" CHECK ("operator"."contest"."start_time" < "operator"."contest"."end_time")
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."problem" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"contest_id" uuid NOT NULL,
+	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."problem"."contest_id" || '/' || "operator"."problem"."number") STORED NOT NULL,
+	"contest_id" text NOT NULL,
+	"number" smallint NOT NULL,
 	"title" varchar(32) NOT NULL,
-	"description" text NOT NULL
+	"description" text NOT NULL,
+	CONSTRAINT "valid_number" CHECK ("operator"."problem"."number" > 0)
+);
+--> statement-breakpoint
+CREATE TABLE "operator"."registration" (
+	"user_id" text NOT NULL,
+	"contest_id" text NOT NULL,
+	CONSTRAINT "registration_user_id_contest_id_pk" PRIMARY KEY("user_id","contest_id")
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."result" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"testcase_id" uuid,
+	"testcase_id" text,
 	"submission_id" uuid,
 	"status" integer NOT NULL,
-	"message" varchar(256) NOT NULL
+	"message" varchar(256) NOT NULL,
+	CONSTRAINT "result_testcase_id_submission_id_pk" PRIMARY KEY("testcase_id","submission_id")
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."submission" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text NOT NULL,
-	"problem_id" uuid NOT NULL,
-	"tokens" varchar[] DEFAULT '{}' NOT NULL,
+	"problem_id" text NOT NULL,
 	"input" text NOT NULL,
-	"language_id" integer NOT NULL,
-	"created_at" timestamp DEFAULT now()
+	"language" varchar(16) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."testcase" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"problem_id" uuid NOT NULL,
-	"answer" text NOT NULL
+	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."testcase"."problem_id" || '/' || "operator"."testcase"."number") STORED NOT NULL,
+	"number" smallint NOT NULL,
+	"problem_id" text NOT NULL,
+	"answer" text NOT NULL,
+	CONSTRAINT "valid_number" CHECK ("operator"."testcase"."number" > 0)
 );
 --> statement-breakpoint
 ALTER TABLE "auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth"."session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "operator"."users_to_contest" ADD CONSTRAINT "users_to_contest_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "operator"."users_to_contest" ADD CONSTRAINT "users_to_contest_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "operator"."contest"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."problem" ADD CONSTRAINT "problem_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "operator"."contest"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "operator"."registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "operator"."registration" ADD CONSTRAINT "registration_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "operator"."contest"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."result" ADD CONSTRAINT "result_testcase_id_testcase_id_fk" FOREIGN KEY ("testcase_id") REFERENCES "operator"."testcase"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."result" ADD CONSTRAINT "result_submission_id_submission_id_fk" FOREIGN KEY ("submission_id") REFERENCES "operator"."submission"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."submission" ADD CONSTRAINT "submission_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

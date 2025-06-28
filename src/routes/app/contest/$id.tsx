@@ -4,6 +4,7 @@ import {
 	linkOptions,
 	Outlet,
 } from "@tanstack/react-router";
+import { formatDistance } from "date-fns";
 import {
 	LucideFileCode2,
 	LucideGavel,
@@ -27,19 +28,20 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { useTime } from "@/hooks/use-time";
+import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/app/contest/$contestId")({
+export const Route = createFileRoute("/app/contest/$id")({
 	beforeLoad: async ({ params, abortController }) => {
-		const { data: contest, error } = await localjudge.api
-			.contest({ contestId: params.contestId })
-			.get({
+		const contest = await rejectError(
+			localjudge.api.contest({ id: params.id }).get({
 				fetch: { signal: abortController.signal },
-			});
-
-		if (error) throw error;
+			}),
+		);
 
 		return { contest };
 	},
+	loader: ({ context }) => context.contest,
 	component: RouteComponent,
 });
 
@@ -63,6 +65,12 @@ const navigationLinks = linkOptions([
 		icon: LucideTrophy,
 	},
 ]);
+
+function RemainingTime() {
+	const time = useTime();
+	const endTime = Route.useLoaderData({ select: (data) => data.endTime });
+	return <span className="text-sm">{formatDistance(endTime, time)}</span>;
+}
 
 function Navbar() {
 	return (
@@ -138,7 +146,7 @@ function Navbar() {
 					orientation="vertical"
 					className="data-[orientation=vertical]:h-4"
 				/>
-				<span className="text-sm">45m left</span>
+				<RemainingTime />
 			</div>
 		</header>
 	);
