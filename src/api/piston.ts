@@ -3,17 +3,19 @@ import { piston } from "@/lib/piston";
 import { rejectError } from "@/lib/utils";
 import { betterAuthPlugin } from "./better-auth";
 
-export const pistonApp = new Elysia({ prefix: "/piston" })
+export const pistonApp = new Elysia({
+	prefix: "/piston",
+	detail: {
+		tags: ["Piston"],
+		externalDocs: {
+			url: "https://piston.readthedocs.io/",
+			description: "Piston is the underlying code sandbox used for execution",
+		},
+	},
+})
 	.use(betterAuthPlugin)
 	.guard({
 		auth: "admin",
-		detail: {
-			tags: ["Piston"],
-			externalDocs: {
-				url: "https://piston.readthedocs.io/",
-				description: "Piston is the underlying code sandbox used for execution",
-			},
-		},
 	})
 	.get("/runtimes", async () => rejectError(piston("@get/runtimes")))
 	.get("/packages", async () => rejectError(piston("@get/packages")))
