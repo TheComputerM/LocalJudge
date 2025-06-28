@@ -1,0 +1,88 @@
+import { faker } from "@faker-js/faker";
+import { Static } from "@sinclair/typemap";
+import { taskRunnerDB as db, reset } from "scripts/utils";
+import * as table from "@/db/schema";
+import { contestSchema } from "@/db/typebox/contest";
+import { auth } from "@/lib/auth";
+
+await reset(db);
+
+const CONFIG = {
+	count: {
+		users: faker.number.int({ min: 20, max: 30 }),
+		contests: faker.number.int({ min: 20, max: 30 }),
+		problems: { min: 3, max: 6 },
+	},
+};
+
+async function createUsers() {
+	console.info("Creating users...");
+	for (let i = 0; i < CONFIG.count.users; i++) {
+		await auth.api.createUser({
+			body: {
+				name: faker.person.fullName(),
+				email: faker.internet.email(),
+				password: "fakepass",
+				role: "user",
+			},
+		});
+	}
+	console.info("Created users");
+}
+
+async function createContests() {
+	console.info("Creating contests...");
+	const data: Static<typeof contestSchema.insert>[] = new Array(
+		CONFIG.count.contests,
+	);
+	for (let i = 0; i < CONFIG.count.contests; i++) {
+		const startTime = faker.date.between({
+			from: faker.date.recent(),
+			to: faker.date.soon(),
+		});
+
+		data[i] = {
+			name: `${faker.hacker.adjective()} contest ${i + 1}`,
+			startTime: startTime,
+			endTime: faker.date.soon({ refDate: startTime }),
+			settings: {
+				leaderboard: faker.datatype.boolean(),
+				submissions: {
+					limit: faker.number.int({ min: 0, max: 8 }),
+					visible: faker.datatype.boolean(),
+				},
+			},
+		};
+	}
+	await db.insert(table.contest).values(data);
+	console.info("Created contests");
+}
+
+async function createProblems() {
+	console.info("Creating problems...");
+	const contests = await db
+		.select({ id: table.contest.id })
+		.from(table.contest);
+
+	for (const { id: contestId } of contests) {
+		const count = faker.number.int(CONFIG.count.problems);
+		for (let i = 1; i <= count; i++) {
+			await db.insert(table.problem).values({
+				contestId,
+				number: i,
+				title: `Problem ${i}`,
+				description: faker.lorem.paragraphs(3),
+			});
+		}
+	}
+	console.info("Created problems");
+}
+
+async function main() {
+	await createUsers();
+	await createContests();
+	await createProblems();
+}
+
+await main();
+await db.$client.close();
