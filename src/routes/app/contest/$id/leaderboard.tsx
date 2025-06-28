@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { contest } from "@/db/schema";
 
 export const Route = createFileRoute("/app/contest/$id/leaderboard")({
+	beforeLoad: ({ context }) => {
+		if (!context.contest.settings.leaderboard) {
+			throw new Error("viewing the leaderboard is disabled for this contest");
+		}
+	},
 	component: RouteComponent,
 });
 
