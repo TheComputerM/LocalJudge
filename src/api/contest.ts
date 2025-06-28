@@ -46,66 +46,81 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 			},
 		},
 	)
-	.group("/:id", (app) =>
-		app
-			.onBeforeHandle(async ({ params, auth }) => {
-				const isRegistered =
-					(await db.$count(
-						table.registration,
-						and(
-							eq(table.registration.userId, auth.user.id),
-							eq(table.registration.contestId, params.id),
-						),
-					)) > 0;
+	.group(
+		"/:id",
+		{
+			params: t.Object({ id: t.String({ description: "Contest ID" }) }),
+		},
+		(app) =>
+			app
+				.onBeforeHandle(async ({ params, auth }) => {
+					const isRegistered =
+						(await db.$count(
+							table.registration,
+							and(
+								eq(table.registration.userId, auth.user.id),
+								eq(table.registration.contestId, params.id),
+							),
+						)) > 0;
 
-				if (!isRegistered) {
-					return status(403, "You are not registered for this contest");
-				}
-			})
-			.get(
-				"/",
-				async ({ params }) => {
-					const data = await db.query.contest.findFirst({
-						where: eq(table.contest.id, params.id),
-						with: {
-							problems: {
-								columns: {
-									number: true,
-									title: true,
+					if (!isRegistered) {
+						return status(403, "You are not registered for this contest");
+					}
+				})
+				.get(
+					"/",
+					async ({ params }) => {
+						const data = await db.query.contest.findFirst({
+							where: eq(table.contest.id, params.id),
+							with: {
+								problems: {
+									columns: {
+										number: true,
+										title: true,
+									},
+									orderBy: asc(table.problem.number),
 								},
-								orderBy: asc(table.problem.number),
 							},
-						},
-					});
-					if (!data) return status(404);
-					return data;
-				},
-				{
-					detail: {
-						summary: "Get contest details",
-						description: "Get details of a contest by using its ID",
-					},
-				},
-			)
-			.group("/problem/:problem", (app) =>
-				app
-					.get("/", async ({ params }) => {
-						const problemId = `${params.id}/${params.problem}`;
-						const data = await db.query.problem.findFirst({
-							where: eq(table.problem.id, problemId),
 						});
 						if (!data) return status(404);
 						return data;
-					})
-					.post("/", async ({}) => {
-						// TODO: submit code
-					})
-					.get("/testcase", async ({ params }) => {
-						const problemId = `${params.id}/${params.problem}`;
-						const data = await db.query.testcase.findMany({
-							where: eq(table.testcase.problemId, problemId),
-						});
-						return data;
-					}),
-			),
+					},
+					{
+						detail: {
+							summary: "Get contest details",
+							description: "Get details of a contest by using its ID",
+						},
+					},
+				)
+				.group(
+					"/problem/:problem",
+					{
+						params: t.Object({
+							id: t.String({ description: "Contest ID" }),
+							problem: t.Number({ description: "Problem number/index" }),
+						}),
+					},
+					(app) =>
+						app
+							.derive(({ params }) => {
+								const problemId = `${params.id}/${params.problem}`;
+								return { problemId };
+							})
+							.get("/", async ({ problemId }) => {
+								const data = await db.query.problem.findFirst({
+									where: eq(table.problem.id, problemId),
+								});
+								if (!data) return status(404);
+								return data;
+							})
+							.post("/", async ({}) => {
+								// TODO: submit code
+							})
+							.get("/testcase", async ({ problemId }) => {
+								const data = await db.query.testcase.findMany({
+									where: eq(table.testcase.problemId, problemId),
+								});
+								return data;
+							}),
+				),
 	);
