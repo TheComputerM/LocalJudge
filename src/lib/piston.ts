@@ -39,11 +39,13 @@ const schema = createSchema({
 					Type.Object({
 						name: Type.Optional(Type.String()),
 						content: Type.String(),
-						encoding: Type.Union([
-							Type.Literal("utf8"),
-							Type.Literal("hex"),
-							Type.Literal("base64"),
-						]),
+						encoding: Type.Optional(
+							Type.Union([
+								Type.Literal("utf8"),
+								Type.Literal("hex"),
+								Type.Literal("base64"),
+							]),
+						),
 					}),
 				),
 				stdin: Type.Optional(Type.String()),
