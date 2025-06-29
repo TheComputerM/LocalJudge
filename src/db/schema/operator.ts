@@ -1,4 +1,3 @@
-import { Static } from "@sinclair/typebox";
 import { relations, type SQL, sql } from "drizzle-orm";
 import {
 	check,
@@ -13,7 +12,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import { contestSettingsSchema } from "../typebox/contest";
+import type { contestSettingsSchema } from "../typebox/contest";
 import { user } from "./auth";
 
 export const operatorSchema = pgSchema("operator");
@@ -28,7 +27,7 @@ export const contest = operatorSchema.table(
 		startTime: timestamp("start_time").notNull(),
 		endTime: timestamp("end_time").notNull(),
 		settings: jsonb("settings")
-			.$type<Static<typeof contestSettingsSchema>>()
+			.$type<typeof contestSettingsSchema.static>()
 			.notNull(),
 	},
 	(table) => [check("time_check", sql`${table.startTime} < ${table.endTime}`)],

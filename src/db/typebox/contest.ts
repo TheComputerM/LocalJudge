@@ -42,6 +42,7 @@ const _contestInsert = createInsertSchema(contest, {
 	settings: contestSettingsSchema,
 });
 
-export const contestSchema = {
+export const ContestModel = {
 	insert: t.Omit(_contestInsert, ["id"]),
+	settings: contestSettingsSchema,
 };

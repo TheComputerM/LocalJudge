@@ -3,7 +3,7 @@ import { Static } from "@sinclair/typemap";
 import { taskRunnerDB as db, reset } from "scripts/utils";
 import { localjudge } from "@/api/client";
 import * as table from "@/db/schema";
-import { contestSchema } from "@/db/typebox/contest";
+import { ContestModel } from "@/db/typebox/contest";
 import { auth } from "@/lib/auth";
 import { rejectError } from "@/lib/utils";
 
@@ -34,7 +34,7 @@ async function createUsers() {
 
 async function createContests() {
 	console.info("Creating contests...");
-	const data: Static<typeof contestSchema.insert>[] = new Array(
+	const data: Static<typeof ContestModel.insert>[] = new Array(
 		CONFIG.count.contests,
 	);
 	const languages = (

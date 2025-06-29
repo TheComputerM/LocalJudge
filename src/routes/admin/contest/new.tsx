@@ -5,7 +5,7 @@ import { localjudge } from "@/api/client";
 import { useAppForm } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { contestSchema, contestSettingsSchema } from "@/db/typebox/contest";
+import { ContestModel } from "@/db/typebox/contest";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/new")({
@@ -26,18 +26,19 @@ export const Route = createFileRoute("/admin/contest/new")({
 function NewContestForm() {
 	const navigate = Route.useNavigate();
 	const languages = Route.useLoaderData({ select: (data) => data.languages });
-	const defaultValues = Value.Default(contestSchema.insert, {
+	const defaultValues = Value.Default(ContestModel.insert, {
 		settings: { languages },
 	});
 
 	const form = useAppForm({
 		defaultValues,
 		validators: {
-			onChange: Compile(contestSchema.insert),
+			onChange: Compile(ContestModel.insert),
 		},
 		onSubmit: async ({ value }) => {
-			const result = Value.Parse(contestSchema.insert, value);
-			const { data, error } = await localjudge.api.admin.contest.post(result);
+			const contestData = Value.Parse(ContestModel.insert, value);
+			const { data, error } =
+				await localjudge.api.admin.contest.post(contestData);
 			if (error) {
 				alert(JSON.stringify(error));
 				return;
@@ -71,14 +72,14 @@ function NewContestForm() {
 			<form.AppField name="settings.leaderboard">
 				{(field) => {
 					const { title, description } =
-						contestSettingsSchema.properties.leaderboard;
+						ContestModel.settings.properties.leaderboard;
 					return <field.ToggleSwitch label={title} description={description} />;
 				}}
 			</form.AppField>
 			<form.AppField name="settings.submissions.limit">
 				{(field) => {
 					const { title, description } =
-						contestSettingsSchema.properties.submissions.properties.limit;
+						ContestModel.settings.properties.submissions.properties.limit;
 					return (
 						<field.NumberField
 							label={title}
@@ -91,14 +92,14 @@ function NewContestForm() {
 			<form.AppField name="settings.submissions.visible">
 				{(field) => {
 					const { title, description } =
-						contestSettingsSchema.properties.submissions.properties.visible;
+						ContestModel.settings.properties.submissions.properties.visible;
 					return <field.ToggleSwitch label={title} description={description} />;
 				}}
 			</form.AppField>
 			<form.AppField name="settings.languages">
 				{(field) => {
 					const { title, description } =
-						contestSettingsSchema.properties.languages;
+						ContestModel.settings.properties.languages;
 					return (
 						<field.MultiselectField
 							label={title}

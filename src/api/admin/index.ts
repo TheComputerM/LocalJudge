@@ -3,7 +3,7 @@ import Elysia from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { db } from "@/db";
 import * as table from "@/db/schema";
-import { contestSchema } from "@/db/typebox/contest";
+import { ContestModel } from "@/db/typebox/contest";
 
 export const adminApp = new Elysia({
 	prefix: "/admin",
@@ -33,7 +33,7 @@ export const adminApp = new Elysia({
 			return data;
 		},
 		{
-			body: contestSchema.insert,
+			body: ContestModel.insert,
 			detail: {
 				summary: "Create new contest",
 				description: "Create a new contest with the given details",
