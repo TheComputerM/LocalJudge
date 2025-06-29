@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useBlocker } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
 import { useAppForm } from "@/components/form";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,14 @@ function NewContestForm() {
 				return;
 			}
 			navigate({ to: "/admin/contest" });
+		},
+	});
+
+	useBlocker({
+		shouldBlockFn: () => {
+			if (!form.state.isDirty) return false;
+			const shouldLeave = confirm("Are you sure you want to leave?");
+			return !shouldLeave;
 		},
 	});
 
