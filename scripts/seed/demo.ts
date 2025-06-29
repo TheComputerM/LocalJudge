@@ -1,9 +1,11 @@
 import { faker } from "@faker-js/faker";
 import { Static } from "@sinclair/typemap";
 import { taskRunnerDB as db, reset } from "scripts/utils";
+import { localjudge } from "@/api/client";
 import * as table from "@/db/schema";
 import { contestSchema } from "@/db/typebox/contest";
 import { auth } from "@/lib/auth";
+import { rejectError } from "@/lib/utils";
 
 await reset(db);
 
@@ -35,6 +37,10 @@ async function createContests() {
 	const data: Static<typeof contestSchema.insert>[] = new Array(
 		CONFIG.count.contests,
 	);
+	const languages = (
+		await rejectError(localjudge.api.piston.runtimes.get())
+	).map(({ language, version }) => `${language}@${version}`);
+
 	for (let i = 0; i < CONFIG.count.contests; i++) {
 		const startTime = faker.date.between({
 			from: faker.date.recent(),
@@ -51,6 +57,10 @@ async function createContests() {
 					limit: faker.number.int({ min: 0, max: 8 }),
 					visible: faker.datatype.boolean(),
 				},
+				languages: faker.helpers.arrayElements(languages, {
+					min: 1,
+					max: languages.length,
+				}),
 			},
 		};
 	}

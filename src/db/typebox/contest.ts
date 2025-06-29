@@ -27,6 +27,12 @@ export const contestSettingsSchema = t.Object(
 			},
 			{ default: {} },
 		),
+		languages: t.Array(t.String(), {
+			default: [],
+			title: "Languages whitelist",
+			description: "List of programming languages supported in the contest.",
+			minItems: 1,
+		}),
 	},
 	{ default: {} },
 );

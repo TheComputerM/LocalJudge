@@ -1,5 +1,5 @@
 import Editor from "@monaco-editor/react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { LucideCloudUpload } from "lucide-react";
 import Markdown from "react-markdown";
 import { localjudge } from "@/api/client";
@@ -60,15 +60,22 @@ function SubmitCode() {
 }
 
 function LanguageSelect() {
+	const languages = useLoaderData({
+		from: "/app/contest/$id",
+		select: (data) => data.settings.languages,
+	});
+
 	return (
-		<Select defaultValue="cpp">
+		<Select defaultValue={languages[0]}>
 			<SelectTrigger className="w-32">
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
 			<SelectContent>
-				<SelectItem value="cpp">C++</SelectItem>
-				<SelectItem value="java">Java</SelectItem>
-				<SelectItem value="dart">Dart</SelectItem>
+				{languages.map((lang) => (
+					<SelectItem key={lang} value={lang}>
+						{lang}
+					</SelectItem>
+				))}
 			</SelectContent>
 		</Select>
 	);

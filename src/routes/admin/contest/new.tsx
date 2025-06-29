@@ -6,15 +6,32 @@ import { useAppForm } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { contestSchema, contestSettingsSchema } from "@/db/typebox/contest";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/new")({
+	loader: async ({ abortController }) => {
+		const languages = (
+			await rejectError(
+				localjudge.api.piston.runtimes.get({
+					fetch: { signal: abortController.signal },
+				}),
+			)
+		).map(({ language, version }) => `${language}@${version}`);
+
+		return { languages };
+	},
 	component: RouteComponent,
 });
 
 function NewContestForm() {
 	const navigate = Route.useNavigate();
+	const languages = Route.useLoaderData({ select: (data) => data.languages });
+	const defaultValues = Value.Default(contestSchema.insert, {
+		settings: { languages },
+	});
+
 	const form = useAppForm({
-		defaultValues: Value.Default(contestSchema.insert, {}),
+		defaultValues,
 		validators: {
 			onChange: Compile(contestSchema.insert),
 		},
@@ -76,6 +93,19 @@ function NewContestForm() {
 					const { title, description } =
 						contestSettingsSchema.properties.submissions.properties.visible;
 					return <field.ToggleSwitch label={title} description={description} />;
+				}}
+			</form.AppField>
+			<form.AppField name="settings.languages">
+				{(field) => {
+					const { title, description } =
+						contestSettingsSchema.properties.languages;
+					return (
+						<field.MultiselectField
+							label={title}
+							description={description}
+							defaultOptions={languages}
+						/>
+					);
 				}}
 			</form.AppField>
 			<Button type="submit">Submit</Button>
