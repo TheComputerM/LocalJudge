@@ -1,8 +1,11 @@
 import Elysia, { t } from "elysia";
+import { betterAuthPlugin } from "@/api/better-auth";
 import { piston } from "@/lib/piston";
 import { rejectError } from "@/lib/utils";
-import { betterAuthPlugin } from "./better-auth";
 
+/**
+ * Piston is the underlying code sandbox and execution engine
+ */
 export const pistonApp = new Elysia({
 	prefix: "/piston",
 	detail: {

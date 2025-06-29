@@ -1,8 +1,8 @@
 import { and, asc, eq } from "drizzle-orm";
 import Elysia, { status, t } from "elysia";
+import { betterAuthPlugin } from "@/api/better-auth";
 import { db } from "@/db";
 import * as table from "@/db/schema";
-import { betterAuthPlugin } from "./better-auth";
 
 export const contestApp = new Elysia({
 	prefix: "/contest",

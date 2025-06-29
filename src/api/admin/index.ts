@@ -1,9 +1,9 @@
 import { desc, eq } from "drizzle-orm";
 import Elysia from "elysia";
+import { betterAuthPlugin } from "@/api/better-auth";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { contestSchema } from "@/db/typebox/contest";
-import { betterAuthPlugin } from "./better-auth";
 
 export const adminApp = new Elysia({
 	prefix: "/admin",
