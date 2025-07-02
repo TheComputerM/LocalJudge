@@ -1,5 +1,5 @@
 {
-	"id": "2be9540f-98d1-49f8-a9f9-7f32f521c997",
+	"id": "f3b86d05-d788-4785-8be7-2c17f8fc9c7f",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -640,8 +640,21 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"answer": {
-					"name": "answer",
+				"hidden": {
+					"name": "hidden",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
+				},
+				"input": {
+					"name": "input",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"output": {
+					"name": "output",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true

@@ -46,3 +46,18 @@ for (let i = 1; i <= 3; i++) {
 		description: `very **cool** description for problem ${i}`,
 	});
 }
+
+console.info("Creating testcases...");
+const problems = await db.select({ id: table.problem.id }).from(table.problem);
+for (const { id: problemId } of problems) {
+	for (let i = 1; i <= 3; i++) {
+		const stdin = `hello world ${i}`;
+		await db.insert(table.testcase).values({
+			problemId,
+			number: i,
+			hidden: false,
+			input: stdin,
+			output: stdin, // For simplicity, input is the same as output
+		});
+	}
+}

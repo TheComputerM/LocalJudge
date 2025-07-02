@@ -1,5 +1,6 @@
 import { relations, type SQL, sql } from "drizzle-orm";
 import {
+	boolean,
 	check,
 	integer,
 	jsonb,
@@ -113,7 +114,9 @@ export const testcase = operatorSchema.table(
 		problemId: text("problem_id")
 			.notNull()
 			.references(() => problem.id),
-		answer: text("answer").notNull(),
+		hidden: boolean("hidden").notNull().default(false),
+		input: text("input").notNull(),
+		output: text("output").notNull(),
 	},
 	(t) => [check("valid_number", sql`${t.number} > 0`)],
 );

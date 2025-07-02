@@ -99,7 +99,9 @@ CREATE TABLE "operator"."testcase" (
 	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."testcase"."problem_id" || '/' || "operator"."testcase"."number") STORED NOT NULL,
 	"number" smallint NOT NULL,
 	"problem_id" text NOT NULL,
-	"answer" text NOT NULL,
+	"hidden" boolean DEFAULT false NOT NULL,
+	"input" text NOT NULL,
+	"output" text NOT NULL,
 	CONSTRAINT "valid_number" CHECK ("operator"."testcase"."number" > 0)
 );
 --> statement-breakpoint

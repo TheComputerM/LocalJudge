@@ -14,6 +14,7 @@ const CONFIG = {
 		users: faker.number.int({ min: 20, max: 30 }),
 		contests: faker.number.int({ min: 20, max: 30 }),
 		problems: { min: 3, max: 6 },
+		testcases: { min: 4, max: 8 },
 	},
 };
 
@@ -85,13 +86,36 @@ async function createProblems() {
 			});
 		}
 	}
+
 	console.info("Created problems");
+}
+
+async function createTestcases() {
+	console.info("Creating testcases...");
+	const problems = await db
+		.select({ id: table.problem.id })
+		.from(table.problem);
+	for (const { id: problemId } of problems) {
+		const count = faker.number.int(CONFIG.count.testcases);
+		for (let i = 1; i <= count; i++) {
+			const stdin = faker.word.noun();
+			await db.insert(table.testcase).values({
+				problemId,
+				number: i,
+				hidden: faker.datatype.boolean(),
+				input: stdin,
+				output: stdin,
+			});
+		}
+	}
+	console.info("Created testcases");
 }
 
 async function main() {
 	await createUsers();
 	await createContests();
 	await createProblems();
+	await createTestcases();
 }
 
 await main();
