@@ -1,3 +1,4 @@
+import { semver } from "bun";
 import Elysia, { t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { piston } from "@/lib/piston";
@@ -21,7 +22,15 @@ export const pistonApp = new Elysia({
 		auth: "admin",
 	})
 	.get("/runtimes", async () => rejectError(piston("@get/runtimes")))
-	.get("/packages", async () => rejectError(piston("@get/packages")))
+	.get("/packages", async () => {
+		const packages = await rejectError(piston("@get/packages"));
+		packages.sort(
+			(a, b) =>
+				a.language.localeCompare(b.language) ||
+				semver.order(a.language_version, b.language_version),
+		);
+		return packages;
+	})
 	.guard(
 		{
 			body: t.Object({
