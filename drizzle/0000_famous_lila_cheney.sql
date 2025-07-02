@@ -65,11 +65,11 @@ CREATE TABLE "operator"."contest" (
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."problem" (
-	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."problem"."contest_id" || '/' || "operator"."problem"."number") STORED NOT NULL,
 	"contest_id" text NOT NULL,
 	"number" smallint NOT NULL,
 	"title" varchar(32) NOT NULL,
 	"description" text NOT NULL,
+	CONSTRAINT "problem_contest_id_number_pk" PRIMARY KEY("contest_id","number"),
 	CONSTRAINT "valid_number" CHECK ("operator"."problem"."number" > 0)
 );
 --> statement-breakpoint
@@ -80,28 +80,32 @@ CREATE TABLE "operator"."registration" (
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."result" (
-	"testcase_id" text,
-	"submission_id" uuid,
+	"contest_id" text NOT NULL,
+	"problem_number" smallint NOT NULL,
+	"testcase_number" smallint NOT NULL,
+	"submission_id" uuid NOT NULL,
 	"status" integer NOT NULL,
 	"message" varchar(256) NOT NULL,
-	CONSTRAINT "result_testcase_id_submission_id_pk" PRIMARY KEY("testcase_id","submission_id")
+	CONSTRAINT "result_contest_id_problem_number_testcase_number_submission_id_pk" PRIMARY KEY("contest_id","problem_number","testcase_number","submission_id")
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."submission" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text NOT NULL,
-	"problem_id" text NOT NULL,
+	"contest_id" text NOT NULL,
+	"problem_number" smallint NOT NULL,
 	"input" text NOT NULL,
 	"language" varchar(16) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."testcase" (
-	"id" text PRIMARY KEY GENERATED ALWAYS AS ("operator"."testcase"."problem_id" || '/' || "operator"."testcase"."number") STORED NOT NULL,
+	"contest_id" text NOT NULL,
+	"problem_number" smallint NOT NULL,
 	"number" smallint NOT NULL,
-	"problem_id" text NOT NULL,
 	"hidden" boolean DEFAULT false NOT NULL,
 	"input" text NOT NULL,
 	"output" text NOT NULL,
+	CONSTRAINT "testcase_contest_id_problem_number_number_pk" PRIMARY KEY("contest_id","problem_number","number"),
 	CONSTRAINT "valid_number" CHECK ("operator"."testcase"."number" > 0)
 );
 --> statement-breakpoint
@@ -110,8 +114,8 @@ ALTER TABLE "auth"."session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN
 ALTER TABLE "operator"."problem" ADD CONSTRAINT "problem_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "operator"."contest"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."registration" ADD CONSTRAINT "registration_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "operator"."contest"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "operator"."result" ADD CONSTRAINT "result_testcase_id_testcase_id_fk" FOREIGN KEY ("testcase_id") REFERENCES "operator"."testcase"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."result" ADD CONSTRAINT "result_submission_id_submission_id_fk" FOREIGN KEY ("submission_id") REFERENCES "operator"."submission"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "operator"."result" ADD CONSTRAINT "result_contest_id_problem_number_testcase_number_testcase_contest_id_problem_number_number_fk" FOREIGN KEY ("contest_id","problem_number","testcase_number") REFERENCES "operator"."testcase"("contest_id","problem_number","number") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operator"."submission" ADD CONSTRAINT "submission_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "operator"."submission" ADD CONSTRAINT "submission_problem_id_problem_id_fk" FOREIGN KEY ("problem_id") REFERENCES "operator"."problem"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "operator"."testcase" ADD CONSTRAINT "testcase_problem_id_problem_id_fk" FOREIGN KEY ("problem_id") REFERENCES "operator"."problem"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "operator"."submission" ADD CONSTRAINT "submission_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "operator"."problem"("contest_id","number") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "operator"."testcase" ADD CONSTRAINT "testcase_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "operator"."problem"("contest_id","number") ON DELETE no action ON UPDATE no action;

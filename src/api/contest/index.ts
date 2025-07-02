@@ -108,23 +108,25 @@ export const contestApp = new Elysia({
 							},
 							(app) =>
 								app
-									.derive(({ params }) => {
-										const problemId = `${params.id}/${params.problem}`;
-										return { problemId };
-									})
-									.get("/", async ({ problemId }) => {
+									.get("/", async ({ params }) => {
 										const problem = await db.query.problem.findFirst({
-											where: eq(table.problem.id, problemId),
+											where: and(
+												eq(table.problem.contestId, params.id),
+												eq(table.problem.number, params.problem),
+											),
 										});
 										if (!problem) return status(404);
 										return problem;
 									})
-									.post("/", async ({ problemId }) => {
+									.post("/", async () => {
 										// TODO: submit code for contest
 									})
-									.get("/testcase", async ({ problemId }) => {
+									.get("/testcase", async ({ params }) => {
 										const testcases = await db.query.testcase.findMany({
-											where: eq(table.testcase.problemId, problemId),
+											where: and(
+												eq(table.testcase.contestId, params.id),
+												eq(table.testcase.problemNumber, params.problem),
+											),
 										});
 										return testcases;
 									}),

@@ -9,7 +9,7 @@ const { user } = await auth.api.createUser({
 	body: {
 		name: "Test User",
 		email: "testuser@localjudge.com",
-		password: "testpassword",
+		password: "pass123",
 		role: "user",
 	},
 });
@@ -27,7 +27,7 @@ const [{ id: contestId }] = await db
 				limit: 0,
 				visible: true,
 			},
-			languages: ["c++@10.2.0"],
+			languages: ["c++@10.2.0", "python@3.12.0"],
 		},
 	})
 	.returning({ id: table.contest.id });
@@ -48,12 +48,15 @@ for (let i = 1; i <= 3; i++) {
 }
 
 console.info("Creating testcases...");
-const problems = await db.select({ id: table.problem.id }).from(table.problem);
-for (const { id: problemId } of problems) {
+const problems = await db
+	.select({ contestId: table.problem.contestId, number: table.problem.number })
+	.from(table.problem);
+for (const problem of problems) {
 	for (let i = 1; i <= 3; i++) {
 		const stdin = `hello world ${i}`;
 		await db.insert(table.testcase).values({
-			problemId,
+			contestId: problem.contestId,
+			problemNumber: problem.number,
 			number: i,
 			hidden: false,
 			input: stdin,

@@ -25,7 +25,7 @@ async function createUsers() {
 			body: {
 				name: faker.person.fullName(),
 				email: faker.internet.email(),
-				password: "fakepass",
+				password: "pass123",
 				role: "user",
 			},
 		});
@@ -93,14 +93,18 @@ async function createProblems() {
 async function createTestcases() {
 	console.info("Creating testcases...");
 	const problems = await db
-		.select({ id: table.problem.id })
+		.select({
+			contestId: table.problem.contestId,
+			number: table.problem.number,
+		})
 		.from(table.problem);
-	for (const { id: problemId } of problems) {
+	for (const problem of problems) {
 		const count = faker.number.int(CONFIG.count.testcases);
 		for (let i = 1; i <= count; i++) {
 			const stdin = faker.word.noun();
 			await db.insert(table.testcase).values({
-				problemId,
+				contestId: problem.contestId,
+				problemNumber: problem.number,
 				number: i,
 				hidden: faker.datatype.boolean(),
 				input: stdin,
