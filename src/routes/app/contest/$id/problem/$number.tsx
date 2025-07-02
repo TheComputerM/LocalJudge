@@ -28,14 +28,22 @@ import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/contest/$id/problem/$number")({
 	loader: async ({ params, abortController }) => {
-		const problem = await rejectError(
-			localjudge.api
-				.contest({ id: params.id })
-				.problem({ problem: params.number })
-				.get({ fetch: { signal: abortController.signal } }),
-		);
+		const [problem, testcases] = await Promise.all([
+			rejectError(
+				localjudge.api
+					.contest({ id: params.id })
+					.problem({ problem: params.number })
+					.get({ fetch: { signal: abortController.signal } }),
+			),
+			rejectError(
+				localjudge.api
+					.contest({ id: params.id })
+					.problem({ problem: params.number })
+					.testcase.get(),
+			),
+		]);
 
-		return { problem };
+		return { problem, testcases };
 	},
 	component: RouteComponent,
 });
@@ -67,7 +75,7 @@ function LanguageSelect() {
 
 	return (
 		<Select defaultValue={languages[0]}>
-			<SelectTrigger className="w-32">
+			<SelectTrigger>
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
 			<SelectContent>
@@ -95,19 +103,27 @@ function Navbar() {
 }
 
 function TestcaseList() {
+	const testcases = Route.useLoaderData({ select: (data) => data.testcases });
+
 	return (
 		<Accordion type="single" collapsible>
-			<AccordionItem value="t1">
-				<AccordionTrigger>Testcase 1</AccordionTrigger>
-				<AccordionContent className="grid grid-cols-2 gap-2 text-xs">
-					<div className="p-2 bg-muted rounded flex-1">
-						<pre className="text-wrap max-h-48 overflow-y-auto">Input</pre>
-					</div>
-					<div className="p-2 bg-muted rounded flex-1">
-						<pre className="text-wrap max-h-48 overflow-y-auto">Output</pre>
-					</div>
-				</AccordionContent>
-			</AccordionItem>
+			{testcases.map((tc) => (
+				<AccordionItem key={tc.number} value={tc.number.toString()}>
+					<AccordionTrigger>Testcase {tc.number}</AccordionTrigger>
+					<AccordionContent className="grid grid-cols-2 gap-2 text-xs">
+						<div className="p-2 bg-muted rounded flex-1">
+							<pre className="text-wrap max-h-48 overflow-y-auto">
+								{tc.input}
+							</pre>
+						</div>
+						<div className="p-2 bg-muted rounded flex-1">
+							<pre className="text-wrap max-h-48 overflow-y-auto">
+								{tc.output}
+							</pre>
+						</div>
+					</AccordionContent>
+				</AccordionItem>
+			))}
 		</Accordion>
 	);
 }

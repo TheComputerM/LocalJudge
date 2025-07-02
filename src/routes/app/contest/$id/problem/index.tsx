@@ -18,6 +18,11 @@ function RouteComponent() {
 	const problems = Route.useLoaderData();
 	return (
 		<div className="container mx-auto">
+			<br />
+			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
+				Problems
+			</h1>
+			<br />
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -27,10 +32,10 @@ function RouteComponent() {
 				</TableHeader>
 				<TableBody>
 					{problems.map((problem) => (
-						<TableRow key={problem.id}>
+						<TableRow key={problem.number}>
 							<TableCell>{problem.number}</TableCell>
 							<TableCell>{problem.title}</TableCell>
-							<TableCell>
+							<TableCell className="text-right">
 								<Button variant="link" asChild>
 									<Link
 										from={Route.fullPath}
