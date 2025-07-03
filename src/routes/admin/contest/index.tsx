@@ -33,7 +33,11 @@ function ContestCard(props: { id: string; name: string }) {
 				<CardTitle>{props.name}</CardTitle>
 				<CardDescription>{props.id}</CardDescription>
 				<CardAction>
-					<Button variant="link">Inspect</Button>
+					<Button variant="link" asChild>
+						<Link to="/admin/contest/$id" params={{ id: props.id }}>
+							Inspect
+						</Link>
+					</Button>
 				</CardAction>
 			</CardHeader>
 		</Card>
