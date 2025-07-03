@@ -1,12 +1,15 @@
 import { and, asc, eq } from "drizzle-orm";
 import Elysia, { status, t } from "elysia";
+import { betterAuthPlugin } from "@/api/better-auth";
 import { db } from "@/db";
 import * as table from "@/db/schema";
-import { betterAuthPlugin } from "./better-auth";
 
-export const contestApp = new Elysia({ prefix: "/contest" })
+export const contestApp = new Elysia({
+	prefix: "/contest",
+	detail: { tags: ["Contest"] },
+})
 	.use(betterAuthPlugin)
-	.guard({ auth: "any", detail: { tags: ["Contest"] } })
+	.guard({ auth: "any" })
 	.get(
 		"/",
 		async ({ auth }) => {
@@ -18,7 +21,7 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 				},
 			});
 
-			return contests.map((c) => c.contest);
+			return contests.map(({ contest }) => contest);
 		},
 		{
 			detail: {
@@ -70,20 +73,11 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 				.get(
 					"/",
 					async ({ params }) => {
-						const data = await db.query.contest.findFirst({
+						const contest = await db.query.contest.findFirst({
 							where: eq(table.contest.id, params.id),
-							with: {
-								problems: {
-									columns: {
-										number: true,
-										title: true,
-									},
-									orderBy: asc(table.problem.number),
-								},
-							},
 						});
-						if (!data) return status(404);
-						return data;
+						if (!contest) return status(404);
+						return contest;
 					},
 					{
 						detail: {
@@ -92,35 +86,50 @@ export const contestApp = new Elysia({ prefix: "/contest" })
 						},
 					},
 				)
-				.group(
-					"/problem/:problem",
-					{
-						params: t.Object({
-							id: t.String({ description: "Contest ID" }),
-							problem: t.Number({ description: "Problem number/index" }),
-						}),
-					},
-					(app) =>
-						app
-							.derive(({ params }) => {
-								const problemId = `${params.id}/${params.problem}`;
-								return { problemId };
-							})
-							.get("/", async ({ problemId }) => {
-								const data = await db.query.problem.findFirst({
-									where: eq(table.problem.id, problemId),
-								});
-								if (!data) return status(404);
-								return data;
-							})
-							.post("/", async ({}) => {
-								// TODO: submit code
-							})
-							.get("/testcase", async ({ problemId }) => {
-								const data = await db.query.testcase.findMany({
-									where: eq(table.testcase.problemId, problemId),
-								});
-								return data;
-							}),
+				.group("/problem", (app) =>
+					app
+						.get("/", async ({ params }) => {
+							const problems = await db.query.problem.findMany({
+								where: eq(table.problem.contestId, params.id),
+								columns: {
+									description: false,
+								},
+								orderBy: asc(table.problem.number),
+							});
+							return problems;
+						})
+						.group(
+							"/:problem",
+							{
+								params: t.Object({
+									id: t.String({ description: "Contest ID" }),
+									problem: t.Number({ description: "Problem number" }),
+								}),
+							},
+							(app) =>
+								app
+									.get("/", async ({ params }) => {
+										const problem = await db.query.problem.findFirst({
+											where: and(
+												eq(table.problem.contestId, params.id),
+												eq(table.problem.number, params.problem),
+											),
+										});
+										if (!problem) return status(404);
+										return problem;
+									})
+									.post("/", async () => {
+										// TODO: submit code for contest
+									})
+									.get("/testcase", async ({ params }) => {
+										const testcases = await db.query.testcase.findMany({
+											where: and(
+												eq(table.testcase.contestId, params.id),
+												eq(table.testcase.problemNumber, params.problem),
+											),
+										});
+										return testcases;
+									}),
+						),
 				),
 	);

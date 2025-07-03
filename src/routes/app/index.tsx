@@ -74,7 +74,7 @@ function RegisterForm() {
 				e.preventDefault();
 				e.stopPropagation();
 				await localjudge.api.contest.post({ code });
-				router.invalidate({ filter: (d) => d.fullPath === "/app/" });
+				router.invalidate({ filter: (d) => d.fullPath === Route.fullPath });
 			}}
 		>
 			<Input

@@ -1,5 +1,5 @@
 {
-	"id": "2be9540f-98d1-49f8-a9f9-7f32f521c997",
+	"id": "b9494bc9-b4f2-4f67-8982-3fdc2b269bfe",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -376,16 +376,6 @@
 			"name": "problem",
 			"schema": "operator",
 			"columns": {
-				"id": {
-					"name": "id",
-					"type": "text",
-					"primaryKey": true,
-					"notNull": true,
-					"generated": {
-						"as": "\"operator\".\"problem\".\"contest_id\" || '/' || \"operator\".\"problem\".\"number\"",
-						"type": "stored"
-					}
-				},
 				"contest_id": {
 					"name": "contest_id",
 					"type": "text",
@@ -424,7 +414,12 @@
 					"onUpdate": "no action"
 				}
 			},
-			"compositePrimaryKeys": {},
+			"compositePrimaryKeys": {
+				"problem_contest_id_number_pk": {
+					"name": "problem_contest_id_number_pk",
+					"columns": ["contest_id", "number"]
+				}
+			},
 			"uniqueConstraints": {},
 			"policies": {},
 			"checkConstraints": {
@@ -490,17 +485,29 @@
 			"name": "result",
 			"schema": "operator",
 			"columns": {
-				"testcase_id": {
-					"name": "testcase_id",
+				"contest_id": {
+					"name": "contest_id",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true
+				},
+				"problem_number": {
+					"name": "problem_number",
+					"type": "smallint",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"testcase_number": {
+					"name": "testcase_number",
+					"type": "smallint",
+					"primaryKey": false,
+					"notNull": true
 				},
 				"submission_id": {
 					"name": "submission_id",
 					"type": "uuid",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true
 				},
 				"status": {
 					"name": "status",
@@ -517,16 +524,6 @@
 			},
 			"indexes": {},
 			"foreignKeys": {
-				"result_testcase_id_testcase_id_fk": {
-					"name": "result_testcase_id_testcase_id_fk",
-					"tableFrom": "result",
-					"tableTo": "testcase",
-					"schemaTo": "operator",
-					"columnsFrom": ["testcase_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				},
 				"result_submission_id_submission_id_fk": {
 					"name": "result_submission_id_submission_id_fk",
 					"tableFrom": "result",
@@ -536,12 +533,27 @@
 					"columnsTo": ["id"],
 					"onDelete": "no action",
 					"onUpdate": "no action"
+				},
+				"result_contest_id_problem_number_testcase_number_testcase_contest_id_problem_number_number_fk": {
+					"name": "result_contest_id_problem_number_testcase_number_testcase_contest_id_problem_number_number_fk",
+					"tableFrom": "result",
+					"tableTo": "testcase",
+					"schemaTo": "operator",
+					"columnsFrom": ["contest_id", "problem_number", "testcase_number"],
+					"columnsTo": ["contest_id", "problem_number", "number"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
 				}
 			},
 			"compositePrimaryKeys": {
-				"result_testcase_id_submission_id_pk": {
-					"name": "result_testcase_id_submission_id_pk",
-					"columns": ["testcase_id", "submission_id"]
+				"result_contest_id_problem_number_testcase_number_submission_id_pk": {
+					"name": "result_contest_id_problem_number_testcase_number_submission_id_pk",
+					"columns": [
+						"contest_id",
+						"problem_number",
+						"testcase_number",
+						"submission_id"
+					]
 				}
 			},
 			"uniqueConstraints": {},
@@ -566,9 +578,15 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"problem_id": {
-					"name": "problem_id",
+				"contest_id": {
+					"name": "contest_id",
 					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"problem_number": {
+					"name": "problem_number",
+					"type": "smallint",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -597,13 +615,13 @@
 					"onDelete": "no action",
 					"onUpdate": "no action"
 				},
-				"submission_problem_id_problem_id_fk": {
-					"name": "submission_problem_id_problem_id_fk",
+				"submission_contest_id_problem_number_problem_contest_id_number_fk": {
+					"name": "submission_contest_id_problem_number_problem_contest_id_number_fk",
 					"tableFrom": "submission",
 					"tableTo": "problem",
 					"schemaTo": "operator",
-					"columnsFrom": ["problem_id"],
-					"columnsTo": ["id"],
+					"columnsFrom": ["contest_id", "problem_number"],
+					"columnsTo": ["contest_id", "number"],
 					"onDelete": "no action",
 					"onUpdate": "no action"
 				}
@@ -618,15 +636,17 @@
 			"name": "testcase",
 			"schema": "operator",
 			"columns": {
-				"id": {
-					"name": "id",
+				"contest_id": {
+					"name": "contest_id",
 					"type": "text",
-					"primaryKey": true,
-					"notNull": true,
-					"generated": {
-						"as": "\"operator\".\"testcase\".\"problem_id\" || '/' || \"operator\".\"testcase\".\"number\"",
-						"type": "stored"
-					}
+					"primaryKey": false,
+					"notNull": true
+				},
+				"problem_number": {
+					"name": "problem_number",
+					"type": "smallint",
+					"primaryKey": false,
+					"notNull": true
 				},
 				"number": {
 					"name": "number",
@@ -634,14 +654,21 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"problem_id": {
-					"name": "problem_id",
+				"hidden": {
+					"name": "hidden",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
+				},
+				"input": {
+					"name": "input",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
-				"answer": {
-					"name": "answer",
+				"output": {
+					"name": "output",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
@@ -649,18 +676,23 @@
 			},
 			"indexes": {},
 			"foreignKeys": {
-				"testcase_problem_id_problem_id_fk": {
-					"name": "testcase_problem_id_problem_id_fk",
+				"testcase_contest_id_problem_number_problem_contest_id_number_fk": {
+					"name": "testcase_contest_id_problem_number_problem_contest_id_number_fk",
 					"tableFrom": "testcase",
 					"tableTo": "problem",
 					"schemaTo": "operator",
-					"columnsFrom": ["problem_id"],
-					"columnsTo": ["id"],
+					"columnsFrom": ["contest_id", "problem_number"],
+					"columnsTo": ["contest_id", "number"],
 					"onDelete": "no action",
 					"onUpdate": "no action"
 				}
 			},
-			"compositePrimaryKeys": {},
+			"compositePrimaryKeys": {
+				"testcase_contest_id_problem_number_number_pk": {
+					"name": "testcase_contest_id_problem_number_number_pk",
+					"columns": ["contest_id", "problem_number", "number"]
+				}
+			},
 			"uniqueConstraints": {},
 			"policies": {},
 			"checkConstraints": {

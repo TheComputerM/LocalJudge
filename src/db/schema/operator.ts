@@ -1,7 +1,8 @@
-import { Static } from "@sinclair/typebox";
 import { relations, type SQL, sql } from "drizzle-orm";
 import {
+	boolean,
 	check,
+	foreignKey,
 	integer,
 	jsonb,
 	pgSchema,
@@ -13,7 +14,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import { contestSettingsSchema } from "../typebox/contest";
+import type { contestSettingsSchema } from "../typebox/contest";
 import { user } from "./auth";
 
 export const operatorSchema = pgSchema("operator");
@@ -28,7 +29,7 @@ export const contest = operatorSchema.table(
 		startTime: timestamp("start_time").notNull(),
 		endTime: timestamp("end_time").notNull(),
 		settings: jsonb("settings")
-			.$type<Static<typeof contestSettingsSchema>>()
+			.$type<typeof contestSettingsSchema.static>()
 			.notNull(),
 	},
 	(table) => [check("time_check", sql`${table.startTime} < ${table.endTime}`)],
@@ -75,11 +76,6 @@ export const registrationRelations = relations(registration, ({ one }) => ({
 export const problem = operatorSchema.table(
 	"problem",
 	{
-		id: text("id")
-			.generatedAlwaysAs(
-				(): SQL => sql`${problem.contestId} || '/' || ${problem.number}`,
-			)
-			.primaryKey(),
 		contestId: text("contest_id")
 			.notNull()
 			.references(() => contest.id),
@@ -87,7 +83,10 @@ export const problem = operatorSchema.table(
 		title: varchar("title", { length: 32 }).notNull(),
 		description: text("description").notNull(),
 	},
-	(t) => [check("valid_number", sql`${t.number} > 0`)],
+	(t) => [
+		check("valid_number", sql`${t.number} > 0`),
+		primaryKey({ columns: [t.contestId, t.number] }),
+	],
 );
 
 export const problemRelations = relations(problem, ({ one, many }) => ({
@@ -105,24 +104,27 @@ export const problemRelations = relations(problem, ({ one, many }) => ({
 export const testcase = operatorSchema.table(
 	"testcase",
 	{
-		id: text("id")
-			.generatedAlwaysAs(
-				(): SQL => sql`${testcase.problemId} || '/' || ${testcase.number}`,
-			)
-			.primaryKey(),
+		contestId: text("contest_id").notNull(),
+		problemNumber: smallint("problem_number").notNull(),
 		number: smallint("number").notNull(),
-		problemId: text("problem_id")
-			.notNull()
-			.references(() => problem.id),
-		answer: text("answer").notNull(),
+		hidden: boolean("hidden").notNull().default(false),
+		input: text("input").notNull(),
+		output: text("output").notNull(),
 	},
-	(t) => [check("valid_number", sql`${t.number} > 0`)],
+	(t) => [
+		check("valid_number", sql`${t.number} > 0`),
+		foreignKey({
+			columns: [t.contestId, t.problemNumber],
+			foreignColumns: [problem.contestId, problem.number],
+		}),
+		primaryKey({ columns: [t.contestId, t.problemNumber, t.number] }),
+	],
 );
 
 export const testcaseRelations = relations(testcase, ({ one, many }) => ({
 	problem: one(problem, {
-		fields: [testcase.problemId],
-		references: [problem.id],
+		fields: [testcase.contestId, testcase.problemNumber],
+		references: [problem.contestId, problem.number],
 	}),
 	results: many(result),
 }));
@@ -130,22 +132,30 @@ export const testcaseRelations = relations(testcase, ({ one, many }) => ({
 /**
  * Represents a submission made by a user for a problem in a contest.
  */
-export const submission = operatorSchema.table("submission", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	userId: text("user_id")
-		.notNull()
-		.references(() => user.id),
-	problemId: text("problem_id")
-		.notNull()
-		.references(() => problem.id),
-	input: text("input").notNull(),
-	language: varchar("language", { length: 16 }).notNull(),
-});
+export const submission = operatorSchema.table(
+	"submission",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id),
+		contestId: text("contest_id").notNull(),
+		problemNumber: smallint("problem_number").notNull(),
+		input: text("input").notNull(),
+		language: varchar("language", { length: 16 }).notNull(),
+	},
+	(t) => [
+		foreignKey({
+			columns: [t.contestId, t.problemNumber],
+			foreignColumns: [problem.contestId, problem.number],
+		}),
+	],
+);
 
 export const submissionRelations = relations(submission, ({ one, many }) => ({
 	problem: one(problem, {
-		fields: [submission.problemId],
-		references: [problem.id],
+		fields: [submission.contestId, submission.problemNumber],
+		references: [problem.contestId, problem.number],
 	}),
 	user: one(user, {
 		fields: [submission.userId],
@@ -160,18 +170,34 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 export const result = operatorSchema.table(
 	"result",
 	{
-		testcaseId: text("testcase_id").references(() => testcase.id),
-		submissionId: uuid("submission_id").references(() => submission.id),
+		contestId: text("contest_id").notNull(),
+		problemNumber: smallint("problem_number").notNull(),
+		testcaseNumber: smallint("testcase_number").notNull(),
+		submissionId: uuid("submission_id")
+			.notNull()
+			.references(() => submission.id),
 		status: integer("status").notNull(),
 		message: varchar("message", { length: 256 }).notNull(),
 	},
-	(t) => [primaryKey({ columns: [t.testcaseId, t.submissionId] })],
+	(t) => [
+		primaryKey({
+			columns: [t.contestId, t.problemNumber, t.testcaseNumber, t.submissionId],
+		}),
+		foreignKey({
+			columns: [t.contestId, t.problemNumber, t.testcaseNumber],
+			foreignColumns: [
+				testcase.contestId,
+				testcase.problemNumber,
+				testcase.number,
+			],
+		}),
+	],
 );
 
 export const resultRelations = relations(result, ({ one }) => ({
 	testcase: one(testcase, {
-		fields: [result.testcaseId],
-		references: [testcase.id],
+		fields: [result.contestId, result.problemNumber, result.testcaseNumber],
+		references: [testcase.contestId, testcase.problemNumber, testcase.number],
 	}),
 	submission: one(submission, {
 		fields: [result.submissionId],

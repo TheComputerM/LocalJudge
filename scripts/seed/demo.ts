@@ -1,9 +1,11 @@
 import { faker } from "@faker-js/faker";
 import { Static } from "@sinclair/typemap";
 import { taskRunnerDB as db, reset } from "scripts/utils";
+import { localjudge } from "@/api/client";
 import * as table from "@/db/schema";
-import { contestSchema } from "@/db/typebox/contest";
+import { ContestModel } from "@/db/typebox/contest";
 import { auth } from "@/lib/auth";
+import { rejectError } from "@/lib/utils";
 
 await reset(db);
 
@@ -12,6 +14,7 @@ const CONFIG = {
 		users: faker.number.int({ min: 20, max: 30 }),
 		contests: faker.number.int({ min: 20, max: 30 }),
 		problems: { min: 3, max: 6 },
+		testcases: { min: 4, max: 8 },
 	},
 };
 
@@ -22,7 +25,7 @@ async function createUsers() {
 			body: {
 				name: faker.person.fullName(),
 				email: faker.internet.email(),
-				password: "fakepass",
+				password: "pass123",
 				role: "user",
 			},
 		});
@@ -32,9 +35,13 @@ async function createUsers() {
 
 async function createContests() {
 	console.info("Creating contests...");
-	const data: Static<typeof contestSchema.insert>[] = new Array(
+	const data: Static<typeof ContestModel.insert>[] = new Array(
 		CONFIG.count.contests,
 	);
+	const languages = (
+		await rejectError(localjudge.api.piston.runtimes.get())
+	).map(({ language, version }) => `${language}@${version}`);
+
 	for (let i = 0; i < CONFIG.count.contests; i++) {
 		const startTime = faker.date.between({
 			from: faker.date.recent(),
@@ -51,6 +58,10 @@ async function createContests() {
 					limit: faker.number.int({ min: 0, max: 8 }),
 					visible: faker.datatype.boolean(),
 				},
+				languages: faker.helpers.arrayElements(languages, {
+					min: 1,
+					max: languages.length,
+				}),
 			},
 		};
 	}
@@ -75,13 +86,40 @@ async function createProblems() {
 			});
 		}
 	}
+
 	console.info("Created problems");
+}
+
+async function createTestcases() {
+	console.info("Creating testcases...");
+	const problems = await db
+		.select({
+			contestId: table.problem.contestId,
+			number: table.problem.number,
+		})
+		.from(table.problem);
+	for (const problem of problems) {
+		const count = faker.number.int(CONFIG.count.testcases);
+		for (let i = 1; i <= count; i++) {
+			const stdin = faker.word.noun();
+			await db.insert(table.testcase).values({
+				contestId: problem.contestId,
+				problemNumber: problem.number,
+				number: i,
+				hidden: faker.datatype.boolean(),
+				input: stdin,
+				output: stdin,
+			});
+		}
+	}
+	console.info("Created testcases");
 }
 
 async function main() {
 	await createUsers();
 	await createContests();
 	await createProblems();
+	await createTestcases();
 }
 
 await main();

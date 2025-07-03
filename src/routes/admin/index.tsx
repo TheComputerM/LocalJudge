@@ -6,16 +6,18 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/")({
 	loader: async ({ abortController }) => {
-		const { data, error } = await localjudge.api.admin.overview.get({
-			fetch: {
-				signal: abortController.signal,
-			},
-		});
-		if (error) throw error;
-		return data;
+		const overview = await rejectError(
+			localjudge.api.admin.overview.get({
+				fetch: {
+					signal: abortController.signal,
+				},
+			}),
+		);
+		return overview;
 	},
 	component: RouteComponent,
 });
