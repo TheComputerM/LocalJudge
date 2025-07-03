@@ -72,6 +72,30 @@ function RemainingTime() {
 	return <span className="text-sm">{formatDistance(endTime, time)}</span>;
 }
 
+function NavigationItems() {
+	return navigationLinks.map((link) => (
+		<NavigationMenuItem key={link.to}>
+			<NavigationMenuLink
+				className="flex-row items-center gap-2 py-1.5 font-medium"
+				asChild
+			>
+				<Link
+					from={link.from}
+					to={link.to}
+					activeProps={{ "data-active": true }}
+				>
+					<link.icon
+						size={16}
+						className="text-foreground/80"
+						aria-hidden="true"
+					/>
+					<span>{link.label}</span>
+				</Link>
+			</NavigationMenuLink>
+		</NavigationMenuItem>
+	));
+}
+
 function Navbar() {
 	return (
 		<header className="flex shrink-0 h-12 items-center justify-between gap-2 border-b px-4">
@@ -88,55 +112,15 @@ function Navbar() {
 				</PopoverTrigger>
 				<PopoverContent className="w-36 p-1 md:hidden">
 					<NavigationMenu className="max-w-none *:w-full">
-						<NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-							{navigationLinks.map((link) => (
-								<NavigationMenuItem key={link.to} className="w-full">
-									<NavigationMenuLink
-										className="flex-row items-center gap-2 py-1.5"
-										asChild
-									>
-										<Link
-											from={link.from}
-											to={link.to}
-											activeProps={{ "data-active": true }}
-										>
-											<link.icon
-												size={16}
-												className="text-muted-foreground/80"
-												aria-hidden="true"
-											/>
-											<span>{link.label}</span>
-										</Link>
-									</NavigationMenuLink>
-								</NavigationMenuItem>
-							))}
+						<NavigationMenuList className="flex-col items-start gap-1 *:w-full">
+							<NavigationItems />
 						</NavigationMenuList>
 					</NavigationMenu>
 				</PopoverContent>
 			</Popover>
 			<NavigationMenu className="max-md:hidden">
 				<NavigationMenuList className="gap-2">
-					{navigationLinks.map((link) => (
-						<NavigationMenuItem key={link.to}>
-							<NavigationMenuLink
-								className="text-foreground hover:text-primary flex-row items-center gap-2 py-1.5 font-medium"
-								asChild
-							>
-								<Link
-									from={link.from}
-									to={link.to}
-									activeProps={{ "data-active": true }}
-								>
-									<link.icon
-										size={16}
-										className="text-muted-foreground/80"
-										aria-hidden="true"
-									/>
-									<span>{link.label}</span>
-								</Link>
-							</NavigationMenuLink>
-						</NavigationMenuItem>
-					))}
+					<NavigationItems />
 				</NavigationMenuList>
 			</NavigationMenu>
 			<div className="inline-flex items-center gap-2">

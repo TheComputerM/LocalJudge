@@ -10,16 +10,18 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/")({
 	loader: async ({ abortController }) => {
-		const { data, error } = await localjudge.api.admin.contest.get({
-			fetch: {
-				signal: abortController.signal,
-			},
-		});
-		if (error) throw error;
-		return data;
+		const contests = await rejectError(
+			localjudge.api.admin.contest.get({
+				fetch: {
+					signal: abortController.signal,
+				},
+			}),
+		);
+		return contests;
 	},
 	component: RouteComponent,
 });
