@@ -1,5 +1,6 @@
 import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
+import { PistonService } from "../piston/service";
 import { ContestService, ProblemService } from "./service";
 
 export const contestApp = new Elysia({
@@ -94,7 +95,8 @@ export const contestApp = new Elysia({
 										return problem;
 									})
 									.post("/", async () => {
-										// TODO: submit code for contest
+										PistonService.submit();
+										return status(201, "Code submitted successfully");
 									})
 									.get("/testcase", async ({ params }) => {
 										const testcases = await ProblemService.getTestcases(
