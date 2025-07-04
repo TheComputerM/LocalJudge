@@ -7,4 +7,5 @@ export const ServerRoute = createServerFileRoute("/api/$").methods({
 	GET: handle,
 	POST: handle,
 	DELETE: handle,
+	PATCH: handle,
 });

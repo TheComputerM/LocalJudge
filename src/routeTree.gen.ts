@@ -28,9 +28,10 @@ import { Route as AdminContestIdIndexRouteImport } from './routes/admin/contest/
 import { Route as AppContestIdSubmissionsRouteImport } from './routes/app/contest/$id/submissions'
 import { Route as AppContestIdProblemRouteImport } from './routes/app/contest/$id/problem'
 import { Route as AppContestIdLeaderboardRouteImport } from './routes/app/contest/$id/leaderboard'
-import { Route as AdminContestIdProblemRouteImport } from './routes/admin/contest/$id/problem'
 import { Route as AppContestIdProblemIndexRouteImport } from './routes/app/contest/$id/problem/index'
+import { Route as AdminContestIdProblemIndexRouteImport } from './routes/admin/contest/$id/problem/index'
 import { Route as AppContestIdProblemNumberRouteImport } from './routes/app/contest/$id/problem/$number'
+import { Route as AdminContestIdProblemProblemRouteImport } from './routes/admin/contest/$id/problem/$problem'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
@@ -121,22 +122,29 @@ const AppContestIdLeaderboardRoute = AppContestIdLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => AppContestIdRoute,
 } as any)
-const AdminContestIdProblemRoute = AdminContestIdProblemRouteImport.update({
-  id: '/problem',
-  path: '/problem',
-  getParentRoute: () => AdminContestIdRoute,
-} as any)
 const AppContestIdProblemIndexRoute =
   AppContestIdProblemIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AppContestIdProblemRoute,
   } as any)
+const AdminContestIdProblemIndexRoute =
+  AdminContestIdProblemIndexRouteImport.update({
+    id: '/problem/',
+    path: '/problem/',
+    getParentRoute: () => AdminContestIdRoute,
+  } as any)
 const AppContestIdProblemNumberRoute =
   AppContestIdProblemNumberRouteImport.update({
     id: '/$number',
     path: '/$number',
     getParentRoute: () => AppContestIdProblemRoute,
+  } as any)
+const AdminContestIdProblemProblemRoute =
+  AdminContestIdProblemProblemRouteImport.update({
+    id: '/problem/$problem',
+    path: '/problem/$problem',
+    getParentRoute: () => AdminContestIdRoute,
   } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
@@ -163,12 +171,13 @@ export interface FileRoutesByFullPath {
   '/admin/contest/new': typeof AdminContestNewRoute
   '/app/contest/$id': typeof AppContestIdRouteWithChildren
   '/admin/contest': typeof AdminContestIndexRoute
-  '/admin/contest/$id/problem': typeof AdminContestIdProblemRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
   '/app/contest/$id/problem': typeof AppContestIdProblemRouteWithChildren
   '/app/contest/$id/submissions': typeof AppContestIdSubmissionsRoute
   '/admin/contest/$id/': typeof AdminContestIdIndexRoute
+  '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
+  '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
 }
 export interface FileRoutesByTo {
@@ -182,11 +191,12 @@ export interface FileRoutesByTo {
   '/admin/contest/new': typeof AdminContestNewRoute
   '/app/contest/$id': typeof AppContestIdRouteWithChildren
   '/admin/contest': typeof AdminContestIndexRoute
-  '/admin/contest/$id/problem': typeof AdminContestIdProblemRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
   '/app/contest/$id/submissions': typeof AppContestIdSubmissionsRoute
   '/admin/contest/$id': typeof AdminContestIdIndexRoute
+  '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
+  '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem': typeof AppContestIdProblemIndexRoute
 }
 export interface FileRoutesById {
@@ -204,12 +214,13 @@ export interface FileRoutesById {
   '/admin/contest/new': typeof AdminContestNewRoute
   '/app/contest/$id': typeof AppContestIdRouteWithChildren
   '/admin/contest/': typeof AdminContestIndexRoute
-  '/admin/contest/$id/problem': typeof AdminContestIdProblemRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
   '/app/contest/$id/problem': typeof AppContestIdProblemRouteWithChildren
   '/app/contest/$id/submissions': typeof AppContestIdSubmissionsRoute
   '/admin/contest/$id/': typeof AdminContestIdIndexRoute
+  '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
+  '/admin/contest/$id/problem/': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
 }
 export interface FileRouteTypes {
@@ -228,12 +239,13 @@ export interface FileRouteTypes {
     | '/admin/contest/new'
     | '/app/contest/$id'
     | '/admin/contest'
-    | '/admin/contest/$id/problem'
     | '/app/contest/$id/leaderboard'
     | '/app/contest/$id/problem'
     | '/app/contest/$id/submissions'
     | '/admin/contest/$id/'
+    | '/admin/contest/$id/problem/$problem'
     | '/app/contest/$id/problem/$number'
+    | '/admin/contest/$id/problem'
     | '/app/contest/$id/problem/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -247,11 +259,12 @@ export interface FileRouteTypes {
     | '/admin/contest/new'
     | '/app/contest/$id'
     | '/admin/contest'
-    | '/admin/contest/$id/problem'
     | '/app/contest/$id/leaderboard'
     | '/app/contest/$id/submissions'
     | '/admin/contest/$id'
+    | '/admin/contest/$id/problem/$problem'
     | '/app/contest/$id/problem/$number'
+    | '/admin/contest/$id/problem'
     | '/app/contest/$id/problem'
   id:
     | '__root__'
@@ -268,12 +281,13 @@ export interface FileRouteTypes {
     | '/admin/contest/new'
     | '/app/contest/$id'
     | '/admin/contest/'
-    | '/admin/contest/$id/problem'
     | '/app/contest/$id/leaderboard'
     | '/app/contest/$id/problem'
     | '/app/contest/$id/submissions'
     | '/admin/contest/$id/'
+    | '/admin/contest/$id/problem/$problem'
     | '/app/contest/$id/problem/$number'
+    | '/admin/contest/$id/problem/'
     | '/app/contest/$id/problem/'
   fileRoutesById: FileRoutesById
 }
@@ -430,13 +444,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppContestIdLeaderboardRouteImport
       parentRoute: typeof AppContestIdRoute
     }
-    '/admin/contest/$id/problem': {
-      id: '/admin/contest/$id/problem'
-      path: '/problem'
-      fullPath: '/admin/contest/$id/problem'
-      preLoaderRoute: typeof AdminContestIdProblemRouteImport
-      parentRoute: typeof AdminContestIdRoute
-    }
     '/app/contest/$id/problem/': {
       id: '/app/contest/$id/problem/'
       path: '/'
@@ -444,12 +451,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppContestIdProblemIndexRouteImport
       parentRoute: typeof AppContestIdProblemRoute
     }
+    '/admin/contest/$id/problem/': {
+      id: '/admin/contest/$id/problem/'
+      path: '/problem'
+      fullPath: '/admin/contest/$id/problem'
+      preLoaderRoute: typeof AdminContestIdProblemIndexRouteImport
+      parentRoute: typeof AdminContestIdRoute
+    }
     '/app/contest/$id/problem/$number': {
       id: '/app/contest/$id/problem/$number'
       path: '/$number'
       fullPath: '/app/contest/$id/problem/$number'
       preLoaderRoute: typeof AppContestIdProblemNumberRouteImport
       parentRoute: typeof AppContestIdProblemRoute
+    }
+    '/admin/contest/$id/problem/$problem': {
+      id: '/admin/contest/$id/problem/$problem'
+      path: '/problem/$problem'
+      fullPath: '/admin/contest/$id/problem/$problem'
+      preLoaderRoute: typeof AdminContestIdProblemProblemRouteImport
+      parentRoute: typeof AdminContestIdRoute
     }
   }
 }
@@ -473,13 +494,15 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface AdminContestIdRouteChildren {
-  AdminContestIdProblemRoute: typeof AdminContestIdProblemRoute
   AdminContestIdIndexRoute: typeof AdminContestIdIndexRoute
+  AdminContestIdProblemProblemRoute: typeof AdminContestIdProblemProblemRoute
+  AdminContestIdProblemIndexRoute: typeof AdminContestIdProblemIndexRoute
 }
 
 const AdminContestIdRouteChildren: AdminContestIdRouteChildren = {
-  AdminContestIdProblemRoute: AdminContestIdProblemRoute,
   AdminContestIdIndexRoute: AdminContestIdIndexRoute,
+  AdminContestIdProblemProblemRoute: AdminContestIdProblemProblemRoute,
+  AdminContestIdProblemIndexRoute: AdminContestIdProblemIndexRoute,
 }
 
 const AdminContestIdRouteWithChildren = AdminContestIdRoute._addFileChildren(

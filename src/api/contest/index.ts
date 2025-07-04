@@ -52,7 +52,7 @@ export const contestApp = new Elysia({
 	.group(
 		"/:id",
 		{
-			params: t.Object({ id: t.String({ description: "Contest ID" }) }),
+			params: t.Object({ id: t.String() }),
 		},
 		(app) =>
 			app
@@ -102,8 +102,8 @@ export const contestApp = new Elysia({
 							"/:problem",
 							{
 								params: t.Object({
-									id: t.String({ description: "Contest ID" }),
-									problem: t.Number({ description: "Problem number" }),
+									id: t.String(),
+									problem: t.Number(),
 								}),
 							},
 							(app) =>

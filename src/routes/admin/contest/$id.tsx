@@ -43,6 +43,7 @@ function RouteComponent() {
 					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenu>
+			<br />
 			<Outlet />
 		</>
 	);
