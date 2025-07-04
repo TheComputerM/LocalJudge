@@ -36,4 +36,4 @@ export const adminApp = new Elysia({
 			},
 		},
 	)
-	.group("/contest", (app) => app.use(adminContestApp));
+	.use(adminContestApp);

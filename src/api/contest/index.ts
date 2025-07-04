@@ -1,8 +1,6 @@
-import { and, asc, eq } from "drizzle-orm";
 import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { db } from "@/db";
-import * as table from "@/db/schema";
+import { ContestService, ProblemService } from "./service";
 
 export const contestApp = new Elysia({
 	prefix: "/contest",
@@ -13,15 +11,8 @@ export const contestApp = new Elysia({
 	.get(
 		"/",
 		async ({ auth }) => {
-			const contests = await db.query.registration.findMany({
-				columns: {},
-				where: eq(table.registration.userId, auth.user.id),
-				with: {
-					contest: true,
-				},
-			});
-
-			return contests.map(({ contest }) => contest);
+			const contests = await ContestService.getContestsByUserId(auth.user.id);
+			return contests;
 		},
 		{
 			detail: {
@@ -33,9 +24,7 @@ export const contestApp = new Elysia({
 	.post(
 		"/",
 		async ({ auth, body }) => {
-			await db
-				.insert(table.registration)
-				.values({ userId: auth.user.id, contestId: body.code });
+			await ContestService.registerContest(body.code, auth.user.id);
 			return status(201, "Successfully registered for the contest");
 		},
 		{
@@ -57,14 +46,10 @@ export const contestApp = new Elysia({
 		(app) =>
 			app
 				.onBeforeHandle(async ({ params, auth }) => {
-					const isRegistered =
-						(await db.$count(
-							table.registration,
-							and(
-								eq(table.registration.userId, auth.user.id),
-								eq(table.registration.contestId, params.id),
-							),
-						)) > 0;
+					const isRegistered = await ContestService.isRegistered(
+						params.id,
+						auth.user.id,
+					);
 
 					if (!isRegistered) {
 						return status(403, "You are not registered for this contest");
@@ -73,9 +58,7 @@ export const contestApp = new Elysia({
 				.get(
 					"/",
 					async ({ params }) => {
-						const contest = await db.query.contest.findFirst({
-							where: eq(table.contest.id, params.id),
-						});
+						const contest = await ContestService.getContest(params.id);
 						if (!contest) return status(404);
 						return contest;
 					},
@@ -89,13 +72,7 @@ export const contestApp = new Elysia({
 				.group("/problem", (app) =>
 					app
 						.get("/", async ({ params }) => {
-							const problems = await db.query.problem.findMany({
-								where: eq(table.problem.contestId, params.id),
-								columns: {
-									description: false,
-								},
-								orderBy: asc(table.problem.number),
-							});
+							const problems = await ProblemService.getProblems(params.id);
 							return problems;
 						})
 						.group(
@@ -109,12 +86,10 @@ export const contestApp = new Elysia({
 							(app) =>
 								app
 									.get("/", async ({ params }) => {
-										const problem = await db.query.problem.findFirst({
-											where: and(
-												eq(table.problem.contestId, params.id),
-												eq(table.problem.number, params.problem),
-											),
-										});
+										const problem = await ProblemService.getProblem(
+											params.id,
+											params.problem,
+										);
 										if (!problem) return status(404);
 										return problem;
 									})
@@ -122,12 +97,10 @@ export const contestApp = new Elysia({
 										// TODO: submit code for contest
 									})
 									.get("/testcase", async ({ params }) => {
-										const testcases = await db.query.testcase.findMany({
-											where: and(
-												eq(table.testcase.contestId, params.id),
-												eq(table.testcase.problemNumber, params.problem),
-											),
-										});
+										const testcases = await ProblemService.getTestcases(
+											params.id,
+											params.problem,
+										);
 										return testcases;
 									}),
 						),
