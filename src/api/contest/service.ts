@@ -2,9 +2,9 @@ import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 
-export abstract class ContestService {
+export namespace ContestService {
 	/** Check if a user is registered for a contest */
-	static async isRegistered(contestId: string, userId: string) {
+	export async function isRegistered(contestId: string, userId: string) {
 		const count = await db.$count(
 			table.registration,
 			and(
@@ -16,27 +16,27 @@ export abstract class ContestService {
 	}
 
 	/** Register a user for a contest */
-	static async registerContest(contestId: string, userId: string) {
+	export async function registerContest(contestId: string, userId: string) {
 		await db
 			.insert(table.registration)
 			.values({ userId: userId, contestId: contestId });
 	}
 
 	/** Get a contest by its ID */
-	static async getContest(contestId: string) {
+	export async function getContest(contestId: string) {
 		return db.query.contest.findFirst({
 			where: eq(table.contest.id, contestId),
 		});
 	}
 
-	static async getContests() {
+	export async function getContests() {
 		return db.query.contest.findMany({
 			orderBy: asc(table.contest.startTime),
 		});
 	}
 
 	/** Get all contests a user is registered for */
-	static async getContestsByUserId(userId: string) {
+	export async function getContestsByUserId(userId: string) {
 		const registrations = await db.query.registration.findMany({
 			columns: {},
 			where: eq(table.registration.userId, userId),
@@ -50,9 +50,9 @@ export abstract class ContestService {
 	}
 }
 
-export abstract class ProblemService {
+export namespace ProblemService {
 	/** Get all problems in a contest */
-	static async getProblems(contestId: string) {
+	export async function getProblems(contestId: string) {
 		return db.query.problem.findMany({
 			where: eq(table.problem.contestId, contestId),
 			columns: {
@@ -63,7 +63,7 @@ export abstract class ProblemService {
 	}
 
 	/** Get a specific problem in a contest by its number */
-	static async getProblem(contestId: string, problemNumber: number) {
+	export async function getProblem(contestId: string, problemNumber: number) {
 		return db.query.problem.findFirst({
 			where: and(
 				eq(table.problem.contestId, contestId),
@@ -73,7 +73,7 @@ export abstract class ProblemService {
 	}
 
 	/** Get all test cases for a specific problem in a contest */
-	static async getTestcases(contestId: string, problemNumber: number) {
+	export async function getTestcases(contestId: string, problemNumber: number) {
 		return db.query.testcase.findMany({
 			where: and(
 				eq(table.testcase.contestId, contestId),
