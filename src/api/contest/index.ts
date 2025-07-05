@@ -94,8 +94,12 @@ export const contestApp = new Elysia({
 										if (!problem) return status(404);
 										return problem;
 									})
-									.post("/", async () => {
-										PistonService.submit();
+									.post("/", async ({ auth, params }) => {
+										await PistonService.submit(
+											auth.user.id,
+											params.id,
+											params.problem,
+										);
 										return status(201, "Code submitted successfully");
 									})
 									.get("/testcase", async ({ params }) => {

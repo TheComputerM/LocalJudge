@@ -79,6 +79,7 @@ export namespace ProblemService {
 				eq(table.testcase.contestId, contestId),
 				eq(table.testcase.problemNumber, problemNumber),
 			),
+			orderBy: asc(table.testcase.number),
 		});
 	}
 }
