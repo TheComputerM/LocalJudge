@@ -141,8 +141,8 @@ export const submission = operatorSchema.table(
 			.references(() => user.id),
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
-		input: text("input").notNull(),
-		language: varchar("language", { length: 16 }).notNull(),
+		code: text("code").notNull(),
+		language: varchar("language", { length: 24 }).notNull(),
 	},
 	(t) => [
 		foreignKey({
@@ -170,34 +170,24 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 export const result = operatorSchema.table(
 	"result",
 	{
-		contestId: text("contest_id").notNull(),
-		problemNumber: smallint("problem_number").notNull(),
-		testcaseNumber: smallint("testcase_number").notNull(),
 		submissionId: uuid("submission_id")
 			.notNull()
 			.references(() => submission.id),
+		testcaseNumber: smallint("testcase_number").notNull(),
 		status: integer("status").notNull(),
 		message: varchar("message", { length: 256 }).notNull(),
 	},
 	(t) => [
 		primaryKey({
-			columns: [t.contestId, t.problemNumber, t.testcaseNumber, t.submissionId],
-		}),
-		foreignKey({
-			columns: [t.contestId, t.problemNumber, t.testcaseNumber],
-			foreignColumns: [
-				testcase.contestId,
-				testcase.problemNumber,
-				testcase.number,
-			],
+			columns: [t.submissionId, t.testcaseNumber],
 		}),
 	],
 );
 
 export const resultRelations = relations(result, ({ one }) => ({
 	testcase: one(testcase, {
-		fields: [result.contestId, result.problemNumber, result.testcaseNumber],
-		references: [testcase.contestId, testcase.problemNumber, testcase.number],
+		fields: [result.testcaseNumber],
+		references: [testcase.number],
 	}),
 	submission: one(submission, {
 		fields: [result.submissionId],
