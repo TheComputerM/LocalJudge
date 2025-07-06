@@ -5,6 +5,7 @@ import { MultiselectField } from "./multiselect";
 import { NumberField } from "./number-field";
 import { SubmitButton } from "./submit-button";
 import { TextField } from "./text-field";
+import { Textarea } from "./textarea";
 import { ToggleSwitch } from "./toggle-switch";
 
 export const { useAppForm } = createFormHook({
@@ -16,6 +17,7 @@ export const { useAppForm } = createFormHook({
 		DateTimePicker,
 		ToggleSwitch,
 		MultiselectField,
+		Textarea,
 	},
 	formComponents: {
 		SubmitButton,

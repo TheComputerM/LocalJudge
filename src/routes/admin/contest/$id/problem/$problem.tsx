@@ -34,15 +34,9 @@ function ProblemForm() {
 			<form.AppField name="problem.title">
 				{(field) => <field.TextField label="Title" />}
 			</form.AppField>
-			<form.Field name="problem.description">
-				{(field) => (
-					<textarea
-						value={field.state.value}
-						onChange={(e) => field.handleChange(e.target.value)}
-						onBlur={field.handleBlur}
-					/>
-				)}
-			</form.Field>
+			<form.AppField name="problem.description">
+				{(field) => <field.Textarea label="Description" />}
+			</form.AppField>
 		</form>
 	);
 }
