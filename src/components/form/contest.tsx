@@ -1,10 +1,16 @@
+import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
 import { formOptions } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
 import { withForm } from "@/components/form/primitives";
 import { ContestModel } from "@/db/typebox/contest";
 
+const defaultValues = Value.Default(
+	ContestModel.insert,
+	{},
+) as typeof ContestModel.insert.static;
 export const ContestFormOptions = formOptions({
+	defaultValues,
 	validators: {
 		onChange: Compile(ContestModel.insert),
 	},

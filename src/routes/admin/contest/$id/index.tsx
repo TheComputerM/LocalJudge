@@ -47,7 +47,6 @@ function RouteComponent() {
 				form.handleSubmit();
 			}}
 		>
-			{/* @ts-expect-error: Some tanstack form stuff ig */}
 			<ContestForm form={form} languages={languages} label="Update Contest" />
 		</form>
 	);

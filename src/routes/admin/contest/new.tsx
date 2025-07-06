@@ -28,7 +28,7 @@ function NewContestForm() {
 
 	const defaultValues = Value.Default(ContestModel.insert, {
 		settings: { languages },
-	});
+	}) as typeof ContestModel.insert.static;
 
 	const form = useAppForm({
 		...ContestFormOptions,
@@ -53,7 +53,6 @@ function NewContestForm() {
 				form.handleSubmit();
 			}}
 		>
-			{/* @ts-expect-error: Some tanstack form stuff ig */}
 			<ContestForm form={form} languages={languages} label="Create Contest" />
 		</form>
 	);
