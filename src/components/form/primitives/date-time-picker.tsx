@@ -5,6 +5,7 @@ import { LucideCalendar } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
 import {
 	Popover,
 	PopoverContent,
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Label } from "../ui/label";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 

@@ -1,5 +1,5 @@
-import { Label } from "../ui/label";
-import { Switch } from "../ui/switch";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 

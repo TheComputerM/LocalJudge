@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
-import { useAppForm } from "@/components/form";
+import { useAppForm } from "@/components/primitives";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({

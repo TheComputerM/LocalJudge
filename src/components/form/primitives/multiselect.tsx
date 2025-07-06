@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
 import MultipleSelector, {
 	MultipleSelectorProps,
 	Option,
-} from "../ui/multiselect";
+} from "@/components/ui/multiselect";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 

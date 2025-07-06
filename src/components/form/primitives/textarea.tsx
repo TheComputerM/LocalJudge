@@ -1,5 +1,5 @@
-import { Label } from "../ui/label";
-import { Textarea as BaseTextarea } from "../ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Textarea as BaseTextarea } from "@/components/ui/textarea";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
