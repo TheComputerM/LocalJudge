@@ -7,18 +7,29 @@ import { ContestModel } from "@/db/typebox/contest";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/$id/")({
-	loader: async ({ params }) => {
-		const contest = await rejectError(
-			localjudge.api.contest({ id: params.id }).get(),
-		);
+	loader: async ({ params, abortController }) => {
+		const [contest, languages] = await Promise.all([
+			rejectError(
+				localjudge.api.contest({ id: params.id }).get({
+					fetch: { signal: abortController.signal },
+				}),
+			),
+			rejectError(
+				localjudge.api.piston.runtimes.get({
+					fetch: { signal: abortController.signal },
+				}),
+			).then((data) =>
+				data.map(({ language, version }) => `${language}@${version}`),
+			),
+		]);
 
-		return { contest };
+		return { contest, languages };
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const contest = Route.useLoaderData({ select: (data) => data.contest });
+	const { contest, languages } = Route.useLoaderData();
 
 	const form = useAppForm({
 		...ContestFormOptions,
@@ -29,9 +40,15 @@ function RouteComponent() {
 	});
 
 	return (
-		<div>
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				form.handleSubmit();
+			}}
+		>
 			{/* @ts-expect-error: Some tanstack form stuff ig */}
-			<ContestForm form={form} languages={[""]} label="Update Contest" />
-		</div>
+			<ContestForm form={form} languages={languages} label="Update Contest" />
+		</form>
 	);
 }

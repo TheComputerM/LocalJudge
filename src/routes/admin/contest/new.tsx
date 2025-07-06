@@ -9,13 +9,13 @@ import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/new")({
 	loader: async ({ abortController }) => {
-		const languages = (
-			await rejectError(
-				localjudge.api.piston.runtimes.get({
-					fetch: { signal: abortController.signal },
-				}),
-			)
-		).map(({ language, version }) => `${language}@${version}`);
+		const languages = await rejectError(
+			localjudge.api.piston.runtimes.get({
+				fetch: { signal: abortController.signal },
+			}),
+		).then((data) =>
+			data.map(({ language, version }) => `${language}@${version}`),
+		);
 
 		return { languages };
 	},
