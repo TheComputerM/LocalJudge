@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
 import { useAppForm } from "@/components/form/primitives";
+import { ProblemForm } from "@/components/form/problem";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
@@ -16,35 +17,23 @@ export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
 	component: RouteComponent,
 });
 
-function ProblemForm() {
+function RouteComponent() {
 	const problem = Route.useLoaderData();
 	const form = useAppForm({
-		defaultValues: { problem },
+		defaultValues: {
+			problem,
+		},
 	});
 
 	return (
 		<form
-			className="grid gap-6"
 			onSubmit={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
 				form.handleSubmit();
 			}}
 		>
-			<form.AppField name="problem.title">
-				{(field) => <field.TextField label="Title" />}
-			</form.AppField>
-			<form.AppField name="problem.description">
-				{(field) => <field.Textarea label="Description" />}
-			</form.AppField>
+			<ProblemForm form={form} />
 		</form>
-	);
-}
-
-function RouteComponent() {
-	return (
-		<div>
-			<ProblemForm />
-		</div>
 	);
 }

@@ -32,6 +32,7 @@ import { Route as AppContestIdLeaderboardRouteImport } from './routes/app/contes
 import { Route as AppContestIdProblemIndexRouteImport } from './routes/app/contest/$id/problem/index'
 import { Route as AdminContestIdProblemIndexRouteImport } from './routes/admin/contest/$id/problem/index'
 import { Route as AppContestIdProblemNumberRouteImport } from './routes/app/contest/$id/problem/$number'
+import { Route as AdminContestIdProblemNewRouteImport } from './routes/admin/contest/$id/problem/new'
 import { Route as AdminContestIdProblemProblemRouteImport } from './routes/admin/contest/$id/problem/$problem'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -146,6 +147,12 @@ const AppContestIdProblemNumberRoute =
     path: '/$number',
     getParentRoute: () => AppContestIdProblemRoute,
   } as any)
+const AdminContestIdProblemNewRoute =
+  AdminContestIdProblemNewRouteImport.update({
+    id: '/problem/new',
+    path: '/problem/new',
+    getParentRoute: () => AdminContestIdRoute,
+  } as any)
 const AdminContestIdProblemProblemRoute =
   AdminContestIdProblemProblemRouteImport.update({
     id: '/problem/$problem',
@@ -183,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/admin/contest/$id/': typeof AdminContestIdIndexRoute
   '/app/contest/$id/': typeof AppContestIdIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
+  '/admin/contest/$id/problem/new': typeof AdminContestIdProblemNewRoute
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
   '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
@@ -202,6 +210,7 @@ export interface FileRoutesByTo {
   '/admin/contest/$id': typeof AdminContestIdIndexRoute
   '/app/contest/$id': typeof AppContestIdIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
+  '/admin/contest/$id/problem/new': typeof AdminContestIdProblemNewRoute
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
   '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem': typeof AppContestIdProblemIndexRoute
@@ -227,6 +236,7 @@ export interface FileRoutesById {
   '/admin/contest/$id/': typeof AdminContestIdIndexRoute
   '/app/contest/$id/': typeof AppContestIdIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
+  '/admin/contest/$id/problem/new': typeof AdminContestIdProblemNewRoute
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
   '/admin/contest/$id/problem/': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/admin/contest/$id/'
     | '/app/contest/$id/'
     | '/admin/contest/$id/problem/$problem'
+    | '/admin/contest/$id/problem/new'
     | '/app/contest/$id/problem/$number'
     | '/admin/contest/$id/problem'
     | '/app/contest/$id/problem/'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/admin/contest/$id'
     | '/app/contest/$id'
     | '/admin/contest/$id/problem/$problem'
+    | '/admin/contest/$id/problem/new'
     | '/app/contest/$id/problem/$number'
     | '/admin/contest/$id/problem'
     | '/app/contest/$id/problem'
@@ -296,6 +308,7 @@ export interface FileRouteTypes {
     | '/admin/contest/$id/'
     | '/app/contest/$id/'
     | '/admin/contest/$id/problem/$problem'
+    | '/admin/contest/$id/problem/new'
     | '/app/contest/$id/problem/$number'
     | '/admin/contest/$id/problem/'
     | '/app/contest/$id/problem/'
@@ -482,6 +495,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppContestIdProblemNumberRouteImport
       parentRoute: typeof AppContestIdProblemRoute
     }
+    '/admin/contest/$id/problem/new': {
+      id: '/admin/contest/$id/problem/new'
+      path: '/problem/new'
+      fullPath: '/admin/contest/$id/problem/new'
+      preLoaderRoute: typeof AdminContestIdProblemNewRouteImport
+      parentRoute: typeof AdminContestIdRoute
+    }
     '/admin/contest/$id/problem/$problem': {
       id: '/admin/contest/$id/problem/$problem'
       path: '/problem/$problem'
@@ -513,12 +533,14 @@ declare module '@tanstack/react-start/server' {
 interface AdminContestIdRouteChildren {
   AdminContestIdIndexRoute: typeof AdminContestIdIndexRoute
   AdminContestIdProblemProblemRoute: typeof AdminContestIdProblemProblemRoute
+  AdminContestIdProblemNewRoute: typeof AdminContestIdProblemNewRoute
   AdminContestIdProblemIndexRoute: typeof AdminContestIdProblemIndexRoute
 }
 
 const AdminContestIdRouteChildren: AdminContestIdRouteChildren = {
   AdminContestIdIndexRoute: AdminContestIdIndexRoute,
   AdminContestIdProblemProblemRoute: AdminContestIdProblemProblemRoute,
+  AdminContestIdProblemNewRoute: AdminContestIdProblemNewRoute,
   AdminContestIdProblemIndexRoute: AdminContestIdProblemIndexRoute,
 }
 

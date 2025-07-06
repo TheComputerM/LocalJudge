@@ -65,6 +65,10 @@ export namespace ProblemService {
 	/** Get a specific problem in a contest by its number */
 	export async function getProblem(contestId: string, problemNumber: number) {
 		return db.query.problem.findFirst({
+			columns: {
+				contestId: false,
+				number: false,
+			},
 			where: and(
 				eq(table.problem.contestId, contestId),
 				eq(table.problem.number, problemNumber),

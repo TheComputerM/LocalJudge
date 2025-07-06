@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { LucideChevronDown, LucideChevronUp, LucidePencil } from "lucide-react";
 import { localjudge } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { rejectError } from "@/lib/utils";
 
@@ -17,20 +17,32 @@ export const Route = createFileRoute("/admin/contest/$id/problem/")({
 
 function ProblemCard(props: { number: number; title: string }) {
 	return (
-		<Card key={props.number}>
-			<CardContent className="flex justify-between items-center">
-				<CardTitle>{props.title}</CardTitle>
-				<Button asChild>
-					<Link
-						from={Route.fullPath}
-						to="./$problem"
-						params={{ problem: props.number.toString() }}
-					>
-						Edit
-					</Link>
-				</Button>
-			</CardContent>
-		</Card>
+		<div
+			className="bg-card border flex justify-between items-center rounded-md p-2"
+			key={props.number}
+		>
+			<div className="font-semibold inline-flex items-center gap-2">
+				<div className="flex flex-col">
+					<Button size="icon" variant="ghost" className="size-6">
+						<LucideChevronUp />
+					</Button>
+					<Button size="icon" variant="ghost" className="size-6">
+						<LucideChevronDown />
+					</Button>
+				</div>
+				{props.title}
+			</div>
+			<Button asChild>
+				<Link
+					from={Route.fullPath}
+					to="./$problem"
+					params={{ problem: props.number.toString() }}
+				>
+					Edit
+					<LucidePencil />
+				</Link>
+			</Button>
+		</div>
 	);
 }
 
