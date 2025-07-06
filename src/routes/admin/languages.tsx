@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { LucideDownload, LucideLoader2, LucideTrash } from "lucide-react";
-import { memo, useState } from "react";
+import { Suspense, use, useState } from "react";
 import { localjudge } from "@/api/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,16 @@ import {
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/languages")({
-	loader: async () => {
-		const [runtimes, packages] = await Promise.all([
-			rejectError(localjudge.api.piston.runtimes.get()),
-			rejectError(localjudge.api.piston.packages.get()),
-		]);
+	loader: async ({ abortController }) => {
+		const runtimes = await rejectError(
+			localjudge.api.piston.runtimes.get({
+				fetch: { signal: abortController.signal },
+			}),
+		);
 
-		return { runtimes, packages };
+		const packagesPromise = rejectError(localjudge.api.piston.packages.get());
+
+		return { runtimes, packagesPromise };
 	},
 	component: RouteComponent,
 });
@@ -87,8 +90,10 @@ function PackageActionButton(props: {
 }
 
 function PackageList() {
-	const packages = Route.useLoaderData({ select: (data) => data.packages });
-
+	const packagesPromise = Route.useLoaderData({
+		select: (data) => data.packagesPromise,
+	});
+	const packages = use(packagesPromise);
 	return (
 		<div>
 			{/* TODO: memoize components */}
@@ -118,7 +123,9 @@ function RouteComponent() {
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
 				Packages
 			</h1>
-			<PackageList />
+			<Suspense fallback="Loading...">
+				<PackageList />
+			</Suspense>
 		</div>
 	);
 }
