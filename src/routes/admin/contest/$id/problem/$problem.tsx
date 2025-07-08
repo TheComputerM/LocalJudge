@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
+import { TestcaseModel } from "@/db/typebox/testcase";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
@@ -22,6 +23,7 @@ function RouteComponent() {
 	const form = useAppForm({
 		defaultValues: {
 			problem,
+			testcases: [] as Array<typeof TestcaseModel.insert.static>,
 		},
 	});
 
