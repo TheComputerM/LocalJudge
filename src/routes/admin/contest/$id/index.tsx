@@ -8,28 +8,19 @@ import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/$id/")({
 	loader: async ({ params, abortController }) => {
-		const [contest, languages] = await Promise.all([
-			rejectError(
-				localjudge.api.contest({ id: params.id }).get({
-					fetch: { signal: abortController.signal },
-				}),
-			),
-			rejectError(
-				localjudge.api.piston.runtimes.get({
-					fetch: { signal: abortController.signal },
-				}),
-			).then((data) =>
-				data.map(({ language, version }) => `${language}@${version}`),
-			),
-		]);
+		const contest = await rejectError(
+			localjudge.api.contest({ id: params.id }).get({
+				fetch: { signal: abortController.signal },
+			}),
+		);
 
-		return { contest, languages };
+		return { contest };
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const { contest, languages } = Route.useLoaderData();
+	const contest = Route.useLoaderData({ select: (data) => data.contest });
 
 	const form = useAppForm({
 		...ContestFormOptions,
@@ -47,7 +38,7 @@ function RouteComponent() {
 				form.handleSubmit();
 			}}
 		>
-			<ContestForm form={form} languages={languages} label="Update Contest" />
+			<ContestForm form={form} label="Update Contest" />
 		</form>
 	);
 }

@@ -2,13 +2,17 @@ import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
 import { formOptions } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
+import useSWR from "swr";
+import { $localjudge } from "@/api/fetch";
 import { withForm } from "@/components/form/primitives";
 import { ContestModel } from "@/db/typebox/contest";
+import { rejectError } from "@/lib/utils";
 
 const defaultValues = Value.Default(
 	ContestModel.insert,
 	{},
 ) as typeof ContestModel.insert.static;
+
 export const ContestFormOptions = formOptions({
 	defaultValues,
 	validators: {
@@ -19,10 +23,21 @@ export const ContestFormOptions = formOptions({
 export const ContestForm = withForm({
 	...ContestFormOptions,
 	props: {
-		languages: [] as string[],
 		label: "Button Label",
 	},
-	render: function Render({ form, languages, label }) {
+	render: function Render({ form, label }) {
+		const { data: languages } = useSWR(
+			"/api/piston/runtimes",
+			(url) =>
+				rejectError($localjudge(url, {})).then((data) =>
+					data.map(({ language, version }) => `${language}@${version}`),
+				),
+			{
+				suspense: true,
+				fallbackData: [],
+			},
+		);
+
 		useBlocker({
 			shouldBlockFn: () => {
 				if (!form.state.isDirty) return false;
@@ -86,10 +101,12 @@ export const ContestForm = withForm({
 							ContestModel.settings.properties.languages;
 						return (
 							<field.MultiselectField
+								key={languages.length}
 								label={title}
 								description={description}
 								placeholder="Select languages"
 								defaultOptions={languages}
+								hidePlaceholderWhenSelected
 							/>
 						);
 					}}
