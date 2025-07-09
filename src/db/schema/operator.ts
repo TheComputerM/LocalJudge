@@ -26,8 +26,8 @@ export const contest = operatorSchema.table(
 			.$default(() => nanoid(12))
 			.primaryKey(),
 		name: varchar("name", { length: 48 }).notNull(),
-		startTime: timestamp("start_time").notNull(),
-		endTime: timestamp("end_time").notNull(),
+		startTime: timestamp("start_time", { withTimezone: true }).notNull(),
+		endTime: timestamp("end_time", { withTimezone: true }).notNull(),
 		settings: jsonb("settings")
 			.$type<typeof contestSettingsSchema.static>()
 			.notNull(),
