@@ -25,8 +25,11 @@ function RouteComponent() {
 	const form = useAppForm({
 		...ContestFormOptions,
 		defaultValues: Value.Parse(ContestModel.insert, contest),
-		onSubmit: ({ value }) => {
-			console.log(value);
+		onSubmit: async ({ value }) => {
+			const response = await localjudge.api.admin
+				.contest({ id: contest.id })
+				.put(value);
+			console.log(response);
 		},
 	});
 

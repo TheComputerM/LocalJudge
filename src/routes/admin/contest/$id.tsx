@@ -12,10 +12,9 @@ export const Route = createFileRoute("/admin/contest/$id")({
 
 const links = linkOptions([
 	{
-		// TODO: fix this to be better
-		from: "/admin/contest/$id/problem",
-		to: "..",
+		to: Route.id,
 		activeOptions: { exact: true },
+		// @ts-ignore: TODO: see how to reload the index page
 		label: "Settings",
 	},
 	{ from: Route.fullPath, to: "./problem", label: "Problems" },

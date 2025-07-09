@@ -15,11 +15,6 @@ export namespace AdminService {
 		id: string,
 		contest: typeof ContestModel.insert.static,
 	) {
-		const [data] = await db
-			.update(table.contest)
-			.set(contest)
-			.where(eq(table.contest.id, id))
-			.returning();
-		return data;
+		await db.update(table.contest).set(contest).where(eq(table.contest.id, id));
 	}
 }
