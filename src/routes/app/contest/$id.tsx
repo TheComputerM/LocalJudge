@@ -4,7 +4,7 @@ import {
 	linkOptions,
 	Outlet,
 } from "@tanstack/react-router";
-import { formatDistance } from "date-fns";
+import { differenceInSeconds } from "date-fns";
 import {
 	LucideFileCode2,
 	LucideGavel,
@@ -12,6 +12,7 @@ import {
 	LucideMenu,
 	LucideTrophy,
 } from "lucide-react";
+import { useMemo } from "react";
 import { localjudge } from "@/api/client";
 import { RefreshButton } from "@/components/refresh-button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -67,9 +68,17 @@ const navigationLinks = linkOptions([
 ]);
 
 function RemainingTime() {
-	const time = useTime();
 	const endTime = Route.useLoaderData({ select: (data) => data.endTime });
-	return <span className="text-sm">{formatDistance(endTime, time)}</span>;
+	const time = useTime();
+	const timeLeft = useMemo(() => {
+		let seconds = differenceInSeconds(endTime, time);
+		let minutes = Math.floor(seconds / 60);
+		let hours = Math.floor(seconds / 3600);
+		minutes %= 60;
+		seconds %= 60;
+		return `${hours}h:${minutes}m:${seconds}s`;
+	}, [endTime, time]);
+	return <span className="text-sm min-w-28 text-center">{timeLeft}</span>;
 }
 
 function NavigationItems() {
