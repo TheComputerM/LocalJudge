@@ -41,7 +41,7 @@ function RouteComponent() {
 				form.handleSubmit();
 			}}
 		>
-			<ContestForm form={form} label="Update Contest" />
+			<ContestForm form={form} />
 		</form>
 	);
 }

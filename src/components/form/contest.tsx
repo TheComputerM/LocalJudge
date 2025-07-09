@@ -2,6 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
 import { formOptions } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
+import { LucideSave } from "lucide-react";
 import useSWR from "swr";
 import { $localjudge } from "@/api/fetch";
 import { withForm } from "@/components/form/primitives";
@@ -22,10 +23,7 @@ export const ContestFormOptions = formOptions({
 
 export const ContestForm = withForm({
 	...ContestFormOptions,
-	props: {
-		label: "Button Label",
-	},
-	render: function Render({ form, label }) {
+	render: function Render({ form }) {
 		const { data: languages } = useSWR(
 			"/api/piston/runtimes",
 			(url) =>
@@ -112,7 +110,9 @@ export const ContestForm = withForm({
 					}}
 				</form.AppField>
 				<form.AppForm>
-					<form.SubmitButton>{label}</form.SubmitButton>
+					<form.SubmitButton>
+						Save <LucideSave />
+					</form.SubmitButton>
 				</form.AppForm>
 			</div>
 		);

@@ -53,7 +53,7 @@ function NewContestForm() {
 				form.handleSubmit();
 			}}
 		>
-			<ContestForm form={form} label="Create Contest" />
+			<ContestForm form={form} />
 		</form>
 	);
 }
