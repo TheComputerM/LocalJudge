@@ -99,6 +99,8 @@ export const contestApp = new Elysia({
 											auth.user.id,
 											params.id,
 											params.problem,
+											"print(input())",
+											"python@3.12.0",
 										);
 										return status(201, "Code submitted successfully");
 									})

@@ -2,7 +2,7 @@ declare var self: Worker;
 
 import { Value } from "@sinclair/typebox/value";
 import { t } from "elysia";
-import { piston } from "@/lib/piston";
+import { $piston } from "@/api/piston/client";
 import { rejectError } from "@/lib/utils";
 
 const schema = t.Object({
@@ -16,8 +16,8 @@ const schema = t.Object({
 self.onmessage = async (event: MessageEvent) => {
 	const payload = Value.Parse(schema, event.data);
 	const [language, version] = payload.language.split("@");
-	const data = await rejectError(
-		piston("@post/execute", {
+	const output = await rejectError(
+		$piston("@post/execute", {
 			body: {
 				language,
 				version,
@@ -27,5 +27,9 @@ self.onmessage = async (event: MessageEvent) => {
 		}),
 	);
 
-	self.postMessage(data);
+	self.postMessage({
+		submission: payload.submission,
+		testcase: payload.testcase,
+		output,
+	});
 };

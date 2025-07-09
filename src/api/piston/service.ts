@@ -1,42 +1,55 @@
-import { and, eq } from "drizzle-orm";
+import { Value } from "@sinclair/typebox/value";
+import { t } from "elysia";
 import { db } from "@/db";
 import * as table from "@/db/schema";
+import { ProblemService } from "../contest/service";
+import { PistonResultSchema } from "./client";
 
 const PistonWorker = new Worker(new URL("worker.ts", import.meta.url).href);
 
-PistonWorker.addEventListener("message", (event) => {
-	console.log(event.data);
+PistonWorker.addEventListener("message", async (event) => {
+	const data = Value.Parse(
+		t.Object({
+			submission: t.String(),
+			testcase: t.Number(),
+			output: PistonResultSchema,
+		}),
+		event.data,
+	);
+
+	await db.insert(table.result).values({
+		submissionId: data.submission,
+		testcaseNumber: data.testcase,
+		status: data.output.run.code ?? 0,
+		message: data.output.run.output,
+	});
 });
 
 export namespace PistonService {
 	export async function submit(
 		userId: string,
 		contestId: string,
-		problem: number,
+		problemNumber: number,
+		code: string,
+		language: string,
 	) {
-		const code = `print(input())`;
-		const language = "python@3.12.0";
-
 		const [{ submission }] = await db
 			.insert(table.submission)
 			.values({
 				userId,
 				contestId,
-				problemNumber: problem,
+				problemNumber,
 				language,
 				code,
 			})
 			.returning({ submission: table.submission.id });
 
-		const testcases = await db
-			.select()
-			.from(table.testcase)
-			.where(
-				and(
-					eq(table.testcase.contestId, contestId),
-					eq(table.testcase.problemNumber, problem),
-				),
-			);
+		const testcases = await ProblemService.getTestcases(
+			contestId,
+			problemNumber,
+			{ includeHidden: true },
+		);
+
 		for (const testcase of testcases) {
 			PistonWorker.postMessage({
 				submission,
@@ -46,6 +59,7 @@ export namespace PistonService {
 				stdin: testcase.input,
 			});
 		}
+
 		return submission;
 	}
 }

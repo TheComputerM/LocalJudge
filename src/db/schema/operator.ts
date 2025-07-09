@@ -185,10 +185,6 @@ export const result = operatorSchema.table(
 );
 
 export const resultRelations = relations(result, ({ one }) => ({
-	testcase: one(testcase, {
-		fields: [result.testcaseNumber],
-		references: [testcase.number],
-	}),
 	submission: one(submission, {
 		fields: [result.submissionId],
 		references: [submission.id],

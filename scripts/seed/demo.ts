@@ -1,10 +1,10 @@
 import { faker } from "@faker-js/faker";
 import { Static } from "@sinclair/typemap";
 import { taskRunnerDB as db, reset } from "scripts/utils";
+import { $piston } from "@/api/piston/client";
 import * as table from "@/db/schema";
 import { ContestModel } from "@/db/typebox/contest";
 import { auth } from "@/lib/auth";
-import { piston } from "@/lib/piston";
 import { rejectError } from "@/lib/utils";
 
 await reset(db);
@@ -38,7 +38,7 @@ async function createContests() {
 	const data: Static<typeof ContestModel.insert>[] = new Array(
 		CONFIG.count.contests,
 	);
-	const languages = (await rejectError(piston("@get/runtimes"))).map(
+	const languages = (await rejectError($piston("@get/runtimes"))).map(
 		({ language, version }) => `${language}@${version}`,
 	);
 
