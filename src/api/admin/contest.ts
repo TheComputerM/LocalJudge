@@ -46,6 +46,16 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 					},
 				},
 			)
+			.put(
+				"/",
+				async ({ params, body }) => {
+					await AdminService.updateContest(params.id, body);
+					return status(204);
+				},
+				{
+					body: ContestModel.insert,
+				},
+			)
 			.group("/problem", (app) =>
 				app
 					.get(

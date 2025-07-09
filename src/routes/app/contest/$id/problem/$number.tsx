@@ -153,6 +153,9 @@ function CodeEditor() {
 				folding: false,
 				lineNumbers: "off",
 				fontFamily: "'JetBrains Mono Variable'",
+				minimap: {
+					enabled: false,
+				},
 			}}
 			defaultValue={`
 #include <bits/stdc++.h>
