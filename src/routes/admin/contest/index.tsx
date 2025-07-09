@@ -1,14 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LucidePlus } from "lucide-react";
+import { LucidePlus, LucideView } from "lucide-react";
 import { localjudge } from "@/api/client";
+import { ContestCard } from "@/components/contest-card";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardAction,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { rejectError } from "@/lib/utils";
 
@@ -25,24 +19,6 @@ export const Route = createFileRoute("/admin/contest/")({
 	},
 	component: RouteComponent,
 });
-
-function ContestCard(props: { id: string; name: string }) {
-	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>{props.name}</CardTitle>
-				<CardDescription>{props.id}</CardDescription>
-				<CardAction>
-					<Button variant="link" asChild>
-						<Link to="/admin/contest/$id" params={{ id: props.id }}>
-							Inspect
-						</Link>
-					</Button>
-				</CardAction>
-			</CardHeader>
-		</Card>
-	);
-}
 
 function RouteComponent() {
 	const contests = Route.useLoaderData();
@@ -61,7 +37,14 @@ function RouteComponent() {
 			<Separator className="my-6" />
 			<div className="grid gap-3">
 				{contests.map((contest) => (
-					<ContestCard key={contest.id} {...contest} />
+					<ContestCard key={contest.id} {...contest}>
+						<Button asChild className="w-full">
+							<Link to="/admin/contest/$id" params={{ id: contest.id }}>
+								View Details
+								<LucideView />
+							</Link>
+						</Button>
+					</ContestCard>
 				))}
 			</div>
 		</>

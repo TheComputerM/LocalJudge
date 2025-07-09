@@ -1,20 +1,12 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { format, lightFormat } from "date-fns";
-import { LucideGavel } from "lucide-react";
+import { lightFormat } from "date-fns";
+import { LucideDoorOpen, LucideGavel } from "lucide-react";
 import { useState } from "react";
 import { localjudge } from "@/api/client";
-import { ContestStatusBadge } from "@/components/contest-status-badge";
+import { ContestCard } from "@/components/contest-card";
 import { SignOutButton } from "@/components/sign-out";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardAction,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useTime } from "@/hooks/use-time";
@@ -87,49 +79,20 @@ function RegisterForm() {
 	);
 }
 
-function ContestCard(props: {
-	id: string;
-	name: string;
-	startTime: Date;
-	endTime: Date;
-}) {
-	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>{props.name}</CardTitle>
-				<CardDescription>
-					<ContestStatusBadge
-						startTime={props.startTime}
-						endTime={props.endTime}
-					/>
-				</CardDescription>
-				<CardAction>
-					<Button asChild>
-						<Link to="/app/contest/$id" params={{ id: props.id }}>
-							Enter
-						</Link>
-					</Button>
-				</CardAction>
-			</CardHeader>
-			<CardFooter className="flex justify-between text-sm">
-				<span>
-					{/* TODO: fix timezone issue */}
-					{format(props.startTime, "do MMM, HH:mm")} —{" "}
-					{format(props.endTime, "do MMM, HH:mm")}
-				</span>
-				<span></span>
-			</CardFooter>
-		</Card>
-	);
-}
-
 function ContestList() {
 	const contests = Route.useLoaderData({ select: (data) => data.contests });
 
 	return (
 		<div className="grid gap-4">
 			{contests.map((contest) => (
-				<ContestCard key={contest.id} {...contest} />
+				<ContestCard key={contest.id} {...contest}>
+					<Button asChild className="w-full">
+						<Link to="/app/contest/$id" params={{ id: contest.id }}>
+							Enter
+							<LucideDoorOpen />
+						</Link>
+					</Button>
+				</ContestCard>
 			))}
 		</div>
 	);
