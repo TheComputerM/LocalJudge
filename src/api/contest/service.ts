@@ -77,11 +77,20 @@ export namespace ProblemService {
 	}
 
 	/** Get all test cases for a specific problem in a contest */
-	export async function getTestcases(contestId: string, problemNumber: number) {
+	export async function getTestcases(
+		contestId: string,
+		problemNumber: number,
+		options: { includeHidden: boolean },
+	) {
 		return db.query.testcase.findMany({
+			columns: {
+				contestId: false,
+				problemNumber: false,
+			},
 			where: and(
 				eq(table.testcase.contestId, contestId),
 				eq(table.testcase.problemNumber, problemNumber),
+				options.includeHidden ? undefined : eq(table.testcase.hidden, false),
 			),
 			orderBy: asc(table.testcase.number),
 		});

@@ -70,24 +70,35 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 							}),
 						},
 						(app) =>
-							app.get(
-								"/",
-								async ({ params }) => {
-									const problem = await ProblemService.getProblem(
-										params.id,
-										params.problem,
-									);
-									if (!problem) return status(404, "Problem not found");
-									return problem;
-								},
-								{
-									detail: {
-										summary: "Get contest problem",
-										description:
-											"Get details of a specific problem in a contest by its ID and problem number",
+							app
+								.get(
+									"/",
+									async ({ params }) => {
+										const problem = await ProblemService.getProblem(
+											params.id,
+											params.problem,
+										);
+										if (!problem) return status(404, "Problem not found");
+										return problem;
 									},
-								},
-							),
+									{
+										detail: {
+											summary: "Get contest problem",
+											description:
+												"Get details of a specific problem in a contest by its ID and problem number",
+										},
+									},
+								)
+								.group("/testcase", (app) =>
+									app.get("/", async ({ params }) => {
+										const testcases = await ProblemService.getTestcases(
+											params.id,
+											params.problem,
+											{ includeHidden: true },
+										);
+										return testcases;
+									}),
+								),
 					),
 			),
 	);

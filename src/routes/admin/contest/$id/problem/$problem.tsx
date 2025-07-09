@@ -7,23 +7,31 @@ import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
 	loader: async ({ params }) => {
-		const problem = await rejectError(
-			localjudge.api.admin
-				.contest({ id: params.id })
-				.problem({ problem: params.problem })
-				.get(),
-		);
-		return problem;
+		const [problem, testcases] = await Promise.all([
+			rejectError(
+				localjudge.api.admin
+					.contest({ id: params.id })
+					.problem({ problem: params.problem })
+					.get(),
+			),
+			rejectError(
+				localjudge.api.admin
+					.contest({ id: params.id })
+					.problem({ problem: params.problem })
+					.testcase.get(),
+			),
+		]);
+		return { problem, testcases };
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const problem = Route.useLoaderData();
+	const { problem, testcases } = Route.useLoaderData();
 	const form = useAppForm({
 		defaultValues: {
 			problem,
-			testcases: [] as Array<typeof TestcaseModel.insert.static>,
+			testcases,
 		},
 	});
 

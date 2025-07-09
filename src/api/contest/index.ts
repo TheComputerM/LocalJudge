@@ -106,6 +106,7 @@ export const contestApp = new Elysia({
 										const testcases = await ProblemService.getTestcases(
 											params.id,
 											params.problem,
+											{ includeHidden: false },
 										);
 										return testcases;
 									}),
