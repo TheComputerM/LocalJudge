@@ -53,11 +53,7 @@ function RouteComponent() {
 			{problems.length > 0 ? problems.map(ProblemCard) : "No Problems Created"}
 			<Separator className="my-6" />
 			<Button>
-				<Link
-					from={Route.fullPath}
-					to="./$problem"
-					params={{ problem: (problems.length + 1).toString() }}
-				>
+				<Link from={Route.fullPath} to="./new">
 					Add New Problem
 				</Link>
 			</Button>
