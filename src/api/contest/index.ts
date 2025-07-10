@@ -12,7 +12,7 @@ export const contestApp = new Elysia({
 	.get(
 		"/",
 		async ({ auth }) => {
-			const contests = await ContestService.getContestsByUserId(auth.user.id);
+			const contests = await ContestService.getContestsByUser(auth.user.id);
 			return contests;
 		},
 		{
@@ -47,7 +47,7 @@ export const contestApp = new Elysia({
 		(app) =>
 			app
 				.onBeforeHandle(async ({ params, auth }) => {
-					const isRegistered = await ContestService.isRegistered(
+					const isRegistered = await ContestService.isUserRegistered(
 						params.id,
 						auth.user.id,
 					);

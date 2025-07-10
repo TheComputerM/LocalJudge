@@ -4,7 +4,7 @@ import * as table from "@/db/schema";
 
 export namespace ContestService {
 	/** Check if a user is registered for a contest */
-	export async function isRegistered(contestId: string, userId: string) {
+	export async function isUserRegistered(contestId: string, userId: string) {
 		const count = await db.$count(
 			table.registration,
 			and(
@@ -36,7 +36,7 @@ export namespace ContestService {
 	}
 
 	/** Get all contests a user is registered for */
-	export async function getContestsByUserId(userId: string) {
+	export async function getContestsByUser(userId: string) {
 		const registrations = await db.query.registration.findMany({
 			columns: {},
 			where: eq(table.registration.userId, userId),
@@ -58,7 +58,7 @@ export namespace ProblemService {
 			columns: {
 				description: false,
 			},
-			orderBy: table.problem.number,
+			orderBy: asc(table.problem.number),
 		});
 	}
 
@@ -102,6 +102,7 @@ export namespace ProblemService {
 		contestId: string,
 		problemNumber: number,
 	) {
+		// TODO: return the no. of testcases passed
 		return db.query.submission.findMany({
 			columns: {
 				userId: false,
@@ -114,9 +115,6 @@ export namespace ProblemService {
 				eq(table.submission.contestId, contestId),
 				eq(table.submission.problemNumber, problemNumber),
 			),
-			with: {
-				results: true,
-			},
 		});
 	}
 }
