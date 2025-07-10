@@ -55,7 +55,7 @@ const navigationLinks = linkOptions([
 	},
 	{
 		from: Route.fullPath,
-		to: "./submissions",
+		to: "./submission",
 		label: "Submissons",
 		icon: LucideInbox,
 	},

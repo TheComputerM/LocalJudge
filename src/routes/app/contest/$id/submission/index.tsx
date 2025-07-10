@@ -1,0 +1,55 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+
+export const Route = createFileRoute("/app/contest/$id/submission/")({
+	component: RouteComponent,
+});
+
+function Submissions() {
+	return (
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead>ID</TableHead>
+					<TableHead>Problem</TableHead>
+					<TableHead>Passed</TableHead>
+					<TableHead>Time</TableHead>
+					<TableHead>Memory</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				<TableRow>
+					<TableCell>Problem ID</TableCell>
+					<TableCell>Problem Name</TableCell>
+					<TableCell>
+						<Badge>10 / 20</Badge>
+					</TableCell>
+					<TableCell>0 ms</TableCell>
+					<TableCell>0 KB</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+	);
+}
+
+function RouteComponent() {
+	return (
+		<div className="container mx-auto p-4">
+			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
+				Your Submissions
+			</h1>
+			<Separator className="my-6" />
+			<Submissions />
+		</div>
+	);
+}

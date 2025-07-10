@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Separator } from "@/components/ui/separator";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { contest } from "@/db/schema";
 
 export const Route = createFileRoute("/app/contest/$id/leaderboard")({
 	beforeLoad: ({ context }) => {
@@ -14,6 +14,10 @@ export const Route = createFileRoute("/app/contest/$id/leaderboard")({
 function RouteComponent() {
 	return (
 		<div className="container mx-auto p-4">
+			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
+				Leaderboard
+			</h1>
+			<Separator className="my-6" />
 			<Table>
 				<TableHeader>
 					<TableRow>

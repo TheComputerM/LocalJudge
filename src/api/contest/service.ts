@@ -95,4 +95,28 @@ export namespace ProblemService {
 			orderBy: asc(table.testcase.number),
 		});
 	}
+
+	/** Get all submissions for a specific problem in a contest */
+	export async function getSubmissionsByUser(
+		userId: string,
+		contestId: string,
+		problemNumber: number,
+	) {
+		return db.query.submission.findMany({
+			columns: {
+				userId: false,
+				contestId: false,
+				problemNumber: false,
+				code: false,
+			},
+			where: and(
+				eq(table.submission.userId, userId),
+				eq(table.submission.contestId, contestId),
+				eq(table.submission.problemNumber, problemNumber),
+			),
+			with: {
+				results: true,
+			},
+		});
+	}
 }

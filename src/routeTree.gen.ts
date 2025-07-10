@@ -26,9 +26,9 @@ import { Route as AdminContestNewRouteImport } from './routes/admin/contest/new'
 import { Route as AdminContestIdRouteImport } from './routes/admin/contest/$id'
 import { Route as AppContestIdIndexRouteImport } from './routes/app/contest/$id/index'
 import { Route as AdminContestIdIndexRouteImport } from './routes/admin/contest/$id/index'
-import { Route as AppContestIdSubmissionsRouteImport } from './routes/app/contest/$id/submissions'
 import { Route as AppContestIdProblemRouteImport } from './routes/app/contest/$id/problem'
 import { Route as AppContestIdLeaderboardRouteImport } from './routes/app/contest/$id/leaderboard'
+import { Route as AppContestIdSubmissionIndexRouteImport } from './routes/app/contest/$id/submission/index'
 import { Route as AppContestIdProblemIndexRouteImport } from './routes/app/contest/$id/problem/index'
 import { Route as AdminContestIdProblemIndexRouteImport } from './routes/admin/contest/$id/problem/index'
 import { Route as AppContestIdProblemNumberRouteImport } from './routes/app/contest/$id/problem/$number'
@@ -114,11 +114,6 @@ const AdminContestIdIndexRoute = AdminContestIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminContestIdRoute,
 } as any)
-const AppContestIdSubmissionsRoute = AppContestIdSubmissionsRouteImport.update({
-  id: '/submissions',
-  path: '/submissions',
-  getParentRoute: () => AppContestIdRoute,
-} as any)
 const AppContestIdProblemRoute = AppContestIdProblemRouteImport.update({
   id: '/problem',
   path: '/problem',
@@ -129,6 +124,12 @@ const AppContestIdLeaderboardRoute = AppContestIdLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => AppContestIdRoute,
 } as any)
+const AppContestIdSubmissionIndexRoute =
+  AppContestIdSubmissionIndexRouteImport.update({
+    id: '/submission/',
+    path: '/submission/',
+    getParentRoute: () => AppContestIdRoute,
+  } as any)
 const AppContestIdProblemIndexRoute =
   AppContestIdProblemIndexRouteImport.update({
     id: '/',
@@ -186,7 +187,6 @@ export interface FileRoutesByFullPath {
   '/admin/contest': typeof AdminContestIndexRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
   '/app/contest/$id/problem': typeof AppContestIdProblemRouteWithChildren
-  '/app/contest/$id/submissions': typeof AppContestIdSubmissionsRoute
   '/admin/contest/$id/': typeof AdminContestIdIndexRoute
   '/app/contest/$id/': typeof AppContestIdIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
@@ -194,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
   '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
+  '/app/contest/$id/submission': typeof AppContestIdSubmissionIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -206,7 +207,6 @@ export interface FileRoutesByTo {
   '/admin/contest/new': typeof AdminContestNewRoute
   '/admin/contest': typeof AdminContestIndexRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
-  '/app/contest/$id/submissions': typeof AppContestIdSubmissionsRoute
   '/admin/contest/$id': typeof AdminContestIdIndexRoute
   '/app/contest/$id': typeof AppContestIdIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
@@ -214,6 +214,7 @@ export interface FileRoutesByTo {
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
   '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem': typeof AppContestIdProblemIndexRoute
+  '/app/contest/$id/submission': typeof AppContestIdSubmissionIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -232,7 +233,6 @@ export interface FileRoutesById {
   '/admin/contest/': typeof AdminContestIndexRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
   '/app/contest/$id/problem': typeof AppContestIdProblemRouteWithChildren
-  '/app/contest/$id/submissions': typeof AppContestIdSubmissionsRoute
   '/admin/contest/$id/': typeof AdminContestIdIndexRoute
   '/app/contest/$id/': typeof AppContestIdIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
@@ -240,6 +240,7 @@ export interface FileRoutesById {
   '/app/contest/$id/problem/$number': typeof AppContestIdProblemNumberRoute
   '/admin/contest/$id/problem/': typeof AdminContestIdProblemIndexRoute
   '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
+  '/app/contest/$id/submission/': typeof AppContestIdSubmissionIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -259,7 +260,6 @@ export interface FileRouteTypes {
     | '/admin/contest'
     | '/app/contest/$id/leaderboard'
     | '/app/contest/$id/problem'
-    | '/app/contest/$id/submissions'
     | '/admin/contest/$id/'
     | '/app/contest/$id/'
     | '/admin/contest/$id/problem/$problem'
@@ -267,6 +267,7 @@ export interface FileRouteTypes {
     | '/app/contest/$id/problem/$number'
     | '/admin/contest/$id/problem'
     | '/app/contest/$id/problem/'
+    | '/app/contest/$id/submission'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -279,7 +280,6 @@ export interface FileRouteTypes {
     | '/admin/contest/new'
     | '/admin/contest'
     | '/app/contest/$id/leaderboard'
-    | '/app/contest/$id/submissions'
     | '/admin/contest/$id'
     | '/app/contest/$id'
     | '/admin/contest/$id/problem/$problem'
@@ -287,6 +287,7 @@ export interface FileRouteTypes {
     | '/app/contest/$id/problem/$number'
     | '/admin/contest/$id/problem'
     | '/app/contest/$id/problem'
+    | '/app/contest/$id/submission'
   id:
     | '__root__'
     | '/'
@@ -304,7 +305,6 @@ export interface FileRouteTypes {
     | '/admin/contest/'
     | '/app/contest/$id/leaderboard'
     | '/app/contest/$id/problem'
-    | '/app/contest/$id/submissions'
     | '/admin/contest/$id/'
     | '/app/contest/$id/'
     | '/admin/contest/$id/problem/$problem'
@@ -312,6 +312,7 @@ export interface FileRouteTypes {
     | '/app/contest/$id/problem/$number'
     | '/admin/contest/$id/problem/'
     | '/app/contest/$id/problem/'
+    | '/app/contest/$id/submission/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -453,13 +454,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContestIdIndexRouteImport
       parentRoute: typeof AdminContestIdRoute
     }
-    '/app/contest/$id/submissions': {
-      id: '/app/contest/$id/submissions'
-      path: '/submissions'
-      fullPath: '/app/contest/$id/submissions'
-      preLoaderRoute: typeof AppContestIdSubmissionsRouteImport
-      parentRoute: typeof AppContestIdRoute
-    }
     '/app/contest/$id/problem': {
       id: '/app/contest/$id/problem'
       path: '/problem'
@@ -472,6 +466,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/app/contest/$id/leaderboard'
       preLoaderRoute: typeof AppContestIdLeaderboardRouteImport
+      parentRoute: typeof AppContestIdRoute
+    }
+    '/app/contest/$id/submission/': {
+      id: '/app/contest/$id/submission/'
+      path: '/submission'
+      fullPath: '/app/contest/$id/submission'
+      preLoaderRoute: typeof AppContestIdSubmissionIndexRouteImport
       parentRoute: typeof AppContestIdRoute
     }
     '/app/contest/$id/problem/': {
@@ -586,15 +587,15 @@ const AppContestIdProblemRouteWithChildren =
 interface AppContestIdRouteChildren {
   AppContestIdLeaderboardRoute: typeof AppContestIdLeaderboardRoute
   AppContestIdProblemRoute: typeof AppContestIdProblemRouteWithChildren
-  AppContestIdSubmissionsRoute: typeof AppContestIdSubmissionsRoute
   AppContestIdIndexRoute: typeof AppContestIdIndexRoute
+  AppContestIdSubmissionIndexRoute: typeof AppContestIdSubmissionIndexRoute
 }
 
 const AppContestIdRouteChildren: AppContestIdRouteChildren = {
   AppContestIdLeaderboardRoute: AppContestIdLeaderboardRoute,
   AppContestIdProblemRoute: AppContestIdProblemRouteWithChildren,
-  AppContestIdSubmissionsRoute: AppContestIdSubmissionsRoute,
   AppContestIdIndexRoute: AppContestIdIndexRoute,
+  AppContestIdSubmissionIndexRoute: AppContestIdSubmissionIndexRoute,
 }
 
 const AppContestIdRouteWithChildren = AppContestIdRoute._addFileChildren(

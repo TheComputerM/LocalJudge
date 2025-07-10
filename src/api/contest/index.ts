@@ -111,6 +111,9 @@ export const contestApp = new Elysia({
 											{ includeHidden: false },
 										);
 										return testcases;
+									})
+									.get("/submission", async ({ params }) => {
+										// TODO: return submissions for the problem by the user
 									}),
 						),
 				),
