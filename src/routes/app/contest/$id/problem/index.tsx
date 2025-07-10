@@ -39,8 +39,8 @@ function RouteComponent() {
 								<Button variant="link" asChild>
 									<Link
 										from={Route.fullPath}
-										to="./$number"
-										params={{ number: problem.number.toString() }}
+										to="./$problem"
+										params={{ problem: problem.number.toString() }}
 									>
 										View
 									</Link>

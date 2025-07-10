@@ -5,3 +5,5 @@ export const Route = createFileRoute("/app/contest/$id/")({
 		throw redirect({ to: "/app/contest/$id/problem", params });
 	},
 });
+
+// TODO: add contest waiting area page

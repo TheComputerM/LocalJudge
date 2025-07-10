@@ -45,8 +45,8 @@ function AppSidebar() {
 											activeProps={{
 												className: "bg-accent text-accent-foreground",
 											}}
-											to="./$number"
-											params={{ number: problem.number.toString() }}
+											to="./$problem"
+											params={{ problem: problem.number.toString() }}
 										>
 											{problem.title}
 										</Link>

@@ -26,19 +26,19 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/app/contest/$id/problem/$number")({
+export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
 	loader: async ({ params, abortController }) => {
 		const [problem, testcases] = await Promise.all([
 			rejectError(
 				localjudge.api
 					.contest({ id: params.id })
-					.problem({ problem: params.number })
+					.problem({ problem: params.problem })
 					.get({ fetch: { signal: abortController.signal } }),
 			),
 			rejectError(
 				localjudge.api
 					.contest({ id: params.id })
-					.problem({ problem: params.number })
+					.problem({ problem: params.problem })
 					.testcase.get(),
 			),
 		]);
@@ -49,11 +49,11 @@ export const Route = createFileRoute("/app/contest/$id/problem/$number")({
 });
 
 function SubmitCode() {
-	const { id, number } = Route.useParams();
+	const { id, problem } = Route.useParams();
 	async function handleSubmit() {
 		const { data, error } = await localjudge.api
 			.contest({ id })
-			.problem({ problem: number })
+			.problem({ problem })
 			.post();
 		if (error) alert(JSON.stringify(error));
 		console.log(data);
@@ -143,7 +143,7 @@ function ProblemStatement() {
 }
 
 function CodeEditor() {
-	const problemIndex = Route.useParams({ select: (params) => params.number });
+	const problemIndex = Route.useParams({ select: (params) => params.problem });
 
 	return (
 		<Editor
