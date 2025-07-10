@@ -164,6 +164,15 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 	results: many(result),
 }));
 
+export const statusEnum = operatorSchema.enum("status", [
+	"passed",
+	"incorrect_answer",
+	"time_limit_exceeded",
+	"memory_limit_exceeded",
+	"compilation_error",
+	"runtime_error",
+]);
+
 /**
  * Represents the result of a submission for a specific test case.
  */
@@ -174,8 +183,10 @@ export const result = operatorSchema.table(
 			.notNull()
 			.references(() => submission.id),
 		testcaseNumber: smallint("testcase_number").notNull(),
-		status: integer("status").notNull(),
-		message: varchar("message", { length: 256 }).notNull(),
+		time: integer("time").notNull().default(0),
+		memory: integer("memory").notNull().default(0),
+		status: statusEnum("status").notNull(),
+		message: text("message").notNull(),
 	},
 	(t) => [
 		primaryKey({

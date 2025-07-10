@@ -20,7 +20,7 @@ PistonWorker.addEventListener("message", async (event) => {
 	await db.insert(table.result).values({
 		submissionId: data.submission,
 		testcaseNumber: data.testcase,
-		status: data.output.run.code ?? 0,
+		status: "passed",
 		message: data.output.run.output,
 	});
 });
