@@ -1,5 +1,5 @@
 import { t } from "elysia";
-import { contest } from "../schema";
+import { contest } from "@/db/schema";
 import { createInsertSchema } from ".";
 
 export const contestSettingsSchema = t.Object(

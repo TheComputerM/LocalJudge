@@ -5,8 +5,8 @@ import { useBlocker } from "@tanstack/react-router";
 import { LucideSave } from "lucide-react";
 import useSWR from "swr";
 import { $localjudge } from "@/api/fetch";
+import { ContestModel } from "@/api/models/contest";
 import { withForm } from "@/components/form/primitives";
-import { ContestModel } from "@/db/typebox/contest";
 import { rejectError } from "@/lib/utils";
 
 const defaultValues = Value.Default(

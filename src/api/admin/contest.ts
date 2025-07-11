@@ -1,5 +1,5 @@
 import Elysia, { status, t } from "elysia";
-import { ContestModel } from "@/db/typebox/contest";
+import { ContestModel } from "@/api/models/contest";
 import { ContestService, ProblemService } from "../contest/service";
 import { AdminService } from "./service";
 

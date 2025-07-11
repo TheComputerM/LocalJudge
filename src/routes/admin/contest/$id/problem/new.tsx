@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { TestcaseModel } from "@/api/models/testcase";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
-import { TestcaseModel } from "@/db/typebox/testcase";
 
 export const Route = createFileRoute("/admin/contest/$id/problem/new")({
 	component: RouteComponent,

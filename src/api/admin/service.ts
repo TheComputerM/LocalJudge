@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
+import { ContestModel } from "@/api/models/contest";
 import { db } from "@/db";
 import * as table from "@/db/schema";
-import { ContestModel } from "@/db/typebox/contest";
 
 export namespace AdminService {
 	export async function createContest(

@@ -14,7 +14,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import type { contestSettingsSchema } from "../typebox/contest";
+import type { contestSettingsSchema } from "@/api/models/contest";
 import { user } from "./auth";
 
 export const operatorSchema = pgSchema("operator");

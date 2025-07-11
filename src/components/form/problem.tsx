@@ -1,9 +1,9 @@
 import { LucidePlus, LucideSave, LucideTrash } from "lucide-react";
+import { ProblemModel } from "@/api/models/problem";
+import { TestcaseModel } from "@/api/models/testcase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ProblemModel } from "@/db/typebox/problem";
-import { TestcaseModel } from "@/db/typebox/testcase";
 import { withForm } from "./primitives";
 
 const defaultValues = {} as {

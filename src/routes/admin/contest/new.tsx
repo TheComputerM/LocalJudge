@@ -1,10 +1,10 @@
 import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
+import { ContestModel } from "@/api/models/contest";
 import { ContestForm, ContestFormOptions } from "@/components/form/contest";
 import { useAppForm } from "@/components/form/primitives";
 import { Separator } from "@/components/ui/separator";
-import { ContestModel } from "@/db/typebox/contest";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/new")({

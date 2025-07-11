@@ -1,5 +1,5 @@
 import { t } from "elysia";
-import { problem } from "../schema";
+import { problem } from "@/db/schema";
 import { createInsertSchema } from ".";
 
 const _insertSchema = createInsertSchema(problem);
