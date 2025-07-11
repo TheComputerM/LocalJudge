@@ -54,13 +54,19 @@ export namespace ProblemService {
 		contestId: string,
 		problemNumber: number,
 	) {
-		// TODO: return the no. of testcases passed
 		return db.query.submission.findMany({
 			columns: {
 				userId: false,
 				contestId: false,
 				problemNumber: false,
 				code: false,
+			},
+			with: {
+				problem: {
+					columns: {
+						title: true,
+					},
+				},
 			},
 			where: and(
 				eq(table.submission.userId, userId),

@@ -85,6 +85,18 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 							},
 						},
 					)
+					.post(
+						"/",
+						async ({ params }) => {
+							// TODO: add problem to contest
+						},
+						{
+							detail: {
+								summary: "Add problem to contest",
+								description: "Add a new problem to a specific contest",
+							},
+						},
+					)
 					.group(
 						"/:problem",
 						{
