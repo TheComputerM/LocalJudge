@@ -2,6 +2,7 @@ import Elysia, { status, t } from "elysia";
 import { ContestModel } from "@/api/models/contest";
 import { AdminService } from "@/api/services/admin";
 import { ContestService } from "@/api/services/contest";
+import { ProblemModel } from "../models/problem";
 
 /**
  * Admin's control interface for managing contests and problems.
@@ -54,10 +55,11 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 				app
 					.post(
 						"/",
-						async ({ params }) => {
-							// TODO: add problem to contest
+						async ({ params, body }) => {
+							return AdminService.createProblem(params.id, body);
 						},
 						{
+							body: ProblemModel.insert,
 							detail: {
 								summary: "Add problem to contest",
 								description: "Add a new problem to a specific contest",
@@ -73,9 +75,11 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 							}),
 						},
 						(app) =>
-							app.put("/", async ({ params }) => {
-								// TODO: update problem
-							}),
+							app
+								.put("/", async ({ params }) => {
+									// TODO: update problem
+								})
+								.group("/testcase", (app) => app.post("/", () => {})),
 					),
 			),
 	);

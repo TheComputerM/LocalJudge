@@ -1,5 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { ContestModel } from "@/api/models/contest";
+import { ProblemModel } from "@/api/models/problem";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 
@@ -32,5 +33,20 @@ export namespace AdminService {
 		contest: typeof ContestModel.insert.static,
 	) {
 		await db.update(table.contest).set(contest).where(eq(table.contest.id, id));
+	}
+
+	export async function createProblem(
+		contestId: string,
+		problem: typeof ProblemModel.insert.static,
+	) {
+		const [data] = await db
+			.insert(table.problem)
+			.values({
+				...problem,
+				contestId,
+				number: sql`${db.$count(table.problem, eq(table.problem.contestId, contestId))} + 1`,
+			})
+			.returning();
+		return data;
 	}
 }
