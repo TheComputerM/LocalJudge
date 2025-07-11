@@ -11,8 +11,7 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 	.get(
 		"/",
 		async () => {
-			const contests = await ContestService.getContests();
-			return contests;
+			return ContestService.getContests();
 		},
 		{
 			response: t.Array(ContestModel.select),
@@ -76,9 +75,19 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 						},
 						(app) =>
 							app
-								.put("/", async ({ params }) => {
-									// TODO: update problem
-								})
+								.put(
+									"/",
+									async ({ params, body }) => {
+										return AdminService.updateProblem(
+											params.id,
+											params.problem,
+											body,
+										);
+									},
+									{
+										body: ProblemModel.insert,
+									},
+								)
 								.group("/testcase", (app) => app.post("/", () => {})),
 					),
 			),
