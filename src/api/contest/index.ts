@@ -50,6 +50,8 @@ export const contestApp = new Elysia({
 		(app) =>
 			app
 				.onBeforeHandle(async ({ params, auth }) => {
+					if (auth.user.role?.includes("admin")) return;
+
 					const isRegistered = await ContestService.isUserRegistered(
 						params.id,
 						auth.user.id,
@@ -72,8 +74,8 @@ export const contestApp = new Elysia({
 							404: t.Literal("Contest not found"),
 						},
 						detail: {
-							summary: "Get contest details",
-							description: "Get details of a contest by using its ID",
+							summary: "Get contest",
+							description: "Get details of a specific contest",
 						},
 					},
 				)
@@ -86,6 +88,10 @@ export const contestApp = new Elysia({
 							},
 							{
 								response: ProblemModel.listSelect,
+								detail: {
+									summary: "Get contest problems",
+									description: "Get all problems of a specific contest",
+								},
 							},
 						)
 						.group(
@@ -113,6 +119,11 @@ export const contestApp = new Elysia({
 												200: ProblemModel.select,
 												404: t.Literal("Problem not found"),
 											},
+											detail: {
+												summary: "Get problem",
+												description:
+													"Get details of a specific problem in a contest",
+											},
 										},
 									)
 									.post("/", async ({ auth, params }) => {
@@ -125,11 +136,14 @@ export const contestApp = new Elysia({
 										);
 										return status(201, "Code submitted successfully");
 									})
-									.get("/testcase", async ({ params }) => {
+									.get("/testcase", async ({ params, auth }) => {
 										const testcases = await ProblemService.getTestcases(
 											params.id,
 											params.problem,
-											{ includeHidden: false },
+											{
+												includeHidden:
+													auth.user.role?.includes("admin") ?? false,
+											},
 										);
 										return testcases;
 									})

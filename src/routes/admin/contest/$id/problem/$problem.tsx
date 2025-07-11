@@ -10,13 +10,13 @@ export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
 	loader: async ({ params }) => {
 		const [problem, testcases] = await Promise.all([
 			rejectError(
-				localjudge.api.admin
+				localjudge.api
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.get(),
 			),
 			rejectError(
-				localjudge.api.admin
+				localjudge.api
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.testcase.get(),

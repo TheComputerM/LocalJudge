@@ -8,7 +8,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/admin/contest/$id/problem/")({
 	loader: async ({ params }) => {
 		const problems = await rejectError(
-			localjudge.api.admin.contest({ id: params.id }).problem.get(),
+			localjudge.api.contest({ id: params.id }).problem.get(),
 		);
 		return problems;
 	},
