@@ -1,9 +1,7 @@
-import { eq } from "drizzle-orm";
 import Elysia from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { db } from "@/db";
-import * as table from "@/db/schema";
 import { adminContestApp } from "./contest";
+import { AdminService } from "./service";
 
 export const adminApp = new Elysia({
 	prefix: "/admin",
@@ -14,19 +12,7 @@ export const adminApp = new Elysia({
 	.get(
 		"/overview",
 		async () => {
-			const _stats = await Promise.all([
-				db.$count(table.contest),
-				db.$count(table.user, eq(table.user.role, "user")),
-				db.$count(table.submission),
-			]);
-
-			return {
-				statistics: {
-					contests: _stats[0],
-					participants: _stats[1],
-					submissions: _stats[2],
-				},
-			};
+			return AdminService.getOverview();
 		},
 		{
 			detail: {

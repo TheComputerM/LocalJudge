@@ -4,6 +4,22 @@ import { db } from "@/db";
 import * as table from "@/db/schema";
 
 export namespace AdminService {
+	export async function getOverview() {
+		const _stats = await Promise.all([
+			db.$count(table.contest),
+			db.$count(table.user, eq(table.user.role, "user")),
+			db.$count(table.submission),
+		]);
+
+		return {
+			statistics: {
+				contests: _stats[0],
+				participants: _stats[1],
+				submissions: _stats[2],
+			},
+		};
+	}
+
 	export async function createContest(
 		contest: typeof ContestModel.insert.static,
 	) {
