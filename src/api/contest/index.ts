@@ -1,6 +1,8 @@
 import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { PistonService } from "../piston/service";
+import { ContestModel } from "@/api/models/contest";
+import { ProblemModel } from "@/api/models/problem";
+import { PistonService } from "@/api/piston/service";
 import { ContestService, ProblemService } from "./service";
 
 export const contestApp = new Elysia({
@@ -12,10 +14,10 @@ export const contestApp = new Elysia({
 	.get(
 		"/",
 		async ({ auth }) => {
-			const contests = await ContestService.getContestsByUser(auth.user.id);
-			return contests;
+			return ContestService.getContestsByUser(auth.user.id);
 		},
 		{
+			response: t.Array(ContestModel.select),
 			detail: {
 				summary: "Get contests",
 				description: "Get contests the user is participating in",
@@ -60,10 +62,14 @@ export const contestApp = new Elysia({
 					"/",
 					async ({ params }) => {
 						const contest = await ContestService.getContest(params.id);
-						if (!contest) return status(404);
+						if (!contest) return status(404, "Contest not found");
 						return contest;
 					},
 					{
+						response: {
+							200: ContestModel.select,
+							404: t.Literal("Contest not found"),
+						},
 						detail: {
 							summary: "Get contest details",
 							description: "Get details of a contest by using its ID",
@@ -72,10 +78,15 @@ export const contestApp = new Elysia({
 				)
 				.group("/problem", (app) =>
 					app
-						.get("/", async ({ params }) => {
-							const problems = await ProblemService.getProblems(params.id);
-							return problems;
-						})
+						.get(
+							"/",
+							async ({ params }) => {
+								return ProblemService.getProblems(params.id);
+							},
+							{
+								response: ProblemModel.listSelect,
+							},
+						)
 						.group(
 							"/:problem",
 							{
@@ -86,14 +97,23 @@ export const contestApp = new Elysia({
 							},
 							(app) =>
 								app
-									.get("/", async ({ params }) => {
-										const problem = await ProblemService.getProblem(
-											params.id,
-											params.problem,
-										);
-										if (!problem) return status(404);
-										return problem;
-									})
+									.get(
+										"/",
+										async ({ params }) => {
+											const problem = await ProblemService.getProblem(
+												params.id,
+												params.problem,
+											);
+											if (!problem) return status(404, "Problem not found");
+											return problem;
+										},
+										{
+											response: {
+												200: ProblemModel.select,
+												404: t.Literal("Problem not found"),
+											},
+										},
+									)
 									.post("/", async ({ auth, params }) => {
 										await PistonService.submit(
 											auth.user.id,

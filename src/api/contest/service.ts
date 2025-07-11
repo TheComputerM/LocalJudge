@@ -56,6 +56,7 @@ export namespace ProblemService {
 		return db.query.problem.findMany({
 			where: eq(table.problem.contestId, contestId),
 			columns: {
+				contestId: false,
 				description: false,
 			},
 			orderBy: asc(table.problem.number),
@@ -67,7 +68,6 @@ export namespace ProblemService {
 		return db.query.problem.findFirst({
 			columns: {
 				contestId: false,
-				number: false,
 			},
 			where: and(
 				eq(table.problem.contestId, contestId),

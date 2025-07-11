@@ -1,16 +1,18 @@
 import Elysia, { status, t } from "elysia";
+import { ContestService, ProblemService } from "@/api/contest/service";
 import { ContestModel } from "@/api/models/contest";
-import { ContestService, ProblemService } from "../contest/service";
+import { ProblemModel } from "@/api/models/problem";
 import { AdminService } from "./service";
 
 export const adminContestApp = new Elysia({ prefix: "/contest" })
 	.get(
 		"/",
 		async () => {
-			const contests = ContestService.getContests();
+			const contests = await ContestService.getContests();
 			return contests;
 		},
 		{
+			response: t.Array(ContestModel.select),
 			detail: {
 				summary: "Get contests",
 				description: "Get all contests present in the system",
@@ -40,6 +42,10 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 					return contest;
 				},
 				{
+					response: {
+						200: ContestModel.select,
+						404: t.Literal("Contest not found"),
+					},
 					detail: {
 						summary: "Get contest",
 						description: "Get details of a specific contest",
@@ -65,10 +71,10 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 					.get(
 						"/",
 						async ({ params }) => {
-							const problems = ProblemService.getProblems(params.id);
-							return problems;
+							return ProblemService.getProblems(params.id);
 						},
 						{
+							response: ProblemModel.listSelect,
 							detail: {
 								summary: "Get contest problems",
 								description: "Get all problems of a specific contest",
@@ -96,6 +102,10 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 										return problem;
 									},
 									{
+										response: {
+											200: ProblemModel.select,
+											404: t.Literal("Problem not found"),
+										},
 										detail: {
 											summary: "Get contest problem",
 											description:

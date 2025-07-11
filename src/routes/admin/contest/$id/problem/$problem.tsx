@@ -1,5 +1,7 @@
+import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
+import { ProblemModel } from "@/api/models/problem";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
 import { rejectError } from "@/lib/utils";
@@ -29,7 +31,7 @@ function RouteComponent() {
 	const { problem, testcases } = Route.useLoaderData();
 	const form = useAppForm({
 		defaultValues: {
-			problem,
+			problem: Value.Parse(ProblemModel.insert, problem),
 			testcases,
 		},
 	});
