@@ -1,5 +1,7 @@
+import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
+import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
@@ -12,11 +14,11 @@ function RouteComponent() {
 	const contestId = Route.useParams({ select: (data) => data.id });
 	const form = useAppForm({
 		defaultValues: {
-			problem: {
-				title: "",
-				description: "",
-			},
-			testcases: [] as typeof TestcaseModel.Group.insert.static,
+			problem: Value.Cast(
+				ProblemModel.insert,
+				Value.Default(ProblemModel.insert, {}),
+			),
+			testcases: Value.Cast(TestcaseModel.Group.insert, []),
 		},
 		onSubmit: async ({ value }) => {
 			await localjudge.api.admin

@@ -2,6 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
 import { ProblemModel } from "@/api/models/problem";
+import { TestcaseModel } from "@/api/models/testcase";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
 import { rejectError } from "@/lib/utils";
@@ -33,7 +34,7 @@ function RouteComponent() {
 	const form = useAppForm({
 		defaultValues: {
 			problem: Value.Parse(ProblemModel.insert, problem),
-			testcases,
+			testcases: Value.Parse(TestcaseModel.Group.insert, testcases),
 		},
 		onSubmit: async ({ value }) => {
 			await localjudge.api.admin

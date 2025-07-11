@@ -1,6 +1,6 @@
 import { t } from "elysia";
 import { testcase } from "@/db/schema";
-import { createInsertSchema, createSelectSchema } from ".";
+import { createInsertSchema } from ".";
 
 const _insertSchema = createInsertSchema(testcase, {
 	hidden: t.Boolean({ default: false }),
