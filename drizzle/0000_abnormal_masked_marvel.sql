@@ -2,6 +2,7 @@ CREATE SCHEMA "auth";
 --> statement-breakpoint
 CREATE SCHEMA "operator";
 --> statement-breakpoint
+CREATE TYPE "operator"."status" AS ENUM('passed', 'incorrect_answer', 'time_limit_exceeded', 'memory_limit_exceeded', 'compilation_error', 'runtime_error');--> statement-breakpoint
 CREATE TABLE "auth"."account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -58,8 +59,8 @@ CREATE TABLE "auth"."verification" (
 CREATE TABLE "operator"."contest" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" varchar(48) NOT NULL,
-	"start_time" timestamp NOT NULL,
-	"end_time" timestamp NOT NULL,
+	"start_time" timestamp with time zone NOT NULL,
+	"end_time" timestamp with time zone NOT NULL,
 	"settings" jsonb NOT NULL,
 	CONSTRAINT "time_check" CHECK ("operator"."contest"."start_time" < "operator"."contest"."end_time")
 );
@@ -69,6 +70,8 @@ CREATE TABLE "operator"."problem" (
 	"number" smallint NOT NULL,
 	"title" varchar(32) NOT NULL,
 	"description" text NOT NULL,
+	"time_limit" integer DEFAULT 1000 NOT NULL,
+	"memory_limit" integer DEFAULT 256 NOT NULL,
 	CONSTRAINT "problem_contest_id_number_pk" PRIMARY KEY("contest_id","number"),
 	CONSTRAINT "valid_number" CHECK ("operator"."problem"."number" > 0)
 );
@@ -82,8 +85,10 @@ CREATE TABLE "operator"."registration" (
 CREATE TABLE "operator"."result" (
 	"submission_id" uuid NOT NULL,
 	"testcase_number" smallint NOT NULL,
-	"status" integer NOT NULL,
-	"message" varchar(256) NOT NULL,
+	"time" integer DEFAULT 0 NOT NULL,
+	"memory" integer DEFAULT 0 NOT NULL,
+	"status" "operator"."status" NOT NULL,
+	"message" text NOT NULL,
 	CONSTRAINT "result_submission_id_testcase_number_pk" PRIMARY KEY("submission_id","testcase_number")
 );
 --> statement-breakpoint
@@ -100,6 +105,7 @@ CREATE TABLE "operator"."testcase" (
 	"contest_id" text NOT NULL,
 	"problem_number" smallint NOT NULL,
 	"number" smallint NOT NULL,
+	"points" integer DEFAULT 25 NOT NULL,
 	"hidden" boolean DEFAULT false NOT NULL,
 	"input" text NOT NULL,
 	"output" text NOT NULL,

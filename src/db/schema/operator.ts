@@ -82,6 +82,8 @@ export const problem = operatorSchema.table(
 		number: smallint("number").notNull(),
 		title: varchar("title", { length: 32 }).notNull(),
 		description: text("description").notNull(),
+		timeLimit: integer("time_limit").notNull().default(1000),
+		memoryLimit: integer("memory_limit").notNull().default(256),
 	},
 	(t) => [
 		check("valid_number", sql`${t.number} > 0`),
@@ -107,6 +109,7 @@ export const testcase = operatorSchema.table(
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
 		number: smallint("number").notNull(),
+		points: integer("points").notNull().default(25),
 		hidden: boolean("hidden").notNull().default(false),
 		input: text("input").notNull(),
 		output: text("output").notNull(),

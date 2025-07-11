@@ -1,5 +1,5 @@
 {
-	"id": "3f37c352-0ce4-4e1b-836e-b6dac8fe66ec",
+	"id": "a6f3c717-62b1-4990-9c44-d2abe1389aed",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -342,13 +342,13 @@
 				},
 				"start_time": {
 					"name": "start_time",
-					"type": "timestamp",
+					"type": "timestamp with time zone",
 					"primaryKey": false,
 					"notNull": true
 				},
 				"end_time": {
 					"name": "end_time",
-					"type": "timestamp",
+					"type": "timestamp with time zone",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -399,6 +399,20 @@
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
+				},
+				"time_limit": {
+					"name": "time_limit",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 1000
+				},
+				"memory_limit": {
+					"name": "memory_limit",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 256
 				}
 			},
 			"indexes": {},
@@ -497,15 +511,30 @@
 					"primaryKey": false,
 					"notNull": true
 				},
+				"time": {
+					"name": "time",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
+				"memory": {
+					"name": "memory",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
 				"status": {
 					"name": "status",
-					"type": "integer",
+					"type": "status",
+					"typeSchema": "operator",
 					"primaryKey": false,
 					"notNull": true
 				},
 				"message": {
 					"name": "message",
-					"type": "varchar(256)",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				}
@@ -627,6 +656,13 @@
 					"primaryKey": false,
 					"notNull": true
 				},
+				"points": {
+					"name": "points",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 25
+				},
 				"hidden": {
 					"name": "hidden",
 					"type": "boolean",
@@ -677,7 +713,20 @@
 			"isRLSEnabled": false
 		}
 	},
-	"enums": {},
+	"enums": {
+		"operator.status": {
+			"name": "status",
+			"schema": "operator",
+			"values": [
+				"passed",
+				"incorrect_answer",
+				"time_limit_exceeded",
+				"memory_limit_exceeded",
+				"compilation_error",
+				"runtime_error"
+			]
+		}
+	},
 	"schemas": {
 		"auth": "auth",
 		"operator": "operator"

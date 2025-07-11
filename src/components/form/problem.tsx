@@ -29,8 +29,27 @@ export const ProblemForm = withForm({
 				<form.AppField name="problem.description">
 					{(field) => <field.Textarea label="Description" />}
 				</form.AppField>
+				<div className="grid grid-cols-2 gap-6">
+					<form.AppField name="problem.timeLimit">
+						{(field) => {
+							const { title, description } =
+								ProblemModel.insert.properties.timeLimit;
+							return (
+								<field.NumberField label={title} description={description} />
+							);
+						}}
+					</form.AppField>
+					<form.AppField name="problem.memoryLimit">
+						{(field) => {
+							const { title, description } =
+								ProblemModel.insert.properties.memoryLimit;
+							return (
+								<field.NumberField label={title} description={description} />
+							);
+						}}
+					</form.AppField>
+				</div>
 				<Separator />
-
 				<form.AppField name="testcases" mode="array">
 					{(field) => (
 						<div className="grid gap-4">

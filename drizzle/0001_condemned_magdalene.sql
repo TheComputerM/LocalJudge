@@ -1,2 +1,0 @@
-ALTER TABLE "operator"."contest" ALTER COLUMN "start_time" SET DATA TYPE timestamp with time zone;--> statement-breakpoint
-ALTER TABLE "operator"."contest" ALTER COLUMN "end_time" SET DATA TYPE timestamp with time zone;

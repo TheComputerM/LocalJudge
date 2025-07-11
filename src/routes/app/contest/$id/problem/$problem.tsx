@@ -9,6 +9,7 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	ResizableHandle,
@@ -109,7 +110,12 @@ function TestcaseList() {
 		<Accordion type="single" collapsible>
 			{testcases.map((tc) => (
 				<AccordionItem key={tc.number} value={tc.number.toString()}>
-					<AccordionTrigger>Testcase {tc.number}</AccordionTrigger>
+					<AccordionTrigger>
+						<div className="inline-flex items-center justify-between w-full">
+							Testcase {tc.number}
+							<Badge>{tc.points} points</Badge>
+						</div>
+					</AccordionTrigger>
 					<AccordionContent className="grid grid-cols-2 gap-2 text-xs">
 						<div className="p-2 bg-muted rounded flex-1">
 							<pre className="text-wrap max-h-48 overflow-y-auto">

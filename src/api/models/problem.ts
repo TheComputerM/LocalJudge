@@ -2,8 +2,26 @@ import { t } from "elysia";
 import { problem } from "@/db/schema";
 import { createInsertSchema, createSelectSchema } from ".";
 
-const _insertSchema = createInsertSchema(problem);
-const _selectSchema = createSelectSchema(problem);
+const timeLimit = t.Number({
+	title: "Time Limit",
+	description: "Time limit for execution for each testcase (in milliseconds)",
+	default: 1000,
+});
+
+const memoryLimit = t.Number({
+	title: "Memory Limit",
+	description: "Memory limit for execution for each testcase (in MB)",
+	default: 256,
+});
+
+const _insertSchema = createInsertSchema(problem, {
+	timeLimit: t.Optional(timeLimit),
+	memoryLimit: t.Optional(memoryLimit),
+});
+const _selectSchema = createSelectSchema(problem, {
+	timeLimit,
+	memoryLimit,
+});
 
 export namespace ProblemModel {
 	export const select = t.Omit(_selectSchema, ["contestId"]);
