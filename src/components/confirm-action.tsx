@@ -1,7 +1,7 @@
+import { LucideLoader2 } from "lucide-react";
 import { useState } from "react";
 import {
 	AlertDialog,
-	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -10,6 +10,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "./ui/button";
 
 export function ConfirmActionDialog({
 	children,
@@ -18,10 +19,11 @@ export function ConfirmActionDialog({
 	children: React.ReactNode;
 	onConfirm?: () => void;
 }) {
+	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	return (
-		<AlertDialog>
+		<AlertDialog open={open} onOpenChange={setOpen}>
 			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
@@ -32,16 +34,18 @@ export function ConfirmActionDialog({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction
+					<Button
 						disabled={loading}
-						onClick={async (e) => {
+						onClick={async () => {
 							setLoading(true);
 							await onConfirm?.();
 							setLoading(false);
+							setOpen(false);
 						}}
 					>
+						{loading && <LucideLoader2 className="animate-spin" />}
 						Confirm
-					</AlertDialogAction>
+					</Button>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

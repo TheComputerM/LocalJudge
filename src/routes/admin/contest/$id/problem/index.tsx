@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LucideChevronDown, LucideChevronUp, LucidePencil } from "lucide-react";
+import {
+	LucideChevronDown,
+	LucideChevronUp,
+	LucidePencil,
+	LucideTrash,
+} from "lucide-react";
 import { localjudge } from "@/api/client";
+import { ConfirmActionDialog } from "@/components/confirm-action";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { rejectError } from "@/lib/utils";
@@ -32,16 +38,24 @@ function ProblemCard(props: { number: number; title: string }) {
 				</div>
 				{props.title}
 			</div>
-			<Button asChild>
-				<Link
-					from={Route.fullPath}
-					to="./$problem"
-					params={{ problem: props.number.toString() }}
-				>
-					Edit
-					<LucidePencil />
-				</Link>
-			</Button>
+			<div className="inline-flex gap-2">
+				<ConfirmActionDialog>
+					<Button variant="destructive">
+						Delete
+						<LucideTrash />
+					</Button>
+				</ConfirmActionDialog>
+				<Button asChild>
+					<Link
+						from={Route.fullPath}
+						to="./$problem"
+						params={{ problem: props.number.toString() }}
+					>
+						Edit
+						<LucidePencil />
+					</Link>
+				</Button>
+			</div>
 		</div>
 	);
 }
