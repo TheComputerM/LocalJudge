@@ -1,9 +1,13 @@
 import Elysia, { status, t } from "elysia";
-import { ContestService, ProblemService } from "@/api/contest/service";
 import { ContestModel } from "@/api/models/contest";
 import { ProblemModel } from "@/api/models/problem";
-import { AdminService } from "./service";
+import { AdminService } from "@/api/services/admin";
+import { ContestService } from "@/api/services/contest";
+import { ProblemService } from "@/api/services/problem";
 
+/**
+ * Admin's control interface for managing contests and problems.
+ */
 export const adminContestApp = new Elysia({ prefix: "/contest" })
 	.get(
 		"/",

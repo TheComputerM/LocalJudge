@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
+import { AdminService } from "../services/admin";
 import { adminContestApp } from "./contest";
-import { AdminService } from "./service";
 
 export const adminApp = new Elysia({
 	prefix: "/admin",

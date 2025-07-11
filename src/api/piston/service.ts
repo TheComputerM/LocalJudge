@@ -1,8 +1,8 @@
 import { Value } from "@sinclair/typebox/value";
 import { t } from "elysia";
+import { ProblemService } from "@/api/services/problem";
 import { db } from "@/db";
 import * as table from "@/db/schema";
-import { ProblemService } from "../contest/service";
 import { PistonResultSchema } from "./client";
 
 const PistonWorker = new Worker(new URL("worker.ts", import.meta.url).href);

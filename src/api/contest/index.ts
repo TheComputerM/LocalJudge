@@ -3,7 +3,8 @@ import { betterAuthPlugin } from "@/api/better-auth";
 import { ContestModel } from "@/api/models/contest";
 import { ProblemModel } from "@/api/models/problem";
 import { PistonService } from "@/api/piston/service";
-import { ContestService, ProblemService } from "./service";
+import { ContestService } from "@/api/services/contest";
+import { ProblemService } from "@/api/services/problem";
 
 export const contestApp = new Elysia({
 	prefix: "/contest",
