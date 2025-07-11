@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LucidePlus, LucideView } from "lucide-react";
+import { LucidePlus, LucideTrash, LucideView } from "lucide-react";
 import { localjudge } from "@/api/client";
+import { ConfirmActionDialog } from "@/components/confirm-action";
 import { ContestCard } from "@/components/contest-card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -38,12 +39,19 @@ function RouteComponent() {
 			<div className="grid gap-3">
 				{contests.map((contest) => (
 					<ContestCard key={contest.id} {...contest}>
-						<Button asChild className="w-full">
-							<Link to="/admin/contest/$id" params={{ id: contest.id }}>
-								View Details
-								<LucideView />
-							</Link>
-						</Button>
+						<div className="flex gap-2 w-full">
+							<ConfirmActionDialog>
+								<Button variant="destructive">
+									Delete <LucideTrash />
+								</Button>
+							</ConfirmActionDialog>
+							<Button asChild className="flex-1">
+								<Link to="/admin/contest/$id" params={{ id: contest.id }}>
+									View Details
+									<LucideView />
+								</Link>
+							</Button>
+						</div>
 					</ContestCard>
 				))}
 			</div>

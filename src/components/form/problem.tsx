@@ -2,8 +2,15 @@ import { LucidePlus, LucideSave, LucideTrash } from "lucide-react";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ConfirmActionDialog } from "../confirm-action";
 import { withForm } from "./primitives";
 
 const defaultValues = {} as {
@@ -47,30 +54,25 @@ export const ProblemForm = withForm({
 								</Button>
 							</div>
 							{field.state.value.map((tc, i) => (
-								<Card key={i} className="gap-3 py-3">
-									<CardHeader className="flex items-center justify-between px-3">
-										<CardTitle>Testcase {tc.number}</CardTitle>
-										<Button
-											type="button"
-											variant="destructive"
-											size="sm"
-											onClick={() => field.removeValue(i)}
-										>
-											Delete
-											<LucideTrash />
-										</Button>
+								<Card key={i} className="gap-4 py-4">
+									<CardHeader className="flex items-center justify-between px-4">
+										<CardTitle>Testcase {i + 1}</CardTitle>
+										<ConfirmActionDialog onConfirm={() => field.removeValue(i)}>
+											<Button type="button" variant="destructive" size="sm">
+												Delete
+												<LucideTrash />
+											</Button>
+										</ConfirmActionDialog>
 									</CardHeader>
-									<CardContent className="grid grid-cols-2 gap-4 px-3">
+									<CardContent className="grid grid-cols-2 gap-4 px-4">
 										<form.AppField name={`testcases[${i}].input`}>
 											{(field) => <field.Textarea label="Input" />}
 										</form.AppField>
-										<form.AppField
-											key={tc.number}
-											name={`testcases[${i}].output`}
-										>
+										<form.AppField name={`testcases[${i}].output`}>
 											{(field) => <field.Textarea label="Output" />}
 										</form.AppField>
 									</CardContent>
+									<CardFooter className="px-4"></CardFooter>
 								</Card>
 							))}
 						</div>
