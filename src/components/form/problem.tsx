@@ -8,7 +8,7 @@ import { withForm } from "./primitives";
 
 const defaultValues = {} as {
 	problem: typeof ProblemModel.insert.static;
-	testcases: Array<typeof TestcaseModel.select.static>;
+	testcases: typeof TestcaseModel.Group.insert.static;
 };
 
 export const ProblemForm = withForm({
@@ -47,7 +47,7 @@ export const ProblemForm = withForm({
 								</Button>
 							</div>
 							{field.state.value.map((tc, i) => (
-								<Card key={tc.number} className="gap-3 py-3">
+								<Card key={i} className="gap-3 py-3">
 									<CardHeader className="flex items-center justify-between px-3">
 										<CardTitle>Testcase {tc.number}</CardTitle>
 										<Button
