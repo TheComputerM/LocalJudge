@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, SQL, sql } from "drizzle-orm";
 import { ContestModel } from "@/api/models/contest";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
@@ -73,12 +73,14 @@ export namespace AdminService {
 		problemNumber: number,
 		testcases: (typeof TestcaseModel.upsert.static)[],
 	) {
-		const updateColumns = Object.fromEntries(
-			Object.keys(TestcaseModel.update.properties).map((v) => [
-				v,
-				sql`excluded.${v}`,
-			]),
+		const updateColumns = Object.keys(TestcaseModel.update.properties).reduce(
+			(acc, v) => {
+				acc[v] = sql.raw(`EXCLUDED.${v}`);
+				return acc;
+			},
+			{} as Record<string, SQL>,
 		);
+
 		return db
 			.insert(table.testcase)
 			.values(
