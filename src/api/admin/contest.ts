@@ -1,8 +1,8 @@
 import Elysia, { status, t } from "elysia";
+import { AdminService } from "@/api/admin/service";
 import { ContestModel } from "@/api/models/contest";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
-import { AdminService } from "@/api/services/admin";
 import { ContestService } from "@/api/services/contest";
 
 /**
