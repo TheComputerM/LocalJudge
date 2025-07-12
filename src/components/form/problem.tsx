@@ -62,9 +62,10 @@ export const ProblemForm = withForm({
 									onClick={() => {
 										field.pushValue({
 											number: field.state.value.length + 1,
-											input: "hello world",
-											output: "hello world",
+											input: "stdin",
+											output: "stdout",
 											hidden: false,
+											points: 25,
 										});
 									}}
 								>
@@ -88,10 +89,21 @@ export const ProblemForm = withForm({
 											{(field) => <field.Textarea label="Input" />}
 										</form.AppField>
 										<form.AppField name={`testcases[${i}].output`}>
-											{(field) => <field.Textarea label="Output" />}
+											{(field) => <field.Textarea label="Expected" />}
+										</form.AppField>
+										<form.AppField name={`testcases[${i}].hidden`}>
+											{(field) => (
+												<field.ToggleSwitch
+													label="Hidden"
+													description="Testcase will be hidden from the participants"
+													border={false}
+												/>
+											)}
+										</form.AppField>
+										<form.AppField name={`testcases[${i}].points`}>
+											{(field) => <field.NumberField label={"Points"} />}
 										</form.AppField>
 									</CardContent>
-									<CardFooter className="px-4"></CardFooter>
 								</Card>
 							))}
 						</div>

@@ -42,6 +42,10 @@ function RouteComponent() {
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.put(value.problem);
+			await localjudge.api.admin
+				.contest({ id })
+				.problem({ problem: problemNumber })
+				.testcase.put(value.testcases);
 		},
 	});
 
