@@ -24,8 +24,7 @@ export namespace AdminService {
 	export async function createContest(
 		contest: typeof ContestModel.insert.static,
 	) {
-		const [data] = await db.insert(table.contest).values(contest).returning();
-		return data;
+		return db.insert(table.contest).values(contest).returning();
 	}
 
 	export async function updateContest(
