@@ -17,6 +17,9 @@ export const baseApp = new Elysia({ prefix: "/api" })
 			},
 		}),
 	)
+	.onError(({ error }) => {
+		console.log(error);
+	})
 	.use(contestApp)
 	.use(adminApp)
 	.use(pistonApp);
