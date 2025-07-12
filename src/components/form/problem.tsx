@@ -15,7 +15,7 @@ import { withForm } from "./primitives";
 
 const defaultValues = {} as {
 	problem: typeof ProblemModel.insert.static;
-	testcases: typeof TestcaseModel.Group.insert.static;
+	testcases: (typeof TestcaseModel.upsert.static)[];
 };
 
 export const ProblemForm = withForm({

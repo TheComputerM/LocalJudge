@@ -37,11 +37,11 @@ function NewContestForm() {
 			const contestData = Value.Parse(ContestModel.insert, value);
 			const { data, error } =
 				await localjudge.api.admin.contest.post(contestData);
-			if (error) {
+			if (error || data.length === 0) {
 				alert(JSON.stringify(error));
 				return;
 			}
-			navigate({ to: "/admin/contest/$id", params: { id: data.id } });
+			navigate({ to: "/admin/contest/$id", params: { id: data[0].id } });
 		},
 	});
 

@@ -1,8 +1,9 @@
 import Elysia, { status, t } from "elysia";
 import { ContestModel } from "@/api/models/contest";
+import { ProblemModel } from "@/api/models/problem";
+import { TestcaseModel } from "@/api/models/testcase";
 import { AdminService } from "@/api/services/admin";
 import { ContestService } from "@/api/services/contest";
-import { ProblemModel } from "../models/problem";
 
 /**
  * Admin's control interface for managing contests and problems.
@@ -88,7 +89,26 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 										body: ProblemModel.insert,
 									},
 								)
-								.group("/testcase", (app) => app.post("/", () => {})),
+								.group("/testcase", (app) =>
+									app.put(
+										"/",
+										async ({ params, body }) => {
+											return await AdminService.upsertTestcases(
+												params.id,
+												params.problem,
+												body,
+											);
+										},
+										{
+											body: t.Array(TestcaseModel.upsert),
+											detail: {
+												summary: "Upsert testcases for a problem",
+												description:
+													"Insert or update testcases for a specific problem in a contest",
+											},
+										},
+									),
+								),
 					),
 			),
 	);

@@ -1,5 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
+import { t } from "elysia";
 import { localjudge } from "@/api/client";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
@@ -18,14 +19,22 @@ function RouteComponent() {
 				ProblemModel.insert,
 				Value.Default(ProblemModel.insert, {}),
 			),
-			testcases: Value.Cast(TestcaseModel.Group.insert, []),
+			testcases: Value.Cast(t.Array(TestcaseModel.upsert), []),
 		},
 		onSubmit: async ({ value }) => {
-			await localjudge.api.admin
+			const { data, error } = await localjudge.api.admin
 				.contest({
 					id: contestId,
 				})
 				.problem.post(value.problem);
+			if (error) {
+				alert(JSON.stringify(error));
+				return;
+			}
+			await localjudge.api.admin
+				.contest({ id: contestId })
+				.problem({ problem: data.number })
+				.testcase.put(value.testcases);
 		},
 	});
 	return (

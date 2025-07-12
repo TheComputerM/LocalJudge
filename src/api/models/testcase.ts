@@ -1,21 +1,16 @@
 import { t } from "elysia";
 import { testcase } from "@/db/schema";
-import { createInsertSchema } from ".";
+import { createInsertSchema, createUpdateSchema } from ".";
 
-const _insertSchema = createInsertSchema(testcase, {
-	hidden: t.Boolean({ default: false }),
-});
+const _insertSchema = createInsertSchema(testcase);
+const _updateSchema = createUpdateSchema(testcase);
 
 export namespace TestcaseModel {
-	export const insert = t.Omit(_insertSchema, [
+	export const upsert = t.Omit(_insertSchema, ["contestId", "problemNumber"]);
+	export const insert = t.Omit(upsert, ["number"]);
+	export const update = t.Omit(_updateSchema, [
 		"contestId",
 		"problemNumber",
 		"number",
 	]);
-
-	export namespace Group {
-		export const insert = t.Array(
-			t.Omit(_insertSchema, ["contestId", "problemNumber"]),
-		);
-	}
 }

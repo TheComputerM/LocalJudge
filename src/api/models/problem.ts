@@ -25,6 +25,6 @@ const _selectSchema = createSelectSchema(problem, {
 
 export namespace ProblemModel {
 	export const select = t.Omit(_selectSchema, ["contestId"]);
-	export const listSelect = t.Array(t.Omit(select, ["description"]));
+	export const groupSelect = t.Array(t.Omit(select, ["description"]));
 	export const insert = t.Omit(_insertSchema, ["contestId", "number"]);
 }

@@ -1,6 +1,7 @@
 import { and, eq, sql } from "drizzle-orm";
 import { ContestModel } from "@/api/models/contest";
 import { ProblemModel } from "@/api/models/problem";
+import { TestcaseModel } from "@/api/models/testcase";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 
@@ -65,5 +66,36 @@ export namespace AdminService {
 			)
 			.returning();
 		return data;
+	}
+
+	export async function upsertTestcases(
+		contestId: string,
+		problemNumber: number,
+		testcases: (typeof TestcaseModel.upsert.static)[],
+	) {
+		const updateColumns = Object.fromEntries(
+			Object.keys(TestcaseModel.update.properties).map((v) => [
+				v,
+				sql`excluded.${v}`,
+			]),
+		);
+		return db
+			.insert(table.testcase)
+			.values(
+				testcases.map((tc) => ({
+					contestId,
+					problemNumber,
+					...tc,
+				})),
+			)
+			.onConflictDoUpdate({
+				target: [
+					table.testcase.contestId,
+					table.testcase.problemNumber,
+					table.testcase.number,
+				],
+				set: updateColumns,
+			})
+			.returning();
 	}
 }

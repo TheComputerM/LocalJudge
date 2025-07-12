@@ -87,7 +87,7 @@ export const contestApp = new Elysia({
 								return ProblemService.getProblems(params.id);
 							},
 							{
-								response: ProblemModel.listSelect,
+								response: ProblemModel.groupSelect,
 								detail: {
 									summary: "Get contest problems",
 									description: "Get all problems of a specific contest",
