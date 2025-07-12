@@ -29,12 +29,28 @@ export namespace ProblemService {
 	}
 
 	/** Get all test cases for a specific problem in a contest */
-	export async function getTestcases(
+	export async function getTestcases(contestId: string, problemNumber: number) {
+		return db.query.testcase.findMany({
+			columns: {
+				contestId: false,
+				problemNumber: false,
+				input: false,
+				output: false,
+			},
+			where: and(
+				eq(table.testcase.contestId, contestId),
+				eq(table.testcase.problemNumber, problemNumber),
+			),
+			orderBy: asc(table.testcase.number),
+		});
+	}
+
+	export async function getTestcase(
 		contestId: string,
 		problemNumber: number,
-		options: { includeHidden: boolean },
+		testcaseNumber: number,
 	) {
-		return db.query.testcase.findMany({
+		return db.query.testcase.findFirst({
 			columns: {
 				contestId: false,
 				problemNumber: false,
@@ -42,9 +58,8 @@ export namespace ProblemService {
 			where: and(
 				eq(table.testcase.contestId, contestId),
 				eq(table.testcase.problemNumber, problemNumber),
-				options.includeHidden ? undefined : eq(table.testcase.hidden, false),
+				eq(table.testcase.number, testcaseNumber),
 			),
-			orderBy: asc(table.testcase.number),
 		});
 	}
 

@@ -22,6 +22,18 @@ export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.testcase.get(),
+			).then((data) =>
+				Promise.all(
+					data.map((tc) =>
+						rejectError(
+							localjudge.api
+								.contest({ id: params.id })
+								.problem({ problem: params.problem })
+								.testcase({ testcase: tc.number })
+								.get(),
+						),
+					),
+				),
 			),
 		]);
 		return { problem, testcases };
@@ -32,6 +44,7 @@ export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
 function RouteComponent() {
 	const { problem, testcases } = Route.useLoaderData();
 	const { id, problem: problemNumber } = Route.useParams();
+
 	const form = useAppForm({
 		defaultValues: {
 			problem: Value.Parse(ProblemModel.insert, problem),

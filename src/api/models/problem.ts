@@ -14,13 +14,13 @@ const memoryLimit = t.Number({
 	default: 256,
 });
 
-const _insertSchema = createInsertSchema(problem, {
-	timeLimit: t.Optional(timeLimit),
-	memoryLimit: t.Optional(memoryLimit),
-});
 const _selectSchema = createSelectSchema(problem, {
 	timeLimit,
 	memoryLimit,
+});
+const _insertSchema = createInsertSchema(problem, {
+	timeLimit: t.Optional(timeLimit),
+	memoryLimit: t.Optional(memoryLimit),
 });
 
 export namespace ProblemModel {

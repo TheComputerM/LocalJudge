@@ -1,11 +1,15 @@
 import { t } from "elysia";
 import { testcase } from "@/db/schema";
-import { createInsertSchema, createUpdateSchema } from ".";
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from ".";
 
+const _selectSchema = createSelectSchema(testcase);
 const _insertSchema = createInsertSchema(testcase);
 const _updateSchema = createUpdateSchema(testcase);
 
 export namespace TestcaseModel {
+	export const select = t.Omit(_selectSchema, ["contestId", "problemNumber"]);
+	export const groupSelect = t.Array(t.Omit(select, ["input", "output"]));
+
 	export const upsert = t.Omit(_insertSchema, ["contestId", "problemNumber"]);
 	export const insert = t.Omit(upsert, ["number"]);
 	export const update = t.Omit(_updateSchema, [

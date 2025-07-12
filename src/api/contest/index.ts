@@ -2,6 +2,7 @@ import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { ContestModel } from "@/api/models/contest";
 import { ProblemModel } from "@/api/models/problem";
+import { TestcaseModel } from "@/api/models/testcase";
 import { PistonService } from "@/api/piston/service";
 import { ContestService } from "@/api/services/contest";
 import { ProblemService } from "@/api/services/problem";
@@ -136,17 +137,59 @@ export const contestApp = new Elysia({
 										);
 										return status(201, "Code submitted successfully");
 									})
-									.get("/testcase", async ({ params, auth }) => {
-										const testcases = await ProblemService.getTestcases(
-											params.id,
-											params.problem,
-											{
-												includeHidden:
-													auth.user.role?.includes("admin") ?? false,
+									.get(
+										"/testcase",
+										async ({ params, auth }) => {
+											const testcases = await ProblemService.getTestcases(
+												params.id,
+												params.problem,
+											);
+											return testcases;
+										},
+										{
+											response: TestcaseModel.groupSelect,
+											detail: {
+												summary: "Get problem testcases",
+												description:
+													"Get all testcases for a specific problem in a contest",
 											},
-										);
-										return testcases;
-									})
+										},
+									)
+									.get(
+										"/testcase/:testcase",
+										async ({ params, auth }) => {
+											const testcase = await ProblemService.getTestcase(
+												params.id,
+												params.problem,
+												params.testcase,
+											);
+											if (!testcase) return status(404, "Testcase not found");
+											if (
+												!auth.user.role?.includes("admin") &&
+												testcase.hidden
+											) {
+												return status(403, "Testcase is hidden");
+											}
+											return testcase;
+										},
+										{
+											response: {
+												200: TestcaseModel.select,
+												404: t.Literal("Testcase not found"),
+												403: t.Literal("Testcase is hidden"),
+											},
+											params: t.Object({
+												id: t.String(),
+												problem: t.Number(),
+												testcase: t.Number(),
+											}),
+											detail: {
+												summary: "Get testcase",
+												description:
+													"Get a specific testcase for a problem in a contest",
+											},
+										},
+									)
 									.get("/submission", async ({ params }) => {
 										// TODO: return submissions for the problem by the user
 									}),

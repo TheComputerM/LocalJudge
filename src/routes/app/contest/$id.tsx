@@ -1,4 +1,5 @@
 import {
+	ClientOnly,
 	createFileRoute,
 	Link,
 	linkOptions,
@@ -139,7 +140,9 @@ function Navbar() {
 					orientation="vertical"
 					className="data-[orientation=vertical]:h-4"
 				/>
-				<RemainingTime />
+				<ClientOnly>
+					<RemainingTime />
+				</ClientOnly>
 			</div>
 		</header>
 	);

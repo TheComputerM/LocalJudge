@@ -1,8 +1,13 @@
 import Editor from "@monaco-editor/react";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { LucideCloudUpload } from "lucide-react";
+import { createAtom } from "@xstate/store";
+import { useAtom } from "@xstate/store/react";
+import { LucideCloudUpload, LucideEyeClosed } from "lucide-react";
+import { Suspense } from "react";
 import Markdown from "react-markdown";
+import useSWR from "swr";
 import { localjudge } from "@/api/client";
+import { $localjudge } from "@/api/fetch";
 import {
 	Accordion,
 	AccordionContent,
@@ -49,6 +54,9 @@ export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
 	component: RouteComponent,
 });
 
+const languageAtom = createAtom("");
+const codeAtom = createAtom("");
+
 function SubmitCode() {
 	const { id, problem } = Route.useParams();
 	async function handleSubmit() {
@@ -75,7 +83,12 @@ function LanguageSelect() {
 	});
 
 	return (
-		<Select defaultValue={languages[0]}>
+		<Select
+			defaultValue={languages[0]}
+			onValueChange={(value) => {
+				languageAtom.set(value.split("@")[0]);
+			}}
+		>
 			<SelectTrigger>
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
@@ -103,30 +116,65 @@ function Navbar() {
 	);
 }
 
+function TestcaseContent({ number }: { number: number }) {
+	const { id, problem } = Route.useParams();
+	const { data } = useSWR(
+		`/api/contest/${id}/problem/${problem}/testcase/${number}`,
+		() =>
+			rejectError(
+				$localjudge("/api/contest/:id/problem/:problem/testcase/:testcase", {
+					params: {
+						id,
+						problem: Number.parseInt(problem),
+						testcase: number,
+					},
+				}),
+			),
+		{
+			suspense: true,
+			fallbackData: {
+				number,
+				hidden: false,
+				points: 25,
+				input: "...",
+				output: "...",
+			},
+		},
+	);
+
+	return (
+		<>
+			<div className="p-2 bg-muted rounded">
+				<pre className="text-wrap max-h-48 overflow-y-auto">{data.input}</pre>
+			</div>
+			<div className="p-2 bg-muted rounded">
+				<pre className="text-wrap max-h-48 overflow-y-auto">{data.output}</pre>
+			</div>
+		</>
+	);
+}
+
 function TestcaseList() {
 	const testcases = Route.useLoaderData({ select: (data) => data.testcases });
 
 	return (
 		<Accordion type="single" collapsible>
 			{testcases.map((tc) => (
-				<AccordionItem key={tc.number} value={tc.number.toString()}>
-					<AccordionTrigger>
+				<AccordionItem
+					key={tc.number}
+					value={tc.number.toString()}
+					disabled={tc.hidden}
+				>
+					<AccordionTrigger className="mb-2">
 						<div className="inline-flex items-center justify-between w-full">
 							Testcase {tc.number}
 							<Badge>{tc.points} points</Badge>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="grid grid-cols-2 gap-2 text-xs">
-						<div className="p-2 bg-muted rounded flex-1">
-							<pre className="text-wrap max-h-48 overflow-y-auto">
-								{tc.input}
-							</pre>
-						</div>
-						<div className="p-2 bg-muted rounded flex-1">
-							<pre className="text-wrap max-h-48 overflow-y-auto">
-								{tc.output}
-							</pre>
-						</div>
+						<Suspense>
+							<TestcaseContent number={tc.number} />
+						</Suspense>
 					</AccordionContent>
 				</AccordionItem>
 			))}
@@ -149,56 +197,25 @@ function ProblemStatement() {
 }
 
 function CodeEditor() {
-	const problemIndex = Route.useParams({ select: (params) => params.problem });
-
+	const code = useAtom(codeAtom);
+	const language = useAtom(languageAtom);
 	return (
 		<Editor
-			defaultLanguage="cpp"
+			language={language}
 			theme="vs-dark"
 			options={{
 				folding: false,
 				lineNumbers: "off",
-				fontFamily: "'JetBrains Mono Variable'",
+				fontFamily: "'JetBrains Mono Variable', monospace",
 				minimap: {
 					enabled: false,
 				},
 			}}
-			defaultValue={`
-#include <bits/stdc++.h>
-int main() {
-	cout << "Hello" << "\\n";
-	return 0;
-}	
-			`.trim()}
+			value={code}
 			onChange={(value) => {
-				sessionStorage.setItem(`code:${problemIndex}`, value ?? "");
+				codeAtom.set(value || "");
 			}}
 		/>
-	);
-}
-
-function Content() {
-	return (
-		<ResizablePanelGroup direction="horizontal" className="h-full">
-			<ResizablePanel className="p-2">
-				<Tabs defaultValue="statement">
-					<TabsList className="w-full">
-						<TabsTrigger value="statement">Statement</TabsTrigger>
-						<TabsTrigger value="testcases">Testcases</TabsTrigger>
-					</TabsList>
-					<TabsContent value="statement">
-						<ProblemStatement />
-					</TabsContent>
-					<TabsContent value="testcases">
-						<TestcaseList />
-					</TabsContent>
-				</Tabs>
-			</ResizablePanel>
-			<ResizableHandle />
-			<ResizablePanel>
-				<CodeEditor />
-			</ResizablePanel>
-		</ResizablePanelGroup>
 	);
 }
 
@@ -206,7 +223,26 @@ function RouteComponent() {
 	return (
 		<>
 			<Navbar />
-			<Content />
+			<ResizablePanelGroup direction="horizontal" className="h-full">
+				<ResizablePanel className="p-2">
+					<Tabs defaultValue="statement">
+						<TabsList className="w-full">
+							<TabsTrigger value="statement">Statement</TabsTrigger>
+							<TabsTrigger value="testcases">Testcases</TabsTrigger>
+						</TabsList>
+						<TabsContent value="statement">
+							<ProblemStatement />
+						</TabsContent>
+						<TabsContent value="testcases">
+							<TestcaseList />
+						</TabsContent>
+					</Tabs>
+				</ResizablePanel>
+				<ResizableHandle />
+				<ResizablePanel>
+					<CodeEditor />
+				</ResizablePanel>
+			</ResizablePanelGroup>
 		</>
 	);
 }
