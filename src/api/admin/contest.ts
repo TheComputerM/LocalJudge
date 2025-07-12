@@ -1,9 +1,9 @@
 import Elysia, { status, t } from "elysia";
 import { AdminService } from "@/api/admin/service";
+import { ContestService } from "@/api/contest/service";
 import { ContestModel } from "@/api/models/contest";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
-import { ContestService } from "@/api/services/contest";
 
 /**
  * Admin's control interface for managing contests and problems.

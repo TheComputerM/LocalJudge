@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { t } from "elysia";
-import { ProblemService } from "@/api/services/problem";
+import { ProblemService } from "@/api/contest/problem/service";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { PistonResultSchema } from "./client";
