@@ -17,28 +17,15 @@ export const Route = createFileRoute("/app/contest/$id/submission/")({
 
 function Submissions() {
 	return (
-		<Table>
-			<TableHeader>
-				<TableRow>
-					<TableHead>ID</TableHead>
-					<TableHead>Problem</TableHead>
-					<TableHead>Passed</TableHead>
-					<TableHead>Time</TableHead>
-					<TableHead>Memory</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				<TableRow>
-					<TableCell>Problem ID</TableCell>
-					<TableCell>Problem Name</TableCell>
-					<TableCell>
-						<Badge>10 / 20</Badge>
-					</TableCell>
-					<TableCell>0 ms</TableCell>
-					<TableCell>0 KB</TableCell>
-				</TableRow>
-			</TableBody>
-		</Table>
+		<TableRow>
+			<TableCell>Problem ID</TableCell>
+			<TableCell>Problem Name</TableCell>
+			<TableCell>
+				<Badge>10 / 20</Badge>
+			</TableCell>
+			<TableCell>0 ms</TableCell>
+			<TableCell>0 KB</TableCell>
+		</TableRow>
 	);
 }
 
@@ -49,7 +36,20 @@ function RouteComponent() {
 				Your Submissions
 			</h1>
 			<Separator className="my-6" />
-			<Submissions />
+			<Table>
+				<TableHeader>
+					<TableRow>
+						<TableHead>ID</TableHead>
+						<TableHead>Problem</TableHead>
+						<TableHead>Passed</TableHead>
+						<TableHead>Time</TableHead>
+						<TableHead>Memory</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					<Submissions />
+				</TableBody>
+			</Table>
 		</div>
 	);
 }
