@@ -186,8 +186,8 @@ export const result = operatorSchema.table(
 			.notNull()
 			.references(() => submission.id),
 		testcaseNumber: smallint("testcase_number").notNull(),
-		time: integer("time").notNull().default(0),
-		memory: integer("memory").notNull().default(0),
+		time: integer("time").notNull(),
+		memory: integer("memory").notNull(),
 		status: statusEnum("status").notNull(),
 		message: text("message").notNull(),
 	},
