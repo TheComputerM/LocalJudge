@@ -1,46 +1,76 @@
-import { useMemo } from "react";
+import { CheckIcon } from "lucide-react";
+import {
+	Tags,
+	TagsContent,
+	TagsEmpty,
+	TagsGroup,
+	TagsInput,
+	TagsItem,
+	TagsList,
+	TagsTrigger,
+	TagsValue,
+} from "@/components/ui/kibo-ui/tags";
 import { Label } from "@/components/ui/label";
-import MultipleSelector, {
-	MultipleSelectorProps,
-	Option,
-} from "@/components/ui/multiselect";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
-interface MultiselectFieldProps
-	extends Omit<MultipleSelectorProps, "defaultOptions"> {
+interface MultiselectFieldProps {
 	label?: string;
 	description?: string;
-	defaultOptions?: string[];
+	placeholder?: string;
+	options: string[];
 }
 
 export function MultiselectField({
 	label,
 	description,
-	defaultOptions,
-	...props
+	placeholder,
+	options,
 }: MultiselectFieldProps) {
 	const field = useFieldContext<string[]>();
-	const value: Option[] = useMemo(
-		() => field.state.value.map((value) => ({ value, label: value })),
-		[field.state.value],
-	);
+
+	const handleRemove = (value: string) => {
+		if (!field.state.value.includes(value)) return;
+
+		field.handleChange(field.state.value.filter((v) => v !== value));
+	};
+
+	const handleSelect = (value: string) => {
+		if (field.state.value.includes(value)) {
+			handleRemove(value);
+			return;
+		}
+		field.handleChange([...field.state.value, value]);
+	};
 
 	return (
 		<div className="flex flex-col gap-3">
 			{label && <Label htmlFor={field.name}>{label}</Label>}
-			<MultipleSelector
-				value={value}
-				defaultOptions={defaultOptions?.map((value) => ({
-					value,
-					label: value,
-				}))}
-				onChange={(options) =>
-					field.handleChange(options.map(({ value }) => value))
-				}
-				{...props}
-				commandProps={{ label }}
-			/>
+			<Tags>
+				<TagsTrigger onBlur={field.handleBlur}>
+					{field.state.value.map((tag) => (
+						<TagsValue key={tag} onRemove={() => handleRemove(tag)}>
+							{tag}
+						</TagsValue>
+					))}
+				</TagsTrigger>
+				<TagsContent>
+					<TagsInput placeholder={placeholder} />
+					<TagsList>
+						<TagsEmpty />
+						<TagsGroup>
+							{options.map((tag) => (
+								<TagsItem key={tag} value={tag} onSelect={handleSelect}>
+									{tag}
+									{field.state.value.includes(tag) && (
+										<CheckIcon className="text-muted-foreground" size={14} />
+									)}
+								</TagsItem>
+							))}
+						</TagsGroup>
+					</TagsList>
+				</TagsContent>
+			</Tags>
 			{description && (
 				<p className="text-muted-foreground text-xs">{description}</p>
 			)}

@@ -103,8 +103,7 @@ export const ContestForm = withForm({
 								label={title}
 								description={description}
 								placeholder="Select languages"
-								defaultOptions={languages}
-								hidePlaceholderWhenSelected
+								options={languages}
 							/>
 						);
 					}}
