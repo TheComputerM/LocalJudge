@@ -44,7 +44,7 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 					return status(204);
 				},
 				{
-					body: ContestModel.insert,
+					body: ContestModel.update,
 					detail: {
 						summary: "Update contest",
 						description: "Update a specific contest by its ID",
@@ -86,7 +86,7 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 										);
 									},
 									{
-										body: ProblemModel.insert,
+										body: ProblemModel.update,
 									},
 								)
 								.group("/testcase", (app) =>

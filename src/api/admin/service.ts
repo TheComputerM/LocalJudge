@@ -30,7 +30,7 @@ export namespace AdminService {
 
 	export async function updateContest(
 		id: string,
-		contest: typeof ContestModel.insert.static,
+		contest: typeof ContestModel.update.static,
 	) {
 		await db.update(table.contest).set(contest).where(eq(table.contest.id, id));
 	}
@@ -53,7 +53,7 @@ export namespace AdminService {
 	export async function updateProblem(
 		contestId: string,
 		problemNumber: number,
-		problem: typeof ProblemModel.insert.static,
+		problem: typeof ProblemModel.update.static,
 	) {
 		const [data] = await db
 			.update(table.problem)
