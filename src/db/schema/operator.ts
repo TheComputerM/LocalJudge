@@ -54,10 +54,16 @@ export const registration = operatorSchema.table(
 	{
 		userId: text("user_id")
 			.notNull()
-			.references(() => user.id),
+			.references(() => user.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 		contestId: text("contest_id")
 			.notNull()
-			.references(() => contest.id),
+			.references(() => contest.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 	},
 	(t) => [primaryKey({ columns: [t.userId, t.contestId] })],
 );
@@ -78,7 +84,10 @@ export const problem = operatorSchema.table(
 	{
 		contestId: text("contest_id")
 			.notNull()
-			.references(() => contest.id),
+			.references(() => contest.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 		number: smallint("number").notNull(),
 		title: varchar("title", { length: 32 }).notNull(),
 		description: text("description").notNull(),
@@ -116,11 +125,13 @@ export const testcase = operatorSchema.table(
 	},
 	(t) => [
 		check("valid_number", sql`${t.number} > 0`),
+		primaryKey({ columns: [t.contestId, t.problemNumber, t.number] }),
 		foreignKey({
 			columns: [t.contestId, t.problemNumber],
 			foreignColumns: [problem.contestId, problem.number],
-		}),
-		primaryKey({ columns: [t.contestId, t.problemNumber, t.number] }),
+		})
+			.onDelete("cascade")
+			.onUpdate("cascade"),
 	],
 );
 
@@ -129,7 +140,6 @@ export const testcaseRelations = relations(testcase, ({ one, many }) => ({
 		fields: [testcase.contestId, testcase.problemNumber],
 		references: [problem.contestId, problem.number],
 	}),
-	results: many(result),
 }));
 
 /**
@@ -141,7 +151,10 @@ export const submission = operatorSchema.table(
 		id: uuid("id").primaryKey().defaultRandom(),
 		userId: text("user_id")
 			.notNull()
-			.references(() => user.id),
+			.references(() => user.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
 		code: text("code").notNull(),
@@ -151,7 +164,9 @@ export const submission = operatorSchema.table(
 		foreignKey({
 			columns: [t.contestId, t.problemNumber],
 			foreignColumns: [problem.contestId, problem.number],
-		}),
+		})
+			.onDelete("cascade")
+			.onUpdate("cascade"),
 	],
 );
 
@@ -184,7 +199,10 @@ export const result = operatorSchema.table(
 	{
 		submissionId: uuid("submission_id")
 			.notNull()
-			.references(() => submission.id),
+			.references(() => submission.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 		testcaseNumber: smallint("testcase_number").notNull(),
 		time: integer("time").notNull(),
 		memory: integer("memory").notNull(),

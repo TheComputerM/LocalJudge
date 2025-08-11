@@ -1,5 +1,5 @@
 {
-	"id": "a6f3c717-62b1-4990-9c44-d2abe1389aed",
+	"id": "1d4ad4e8-7d4c-43a1-bd25-b765eccec8db",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -424,8 +424,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
@@ -470,8 +470,8 @@
 					"schemaTo": "auth",
 					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				},
 				"registration_contest_id_contest_id_fk": {
 					"name": "registration_contest_id_contest_id_fk",
@@ -480,8 +480,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
@@ -515,15 +515,13 @@
 					"name": "time",
 					"type": "integer",
 					"primaryKey": false,
-					"notNull": true,
-					"default": 0
+					"notNull": true
 				},
 				"memory": {
 					"name": "memory",
 					"type": "integer",
 					"primaryKey": false,
-					"notNull": true,
-					"default": 0
+					"notNull": true
 				},
 				"status": {
 					"name": "status",
@@ -548,8 +546,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["submission_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
@@ -614,8 +612,8 @@
 					"schemaTo": "auth",
 					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				},
 				"submission_contest_id_problem_number_problem_contest_id_number_fk": {
 					"name": "submission_contest_id_problem_number_problem_contest_id_number_fk",
@@ -624,8 +622,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id", "problem_number"],
 					"columnsTo": ["contest_id", "number"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -692,8 +690,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id", "problem_number"],
 					"columnsTo": ["contest_id", "number"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
