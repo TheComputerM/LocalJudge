@@ -1,5 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { localjudge } from "@/api/client";
 import { ContestModel } from "@/api/models/contest";
 import { ContestForm, ContestFormOptions } from "@/components/form/contest";
@@ -41,7 +42,9 @@ function RouteComponent() {
 				form.handleSubmit();
 			}}
 		>
-			<ContestForm form={form} />
+			<Suspense fallback={<div>Loading...</div>}>
+				<ContestForm form={form} />
+			</Suspense>
 		</form>
 	);
 }
