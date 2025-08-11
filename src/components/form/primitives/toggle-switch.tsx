@@ -7,20 +7,16 @@ import { useFieldContext } from "./form-context";
 export function ToggleSwitch({
 	label,
 	description,
-	border = true,
 }: {
 	label?: string;
 	description?: string;
-	border?: boolean;
 }) {
 	const field = useFieldContext<boolean>();
 
 	return (
 		<div
 			className={cn(
-				"relative flex w-full items-center gap-2 rounded-md p-4 outline-none",
-				border &&
-					"border-input has-data-[state=checked]:border-primary/50 border shadow-xs",
+				"relative flex w-full items-center gap-2 rounded-md p-4 outline-none border-input has-data-[state=checked]:border-primary/50 border shadow-xs",
 			)}
 		>
 			<div className="grid grow gap-2">
