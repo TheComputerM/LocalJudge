@@ -4,7 +4,12 @@ import {
 	linkOptions,
 	Outlet,
 } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import {
+	NavigationMenu,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+} from "@/components/ui/navigation-menu";
 
 export const Route = createFileRoute("/admin/contest/$id")({
 	component: RouteComponent,
@@ -22,24 +27,22 @@ const links = linkOptions([
 
 function Navbar() {
 	return (
-		<div className="flex border-b pb-4 gap-2">
-			{links.map((link) => (
-				<Button
-					key={link.label}
-					asChild
-					variant="link"
-					size="sm"
-					className="text-muted-foreground"
-				>
-					<Link
-						{...link}
-						activeProps={{ className: "bg-secondary text-primary" }}
-					>
-						{link.label}
-					</Link>
-				</Button>
-			))}
-		</div>
+		<NavigationMenu className="max-w-full pb-4 border-b">
+			<NavigationMenuList className="gap-2">
+				{links.map((link) => (
+					<NavigationMenuItem key={link.to}>
+						<NavigationMenuLink
+							className="flex-row items-center gap-2 py-1.5 font-medium"
+							asChild
+						>
+							<Link {...link} activeProps={{ "data-active": true }}>
+								<span>{link.label}</span>
+							</Link>
+						</NavigationMenuLink>
+					</NavigationMenuItem>
+				))}
+			</NavigationMenuList>
+		</NavigationMenu>
 	);
 }
 
