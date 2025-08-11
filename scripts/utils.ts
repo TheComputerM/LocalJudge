@@ -2,7 +2,6 @@ import { and, eq, is, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/bun-sql";
 import { migrate } from "drizzle-orm/bun-sql/migrator";
 import { getTableConfig, PgTable } from "drizzle-orm/pg-core";
-import { _ } from "node_modules/better-auth/dist/shared/better-auth.Da_FnxgM";
 import * as table from "@/db/schema";
 import { createBunSQLClient } from "@/db/utils";
 import { auth } from "@/lib/auth";
