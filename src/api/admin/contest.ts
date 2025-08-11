@@ -37,7 +37,7 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 	)
 	.group("/:id", (app) =>
 		app
-			.put(
+			.patch(
 				"/",
 				async ({ params, body }) => {
 					await AdminService.updateContest(params.id, body);
@@ -76,7 +76,7 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 						},
 						(app) =>
 							app
-								.put(
+								.patch(
 									"/",
 									async ({ params, body }) => {
 										return AdminService.updateProblem(

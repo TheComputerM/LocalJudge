@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
+import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
-import { ProblemService } from "@/api/contest/problem/service";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { PistonResultSchema } from "./client";
@@ -22,6 +22,9 @@ PistonWorker.addEventListener("message", async (event) => {
 		testcaseNumber: data.testcase,
 		status: "passed",
 		message: data.output.run.output,
+		// TODO: see memory used
+		time: 1,
+		memory: 1,
 	});
 });
 
@@ -44,11 +47,12 @@ export namespace PistonService {
 			})
 			.returning({ submission: table.submission.id });
 
-		const testcases = await ProblemService.getTestcases(
-			contestId,
-			problemNumber,
-			{ includeHidden: true },
-		);
+		const testcases = await db.query.testcase.findMany({
+			where: and(
+				eq(table.testcase.contestId, contestId),
+				eq(table.testcase.problemNumber, problemNumber),
+			),
+		});
 
 		for (const testcase of testcases) {
 			PistonWorker.postMessage({

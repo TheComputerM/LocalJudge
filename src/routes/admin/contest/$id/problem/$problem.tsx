@@ -54,7 +54,7 @@ function RouteComponent() {
 			await localjudge.api.admin
 				.contest({ id })
 				.problem({ problem: problemNumber })
-				.put(value.problem);
+				.patch(value.problem);
 			await localjudge.api.admin
 				.contest({ id })
 				.problem({ problem: problemNumber })

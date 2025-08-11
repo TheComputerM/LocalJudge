@@ -29,7 +29,7 @@ function RouteComponent() {
 		onSubmit: async ({ value }) => {
 			const response = await localjudge.api.admin
 				.contest({ id: contest.id })
-				.put(value);
+				.patch(value);
 			console.log(response);
 		},
 	});
