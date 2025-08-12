@@ -17,8 +17,8 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 		{
 			response: t.Array(ContestModel.select),
 			detail: {
-				summary: "Get contests",
-				description: "Get all contests present in the system",
+				summary: "List contests",
+				description: "List all contests present in the system",
 			},
 		},
 	)
@@ -30,7 +30,7 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 		{
 			body: ContestModel.insert,
 			detail: {
-				summary: "Create new contest",
+				summary: "Create contest",
 				description: "Create a new contest with the given details",
 			},
 		},
@@ -87,6 +87,10 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 									},
 									{
 										body: ProblemModel.update,
+										detail: {
+											summary: "Update problem",
+											description: "Update a specific problem in a contest",
+										},
 									},
 								)
 								.group("/testcase", (app) =>
@@ -102,7 +106,7 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 										{
 											body: t.Array(TestcaseModel.upsert),
 											detail: {
-												summary: "Upsert testcases for a problem",
+												summary: "Upsert testcases",
 												description:
 													"Insert or update testcases for a specific problem in a contest",
 											},

@@ -19,8 +19,8 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 			params: t.Object({ id: t.String() }),
 			response: ProblemModel.groupSelect,
 			detail: {
-				summary: "Get contest problems",
-				description: "Get all problems of a specific contest",
+				summary: "List problems",
+				description: "List all problems of a specific contest",
 			},
 		},
 	)
@@ -55,19 +55,29 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 						},
 					},
 				)
-				.post("/", async ({ auth, params }) => {
-					await PistonService.submit(
-						auth.user.id,
-						params.id,
-						params.problem,
-						"print(input())",
-						"python@3.12.0",
-					);
-					return status(201, "Code submitted successfully");
-				})
+				.post(
+					"/",
+					async ({ auth, params }) => {
+						await PistonService.submit(
+							auth.user.id,
+							params.id,
+							params.problem,
+							"print(input())",
+							"python@3.12.0",
+						);
+						return status(201, "Code submitted successfully");
+					},
+					{
+						detail: {
+							summary: "Submit solution",
+							description:
+								"Submit a solution for a specific problem in a contest",
+						},
+					},
+				)
 				.get(
 					"/testcase",
-					async ({ params, auth }) => {
+					async ({ params }) => {
 						const testcases = await ProblemService.getTestcases(
 							params.id,
 							params.problem,
@@ -77,9 +87,9 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 					{
 						response: TestcaseModel.groupSelect,
 						detail: {
-							summary: "Get problem testcases",
+							summary: "List testcases",
 							description:
-								"Get all testcases for a specific problem in a contest",
+								"List all testcases for a specific problem in a contest",
 						},
 					},
 				)

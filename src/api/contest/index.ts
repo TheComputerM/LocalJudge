@@ -18,8 +18,8 @@ export const contestApp = new Elysia({
 		{
 			response: t.Array(ContestModel.select),
 			detail: {
-				summary: "Get contests",
-				description: "Get contests the user is participating in",
+				summary: "List contests",
+				description: "List contests the user is participating in",
 			},
 		},
 	)
