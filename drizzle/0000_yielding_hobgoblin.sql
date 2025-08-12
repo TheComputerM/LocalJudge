@@ -2,7 +2,7 @@ CREATE SCHEMA "auth";
 --> statement-breakpoint
 CREATE SCHEMA "operator";
 --> statement-breakpoint
-CREATE TYPE "operator"."status" AS ENUM('passed', 'incorrect_answer', 'time_limit_exceeded', 'memory_limit_exceeded', 'compilation_error', 'runtime_error');--> statement-breakpoint
+CREATE TYPE "operator"."status" AS ENUM('accepted', 'incorrect_answer', 'time_limit_exceeded', 'memory_limit_exceeded', 'compilation_error', 'runtime_error');--> statement-breakpoint
 CREATE TABLE "auth"."account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -85,8 +85,6 @@ CREATE TABLE "operator"."registration" (
 CREATE TABLE "operator"."result" (
 	"submission_id" uuid NOT NULL,
 	"testcase_number" smallint NOT NULL,
-	"time" integer NOT NULL,
-	"memory" integer NOT NULL,
 	"status" "operator"."status" NOT NULL,
 	"message" text NOT NULL,
 	CONSTRAINT "result_submission_id_testcase_number_pk" PRIMARY KEY("submission_id","testcase_number")

@@ -1,5 +1,5 @@
 {
-	"id": "1d4ad4e8-7d4c-43a1-bd25-b765eccec8db",
+	"id": "9bce6f65-d773-448a-a141-417ed0c660d3",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -511,18 +511,6 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"time": {
-					"name": "time",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"memory": {
-					"name": "memory",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
 				"status": {
 					"name": "status",
 					"type": "status",
@@ -716,7 +704,7 @@
 			"name": "status",
 			"schema": "operator",
 			"values": [
-				"passed",
+				"accepted",
 				"incorrect_answer",
 				"time_limit_exceeded",
 				"memory_limit_exceeded",

@@ -23,8 +23,8 @@ function Submissions() {
 			<TableCell>
 				<Badge>10 / 20</Badge>
 			</TableCell>
-			<TableCell>0 ms</TableCell>
-			<TableCell>0 KB</TableCell>
+			<TableCell>C++@10.0.0</TableCell>
+			<TableCell>DateTime</TableCell>
 		</TableRow>
 	);
 }
@@ -42,8 +42,8 @@ function RouteComponent() {
 						<TableHead>ID</TableHead>
 						<TableHead>Problem</TableHead>
 						<TableHead>Passed</TableHead>
-						<TableHead>Time</TableHead>
-						<TableHead>Memory</TableHead>
+						<TableHead>Language</TableHead>
+						<TableHead>When</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>

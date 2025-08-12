@@ -183,7 +183,7 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 }));
 
 export const statusEnum = operatorSchema.enum("status", [
-	"passed",
+	"accepted",
 	"incorrect_answer",
 	"time_limit_exceeded",
 	"memory_limit_exceeded",
@@ -204,8 +204,7 @@ export const result = operatorSchema.table(
 				onUpdate: "cascade",
 			}),
 		testcaseNumber: smallint("testcase_number").notNull(),
-		time: integer("time").notNull(),
-		memory: integer("memory").notNull(),
+		// TODO: use a code execution engine that reports memory and time
 		status: statusEnum("status").notNull(),
 		message: text("message").notNull(),
 	},

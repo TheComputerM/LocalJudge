@@ -20,11 +20,8 @@ PistonWorker.addEventListener("message", async (event) => {
 	await db.insert(table.result).values({
 		submissionId: data.submission,
 		testcaseNumber: data.testcase,
-		status: "passed",
+		status: "accepted",
 		message: data.output.run.output,
-		// TODO: see memory used
-		time: 1,
-		memory: 1,
 	});
 });
 
