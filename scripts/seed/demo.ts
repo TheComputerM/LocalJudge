@@ -1,13 +1,11 @@
 import { faker } from "@faker-js/faker";
 import { Static } from "@sinclair/typemap";
-import { taskRunnerDB as db, reset } from "scripts/utils";
+import { taskRunnerDB as db } from "scripts/utils";
 import { ContestModel } from "@/api/models/contest";
 import { $piston } from "@/api/piston/client";
 import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { rejectError } from "@/lib/utils";
-
-await reset(db);
 
 const CONFIG = {
 	count: {
