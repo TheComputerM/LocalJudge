@@ -1,22 +1,22 @@
 import { Value } from "@sinclair/typebox/value";
-import { Compile } from "@sinclair/typemap";
-import { createFileRoute, useBlocker } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { localjudge } from "@/api/client";
-import { useAppForm } from "@/components/form";
-import { Button } from "@/components/ui/button";
+import { ContestModel } from "@/api/models/contest";
+import { ContestForm, ContestFormOptions } from "@/components/form/contest";
+import { useAppForm } from "@/components/form/primitives";
 import { Separator } from "@/components/ui/separator";
-import { ContestModel } from "@/db/typebox/contest";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/new")({
 	loader: async ({ abortController }) => {
-		const languages = (
-			await rejectError(
-				localjudge.api.piston.runtimes.get({
-					fetch: { signal: abortController.signal },
-				}),
-			)
-		).map(({ language, version }) => `${language}@${version}`);
+		const languages = await rejectError(
+			localjudge.api.piston.runtimes.get({
+				fetch: { signal: abortController.signal },
+			}),
+		).then((data) =>
+			data.map(({ language, version }) => `${language}@${version}`),
+		);
 
 		return { languages };
 	},
@@ -26,98 +26,37 @@ export const Route = createFileRoute("/admin/contest/new")({
 function NewContestForm() {
 	const navigate = Route.useNavigate();
 	const languages = Route.useLoaderData({ select: (data) => data.languages });
+
 	const defaultValues = Value.Default(ContestModel.insert, {
 		settings: { languages },
-	});
+	}) as typeof ContestModel.insert.static;
 
 	const form = useAppForm({
+		...ContestFormOptions,
 		defaultValues,
-		validators: {
-			onChange: Compile(ContestModel.insert),
-		},
 		onSubmit: async ({ value }) => {
 			const contestData = Value.Parse(ContestModel.insert, value);
 			const { data, error } =
 				await localjudge.api.admin.contest.post(contestData);
-			if (error) {
+			if (error || data.length === 0) {
 				alert(JSON.stringify(error));
 				return;
 			}
-			navigate({ to: "/admin/contest" });
-		},
-	});
-
-	useBlocker({
-		shouldBlockFn: () => {
-			if (!form.state.isDirty) return false;
-			const shouldLeave = confirm("Are you sure you want to leave?");
-			return !shouldLeave;
+			navigate({ to: "/admin/contest/$id", params: { id: data[0].id } });
 		},
 	});
 
 	return (
 		<form
-			className="grid gap-6"
 			onSubmit={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
 				form.handleSubmit();
 			}}
 		>
-			<form.AppField name="name">
-				{(field) => (
-					<field.TextField label="Name" placeholder="DSA - Practice Round 2" />
-				)}
-			</form.AppField>
-			<div className="grid sm:grid-cols-2 gap-6">
-				<form.AppField name="startTime">
-					{(field) => <field.DateTimePicker label="Start time" />}
-				</form.AppField>
-				<form.AppField name="endTime">
-					{(field) => <field.DateTimePicker label="End time" />}
-				</form.AppField>
-			</div>
-			<form.AppField name="settings.leaderboard">
-				{(field) => {
-					const { title, description } =
-						ContestModel.settings.properties.leaderboard;
-					return <field.ToggleSwitch label={title} description={description} />;
-				}}
-			</form.AppField>
-			<form.AppField name="settings.submissions.limit">
-				{(field) => {
-					const { title, description } =
-						ContestModel.settings.properties.submissions.properties.limit;
-					return (
-						<field.NumberField
-							label={title}
-							description={description}
-							min={0}
-						/>
-					);
-				}}
-			</form.AppField>
-			<form.AppField name="settings.submissions.visible">
-				{(field) => {
-					const { title, description } =
-						ContestModel.settings.properties.submissions.properties.visible;
-					return <field.ToggleSwitch label={title} description={description} />;
-				}}
-			</form.AppField>
-			<form.AppField name="settings.languages">
-				{(field) => {
-					const { title, description } =
-						ContestModel.settings.properties.languages;
-					return (
-						<field.MultiselectField
-							label={title}
-							description={description}
-							defaultOptions={languages}
-						/>
-					);
-				}}
-			</form.AppField>
-			<Button type="submit">Submit</Button>
+			<Suspense fallback={<div>Loading...</div>}>
+				<ContestForm form={form} />
+			</Suspense>
 		</form>
 	);
 }

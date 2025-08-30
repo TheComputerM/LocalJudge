@@ -1,5 +1,5 @@
-import env from "@/lib/env";
 import { defineConfig } from "drizzle-kit";
+import env from "@/lib/env";
 
 // TODO: remove `pg` once https://github.com/drizzle-team/drizzle-orm/pull/4109 gets merged
 

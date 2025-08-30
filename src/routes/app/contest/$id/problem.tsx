@@ -42,9 +42,11 @@ function AppSidebar() {
 									<SidebarMenuButton asChild>
 										<Link
 											from={Route.fullPath}
-											activeProps={{ className: "bg-accent" }}
-											to="./$number"
-											params={{ number: problem.number.toString() }}
+											activeProps={{
+												className: "bg-accent text-accent-foreground",
+											}}
+											to="./$problem"
+											params={{ problem: problem.number.toString() }}
 										>
 											{problem.title}
 										</Link>

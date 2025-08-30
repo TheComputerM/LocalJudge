@@ -1,10 +1,11 @@
 import {
+	ClientOnly,
 	createFileRoute,
 	Link,
 	linkOptions,
 	Outlet,
 } from "@tanstack/react-router";
-import { formatDistance } from "date-fns";
+import { differenceInSeconds } from "date-fns";
 import {
 	LucideFileCode2,
 	LucideGavel,
@@ -12,6 +13,7 @@ import {
 	LucideMenu,
 	LucideTrophy,
 } from "lucide-react";
+import { useMemo } from "react";
 import { localjudge } from "@/api/client";
 import { RefreshButton } from "@/components/refresh-button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -54,7 +56,7 @@ const navigationLinks = linkOptions([
 	},
 	{
 		from: Route.fullPath,
-		to: "./submissions",
+		to: "./submission",
 		label: "Submissons",
 		icon: LucideInbox,
 	},
@@ -67,9 +69,41 @@ const navigationLinks = linkOptions([
 ]);
 
 function RemainingTime() {
-	const time = useTime();
 	const endTime = Route.useLoaderData({ select: (data) => data.endTime });
-	return <span className="text-sm">{formatDistance(endTime, time)}</span>;
+	const time = useTime();
+	const timeLeft = useMemo(() => {
+		let seconds = differenceInSeconds(endTime, time);
+		let minutes = Math.floor(seconds / 60);
+		let hours = Math.floor(seconds / 3600);
+		minutes %= 60;
+		seconds %= 60;
+		return `${hours}h:${minutes}m:${seconds}s`;
+	}, [endTime, time]);
+	return <span className="text-sm min-w-28 text-center">{timeLeft}</span>;
+}
+
+function NavigationItems() {
+	return navigationLinks.map((link) => (
+		<NavigationMenuItem key={link.to}>
+			<NavigationMenuLink
+				className="flex-row items-center gap-2 py-1.5 font-medium"
+				asChild
+			>
+				<Link
+					from={link.from}
+					to={link.to}
+					activeProps={{ "data-active": true }}
+				>
+					<link.icon
+						size={16}
+						className="text-foreground/80"
+						aria-hidden="true"
+					/>
+					<span>{link.label}</span>
+				</Link>
+			</NavigationMenuLink>
+		</NavigationMenuItem>
+	));
 }
 
 function Navbar() {
@@ -88,55 +122,15 @@ function Navbar() {
 				</PopoverTrigger>
 				<PopoverContent className="w-36 p-1 md:hidden">
 					<NavigationMenu className="max-w-none *:w-full">
-						<NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-							{navigationLinks.map((link) => (
-								<NavigationMenuItem key={link.to} className="w-full">
-									<NavigationMenuLink
-										className="flex-row items-center gap-2 py-1.5"
-										asChild
-									>
-										<Link
-											from={link.from}
-											to={link.to}
-											activeProps={{ "data-active": true }}
-										>
-											<link.icon
-												size={16}
-												className="text-muted-foreground/80"
-												aria-hidden="true"
-											/>
-											<span>{link.label}</span>
-										</Link>
-									</NavigationMenuLink>
-								</NavigationMenuItem>
-							))}
+						<NavigationMenuList className="flex-col items-start gap-1 *:w-full">
+							<NavigationItems />
 						</NavigationMenuList>
 					</NavigationMenu>
 				</PopoverContent>
 			</Popover>
 			<NavigationMenu className="max-md:hidden">
 				<NavigationMenuList className="gap-2">
-					{navigationLinks.map((link) => (
-						<NavigationMenuItem key={link.to}>
-							<NavigationMenuLink
-								className="text-foreground hover:text-primary flex-row items-center gap-2 py-1.5 font-medium"
-								asChild
-							>
-								<Link
-									from={link.from}
-									to={link.to}
-									activeProps={{ "data-active": true }}
-								>
-									<link.icon
-										size={16}
-										className="text-muted-foreground/80"
-										aria-hidden="true"
-									/>
-									<span>{link.label}</span>
-								</Link>
-							</NavigationMenuLink>
-						</NavigationMenuItem>
-					))}
+					<NavigationItems />
 				</NavigationMenuList>
 			</NavigationMenu>
 			<div className="inline-flex items-center gap-2">
@@ -146,7 +140,9 @@ function Navbar() {
 					orientation="vertical"
 					className="data-[orientation=vertical]:h-4"
 				/>
-				<RemainingTime />
+				<ClientOnly>
+					<RemainingTime />
+				</ClientOnly>
 			</div>
 		</header>
 	);

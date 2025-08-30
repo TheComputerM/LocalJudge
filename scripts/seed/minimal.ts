@@ -1,8 +1,6 @@
-import { taskRunnerDB as db, reset } from "scripts/utils";
+import { taskRunnerDB as db } from "scripts/utils";
 import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
-
-await reset(db);
 
 console.info("Creating test user...");
 const { user } = await auth.api.createUser({

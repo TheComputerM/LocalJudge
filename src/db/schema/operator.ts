@@ -14,7 +14,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import type { contestSettingsSchema } from "../typebox/contest";
+import type { contestSettingsSchema } from "@/api/models/contest";
 import { user } from "./auth";
 
 export const operatorSchema = pgSchema("operator");
@@ -26,8 +26,8 @@ export const contest = operatorSchema.table(
 			.$default(() => nanoid(12))
 			.primaryKey(),
 		name: varchar("name", { length: 48 }).notNull(),
-		startTime: timestamp("start_time").notNull(),
-		endTime: timestamp("end_time").notNull(),
+		startTime: timestamp("start_time", { withTimezone: true }).notNull(),
+		endTime: timestamp("end_time", { withTimezone: true }).notNull(),
 		settings: jsonb("settings")
 			.$type<typeof contestSettingsSchema.static>()
 			.notNull(),
@@ -54,10 +54,16 @@ export const registration = operatorSchema.table(
 	{
 		userId: text("user_id")
 			.notNull()
-			.references(() => user.id),
+			.references(() => user.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 		contestId: text("contest_id")
 			.notNull()
-			.references(() => contest.id),
+			.references(() => contest.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 	},
 	(t) => [primaryKey({ columns: [t.userId, t.contestId] })],
 );
@@ -78,10 +84,15 @@ export const problem = operatorSchema.table(
 	{
 		contestId: text("contest_id")
 			.notNull()
-			.references(() => contest.id),
+			.references(() => contest.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 		number: smallint("number").notNull(),
 		title: varchar("title", { length: 32 }).notNull(),
 		description: text("description").notNull(),
+		timeLimit: integer("time_limit").notNull().default(1000),
+		memoryLimit: integer("memory_limit").notNull().default(256),
 	},
 	(t) => [
 		check("valid_number", sql`${t.number} > 0`),
@@ -107,17 +118,20 @@ export const testcase = operatorSchema.table(
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
 		number: smallint("number").notNull(),
+		points: integer("points").notNull().default(25),
 		hidden: boolean("hidden").notNull().default(false),
 		input: text("input").notNull(),
 		output: text("output").notNull(),
 	},
 	(t) => [
 		check("valid_number", sql`${t.number} > 0`),
+		primaryKey({ columns: [t.contestId, t.problemNumber, t.number] }),
 		foreignKey({
 			columns: [t.contestId, t.problemNumber],
 			foreignColumns: [problem.contestId, problem.number],
-		}),
-		primaryKey({ columns: [t.contestId, t.problemNumber, t.number] }),
+		})
+			.onDelete("cascade")
+			.onUpdate("cascade"),
 	],
 );
 
@@ -126,7 +140,6 @@ export const testcaseRelations = relations(testcase, ({ one, many }) => ({
 		fields: [testcase.contestId, testcase.problemNumber],
 		references: [problem.contestId, problem.number],
 	}),
-	results: many(result),
 }));
 
 /**
@@ -138,17 +151,22 @@ export const submission = operatorSchema.table(
 		id: uuid("id").primaryKey().defaultRandom(),
 		userId: text("user_id")
 			.notNull()
-			.references(() => user.id),
+			.references(() => user.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
-		input: text("input").notNull(),
-		language: varchar("language", { length: 16 }).notNull(),
+		code: text("code").notNull(),
+		language: varchar("language", { length: 24 }).notNull(),
 	},
 	(t) => [
 		foreignKey({
 			columns: [t.contestId, t.problemNumber],
 			foreignColumns: [problem.contestId, problem.number],
-		}),
+		})
+			.onDelete("cascade")
+			.onUpdate("cascade"),
 	],
 );
 
@@ -164,41 +182,40 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 	results: many(result),
 }));
 
+export const statusEnum = operatorSchema.enum("status", [
+	"accepted",
+	"incorrect_answer",
+	"time_limit_exceeded",
+	"memory_limit_exceeded",
+	"compilation_error",
+	"runtime_error",
+]);
+
 /**
  * Represents the result of a submission for a specific test case.
  */
 export const result = operatorSchema.table(
 	"result",
 	{
-		contestId: text("contest_id").notNull(),
-		problemNumber: smallint("problem_number").notNull(),
-		testcaseNumber: smallint("testcase_number").notNull(),
 		submissionId: uuid("submission_id")
 			.notNull()
-			.references(() => submission.id),
-		status: integer("status").notNull(),
-		message: varchar("message", { length: 256 }).notNull(),
+			.references(() => submission.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
+		testcaseNumber: smallint("testcase_number").notNull(),
+		// TODO: use a code execution engine that reports memory and time
+		status: statusEnum("status").notNull(),
+		message: text("message").notNull(),
 	},
 	(t) => [
 		primaryKey({
-			columns: [t.contestId, t.problemNumber, t.testcaseNumber, t.submissionId],
-		}),
-		foreignKey({
-			columns: [t.contestId, t.problemNumber, t.testcaseNumber],
-			foreignColumns: [
-				testcase.contestId,
-				testcase.problemNumber,
-				testcase.number,
-			],
+			columns: [t.submissionId, t.testcaseNumber],
 		}),
 	],
 );
 
 export const resultRelations = relations(result, ({ one }) => ({
-	testcase: one(testcase, {
-		fields: [result.contestId, result.problemNumber, result.testcaseNumber],
-		references: [testcase.contestId, testcase.problemNumber, testcase.number],
-	}),
 	submission: one(submission, {
 		fields: [result.submissionId],
 		references: [submission.id],

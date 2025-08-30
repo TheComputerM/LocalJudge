@@ -1,7 +1,7 @@
 import { createFetch, createSchema } from "@better-fetch/fetch";
 import { Type } from "@sinclair/typebox";
 import { Compile } from "@sinclair/typemap";
-import env from "./env";
+import env from "@/lib/env";
 
 /**
  * This schema is used for both adding and removing packages,
@@ -27,6 +27,16 @@ const ProcessResult = Type.Object({
 	output: Type.String(),
 	code: Type.Union([Type.Integer(), Type.Null()]),
 	signal: Type.Union([Type.String(), Type.Null()]),
+	memory: Type.Number(),
+	cpu_time: Type.Number(),
+	wall_time: Type.Number(),
+});
+
+export const PistonResultSchema = Type.Object({
+	language: Type.String(),
+	version: Type.String(),
+	run: ProcessResult,
+	compile: Type.Optional(ProcessResult),
 });
 
 const schema = createSchema({
@@ -56,14 +66,7 @@ const schema = createSchema({
 				compile_memory_limit: Type.Optional(Type.Number()),
 			}),
 		),
-		output: Compile(
-			Type.Object({
-				language: Type.String(),
-				version: Type.String(),
-				run: ProcessResult,
-				compile: Type.Optional(ProcessResult),
-			}),
-		),
+		output: Compile(PistonResultSchema),
 	},
 	"@get/runtimes": {
 		output: Compile(
@@ -92,7 +95,7 @@ const schema = createSchema({
 	"@delete/packages": PackageAction,
 });
 
-export const piston = createFetch({
+export const $piston = createFetch({
 	baseURL: new URL("/api/v2", env.PISTON_URL).href,
 	schema,
 });

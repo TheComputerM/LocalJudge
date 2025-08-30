@@ -1,6 +1,6 @@
 import { t } from "elysia";
-import { contest } from "../schema";
-import { createInsertSchema } from ".";
+import { contest } from "@/db/schema";
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from ".";
 
 export const contestSettingsSchema = t.Object(
 	{
@@ -37,12 +37,25 @@ export const contestSettingsSchema = t.Object(
 	{ default: {} },
 );
 
-const _contestInsert = createInsertSchema(contest, {
-	name: t.String({ minLength: 4, maxLength: 48, default: "" }),
+const name = t.String({ minLength: 4, maxLength: 48, default: "" });
+
+const _selectSchema = createSelectSchema(contest, {
+	name,
 	settings: contestSettingsSchema,
 });
-
-export const ContestModel = {
-	insert: t.Omit(_contestInsert, ["id"]),
+const _insertSchema = createInsertSchema(contest, {
+	name,
 	settings: contestSettingsSchema,
-};
+});
+const _updateSchema = createUpdateSchema(contest, {
+	name: t.Optional(name),
+	settings: t.Optional(contestSettingsSchema),
+});
+
+export namespace ContestModel {
+	export const select = _selectSchema;
+	export const insert = t.Omit(_insertSchema, ["id"]);
+	export const update = t.Omit(_updateSchema, ["id"]);
+
+	export const settings = contestSettingsSchema;
+}

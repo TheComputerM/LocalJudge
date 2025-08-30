@@ -1,8 +1,8 @@
-import { and, asc, eq } from "drizzle-orm";
 import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { db } from "@/db";
-import * as table from "@/db/schema";
+import { ContestService } from "@/api/contest/service";
+import { ContestModel } from "@/api/models/contest";
+import { problemApp } from "./problem";
 
 export const contestApp = new Elysia({
 	prefix: "/contest",
@@ -13,29 +13,20 @@ export const contestApp = new Elysia({
 	.get(
 		"/",
 		async ({ auth }) => {
-			const contests = await db.query.registration.findMany({
-				columns: {},
-				where: eq(table.registration.userId, auth.user.id),
-				with: {
-					contest: true,
-				},
-			});
-
-			return contests.map(({ contest }) => contest);
+			return ContestService.getContestsByUser(auth.user.id);
 		},
 		{
+			response: t.Array(ContestModel.select),
 			detail: {
-				summary: "Get contests",
-				description: "Get contests the user is participating in",
+				summary: "List contests",
+				description: "List contests the user is participating in",
 			},
 		},
 	)
 	.post(
 		"/",
 		async ({ auth, body }) => {
-			await db
-				.insert(table.registration)
-				.values({ userId: auth.user.id, contestId: body.code });
+			await ContestService.registerContest(body.code, auth.user.id);
 			return status(201, "Successfully registered for the contest");
 		},
 		{
@@ -52,19 +43,17 @@ export const contestApp = new Elysia({
 	.group(
 		"/:id",
 		{
-			params: t.Object({ id: t.String({ description: "Contest ID" }) }),
+			params: t.Object({ id: t.String() }),
 		},
 		(app) =>
 			app
 				.onBeforeHandle(async ({ params, auth }) => {
-					const isRegistered =
-						(await db.$count(
-							table.registration,
-							and(
-								eq(table.registration.userId, auth.user.id),
-								eq(table.registration.contestId, params.id),
-							),
-						)) > 0;
+					if (auth.user.role?.includes("admin")) return;
+
+					const isRegistered = await ContestService.isUserRegistered(
+						params.id,
+						auth.user.id,
+					);
 
 					if (!isRegistered) {
 						return status(403, "You are not registered for this contest");
@@ -73,63 +62,20 @@ export const contestApp = new Elysia({
 				.get(
 					"/",
 					async ({ params }) => {
-						const contest = await db.query.contest.findFirst({
-							where: eq(table.contest.id, params.id),
-						});
-						if (!contest) return status(404);
+						const contest = await ContestService.getContest(params.id);
+						if (!contest) return status(404, "Contest not found");
 						return contest;
 					},
 					{
+						response: {
+							200: ContestModel.select,
+							404: t.Literal("Contest not found"),
+						},
 						detail: {
-							summary: "Get contest details",
-							description: "Get details of a contest by using its ID",
+							summary: "Get contest",
+							description: "Get details of a specific contest",
 						},
 					},
 				)
-				.group("/problem", (app) =>
-					app
-						.get("/", async ({ params }) => {
-							const problems = await db.query.problem.findMany({
-								where: eq(table.problem.contestId, params.id),
-								columns: {
-									description: false,
-								},
-								orderBy: asc(table.problem.number),
-							});
-							return problems;
-						})
-						.group(
-							"/:problem",
-							{
-								params: t.Object({
-									id: t.String({ description: "Contest ID" }),
-									problem: t.Number({ description: "Problem number" }),
-								}),
-							},
-							(app) =>
-								app
-									.get("/", async ({ params }) => {
-										const problem = await db.query.problem.findFirst({
-											where: and(
-												eq(table.problem.contestId, params.id),
-												eq(table.problem.number, params.problem),
-											),
-										});
-										if (!problem) return status(404);
-										return problem;
-									})
-									.post("/", async () => {
-										// TODO: submit code for contest
-									})
-									.get("/testcase", async ({ params }) => {
-										const testcases = await db.query.testcase.findMany({
-											where: and(
-												eq(table.testcase.contestId, params.id),
-												eq(table.testcase.problemNumber, params.problem),
-											),
-										});
-										return testcases;
-									}),
-						),
-				),
+				.use(problemApp),
 	);

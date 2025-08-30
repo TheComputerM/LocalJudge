@@ -1,5 +1,5 @@
 {
-	"id": "f5a1f19d-74f2-469c-a51a-dfbc7b693ce3",
+	"id": "9bce6f65-d773-448a-a141-417ed0c660d3",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -342,13 +342,13 @@
 				},
 				"start_time": {
 					"name": "start_time",
-					"type": "timestamp",
+					"type": "timestamp with time zone",
 					"primaryKey": false,
 					"notNull": true
 				},
 				"end_time": {
 					"name": "end_time",
-					"type": "timestamp",
+					"type": "timestamp with time zone",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -399,6 +399,20 @@
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
+				},
+				"time_limit": {
+					"name": "time_limit",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 1000
+				},
+				"memory_limit": {
+					"name": "memory_limit",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 256
 				}
 			},
 			"indexes": {},
@@ -410,8 +424,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
@@ -456,8 +470,8 @@
 					"schemaTo": "auth",
 					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				},
 				"registration_contest_id_contest_id_fk": {
 					"name": "registration_contest_id_contest_id_fk",
@@ -466,8 +480,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
@@ -485,15 +499,9 @@
 			"name": "result",
 			"schema": "operator",
 			"columns": {
-				"contest_id": {
-					"name": "contest_id",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"problem_number": {
-					"name": "problem_number",
-					"type": "smallint",
+				"submission_id": {
+					"name": "submission_id",
+					"type": "uuid",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -503,21 +511,16 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"submission_id": {
-					"name": "submission_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
 				"status": {
 					"name": "status",
-					"type": "integer",
+					"type": "status",
+					"typeSchema": "operator",
 					"primaryKey": false,
 					"notNull": true
 				},
 				"message": {
 					"name": "message",
-					"type": "varchar(256)",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				}
@@ -531,29 +534,14 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["submission_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				},
-				"result_contest_id_problem_number_testcase_number_testcase_contest_id_problem_number_number_fk": {
-					"name": "result_contest_id_problem_number_testcase_number_testcase_contest_id_problem_number_number_fk",
-					"tableFrom": "result",
-					"tableTo": "testcase",
-					"schemaTo": "operator",
-					"columnsFrom": ["contest_id", "problem_number", "testcase_number"],
-					"columnsTo": ["contest_id", "problem_number", "number"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
-				"result_contest_id_problem_number_testcase_number_submission_id_pk": {
-					"name": "result_contest_id_problem_number_testcase_number_submission_id_pk",
-					"columns": [
-						"contest_id",
-						"problem_number",
-						"testcase_number",
-						"submission_id"
-					]
+				"result_submission_id_testcase_number_pk": {
+					"name": "result_submission_id_testcase_number_pk",
+					"columns": ["submission_id", "testcase_number"]
 				}
 			},
 			"uniqueConstraints": {},
@@ -590,15 +578,15 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"input": {
-					"name": "input",
+				"code": {
+					"name": "code",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
 				"language": {
 					"name": "language",
-					"type": "varchar(16)",
+					"type": "varchar(24)",
 					"primaryKey": false,
 					"notNull": true
 				}
@@ -612,8 +600,8 @@
 					"schemaTo": "auth",
 					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				},
 				"submission_contest_id_problem_number_problem_contest_id_number_fk": {
 					"name": "submission_contest_id_problem_number_problem_contest_id_number_fk",
@@ -622,8 +610,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id", "problem_number"],
 					"columnsTo": ["contest_id", "number"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {},
@@ -654,6 +642,13 @@
 					"primaryKey": false,
 					"notNull": true
 				},
+				"points": {
+					"name": "points",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 25
+				},
 				"hidden": {
 					"name": "hidden",
 					"type": "boolean",
@@ -683,8 +678,8 @@
 					"schemaTo": "operator",
 					"columnsFrom": ["contest_id", "problem_number"],
 					"columnsTo": ["contest_id", "number"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
 				}
 			},
 			"compositePrimaryKeys": {
@@ -704,7 +699,20 @@
 			"isRLSEnabled": false
 		}
 	},
-	"enums": {},
+	"enums": {
+		"operator.status": {
+			"name": "status",
+			"schema": "operator",
+			"values": [
+				"accepted",
+				"incorrect_answer",
+				"time_limit_exceeded",
+				"memory_limit_exceeded",
+				"compilation_error",
+				"runtime_error"
+			]
+		}
+	},
 	"schemas": {
 		"auth": "auth",
 		"operator": "operator"

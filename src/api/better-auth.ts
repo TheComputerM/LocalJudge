@@ -14,10 +14,7 @@ export const betterAuthPlugin = new Elysia({
 			if (role !== "any" && !data.user.role?.includes(role)) return status(403);
 
 			return {
-				auth: {
-					user: data.user,
-					session: data.session,
-				},
+				auth: data,
 			};
 		},
 	}),

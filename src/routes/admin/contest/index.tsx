@@ -1,42 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LucidePlus } from "lucide-react";
+import { LucidePlus, LucideTrash, LucideView } from "lucide-react";
 import { localjudge } from "@/api/client";
+import { ConfirmActionDialog } from "@/components/confirm-action";
+import { ContestCard } from "@/components/contest-card";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardAction,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/")({
 	loader: async ({ abortController }) => {
-		const { data, error } = await localjudge.api.admin.contest.get({
-			fetch: {
-				signal: abortController.signal,
-			},
-		});
-		if (error) throw error;
-		return data;
+		const contests = await rejectError(
+			localjudge.api.admin.contest.get({
+				fetch: {
+					signal: abortController.signal,
+				},
+			}),
+		);
+		return contests;
 	},
 	component: RouteComponent,
 });
-
-function ContestCard(props: { id: string; name: string }) {
-	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>{props.name}</CardTitle>
-				<CardDescription>{props.id}</CardDescription>
-				<CardAction>
-					<Button variant="link">Inspect</Button>
-				</CardAction>
-			</CardHeader>
-		</Card>
-	);
-}
 
 function RouteComponent() {
 	const contests = Route.useLoaderData();
@@ -55,7 +38,21 @@ function RouteComponent() {
 			<Separator className="my-6" />
 			<div className="grid gap-3">
 				{contests.map((contest) => (
-					<ContestCard key={contest.id} {...contest} />
+					<ContestCard key={contest.id} {...contest}>
+						<div className="flex gap-2 w-full">
+							<ConfirmActionDialog>
+								<Button variant="destructive">
+									Delete <LucideTrash />
+								</Button>
+							</ConfirmActionDialog>
+							<Button asChild className="flex-1">
+								<Link to="/admin/contest/$id" params={{ id: contest.id }}>
+									View Details
+									<LucideView />
+								</Link>
+							</Button>
+						</div>
+					</ContestCard>
 				))}
 			</div>
 		</>
