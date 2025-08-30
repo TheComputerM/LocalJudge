@@ -27,6 +27,9 @@ const ProcessResult = Type.Object({
 	output: Type.String(),
 	code: Type.Union([Type.Integer(), Type.Null()]),
 	signal: Type.Union([Type.String(), Type.Null()]),
+	memory: Type.Number(),
+	cpu_time: Type.Number(),
+	wall_time: Type.Number(),
 });
 
 export const PistonResultSchema = Type.Object({
