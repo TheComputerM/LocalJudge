@@ -2,7 +2,7 @@ import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { adminApp } from "./admin";
 import { contestApp } from "./contest";
-import { pistonApp } from "./piston";
+import { localboxApp } from "./localbox";
 
 export const baseApp = new Elysia({ prefix: "/api" })
 	.use(
@@ -22,6 +22,6 @@ export const baseApp = new Elysia({ prefix: "/api" })
 	})
 	.use(contestApp)
 	.use(adminApp)
-	.use(pistonApp);
+	.use(localboxApp);
 
 export type App = typeof baseApp;

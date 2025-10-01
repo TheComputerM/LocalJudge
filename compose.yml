@@ -1,11 +1,10 @@
 services:
-  piston:
-    image: ghcr.io/engineer-man/piston
+  localbox:
+    image: ghcr.io/thecomputerm/localbox:latest
+    cgroup: host
     privileged: true
     ports:
       - "2000:2000"
-    volumes:
-      - ./temp/piston/packages:/piston/packages
     tmpfs:
       - /tmp:exec
 

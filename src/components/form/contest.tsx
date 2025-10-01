@@ -25,10 +25,12 @@ export const ContestForm = withForm({
 	...ContestFormOptions,
 	render: function Render({ form }) {
 		const { data: languages } = useSWR(
-			"/api/piston/runtimes",
+			"/api/localbox/engine",
 			(url) =>
 				rejectError($localjudge(url, {})).then((data) =>
-					data.map(({ language, version }) => `${language}@${version}`),
+					Object.entries(data).map(
+						([language, { version }]) => `${language}@${version}`,
+					),
 				),
 			{
 				suspense: true,

@@ -2,7 +2,6 @@ import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
-import { PistonService } from "@/api/piston/service";
 import { ProblemService } from "./service";
 
 export const problemApp = new Elysia({ prefix: "/problem" })
@@ -58,13 +57,6 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 				.post(
 					"/",
 					async ({ auth, params }) => {
-						await PistonService.submit(
-							auth.user.id,
-							params.id,
-							params.problem,
-							"print(input())",
-							"python@3.12.0",
-						);
 						return status(201, "Code submitted successfully");
 					},
 					{

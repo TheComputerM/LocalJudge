@@ -11,7 +11,7 @@ const envSchema = Type.Object({
 	BETTER_AUTH_SECRET: Type.String(),
 	ADMIN_EMAIL: Type.String(),
 	ADMIN_PASSWORD: Type.String(),
-	PISTON_URL: Type.String(),
+	LOCALBOX_URL: Type.String(),
 });
 
 const env = Value.Parse(envSchema, process.env);
