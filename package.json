@@ -8,8 +8,8 @@
 		"build": "vite build",
 		"start": "bun --bun run .output/server/index.mjs",
 		"check": "biome check src",
-		"db:migrate": "bun run ./scripts/migrate.ts",
-		"db:reset": "bun run ./scripts/reset.ts",
+		"db:migrate": "bun run ./scripts/db/migrate.ts",
+		"db:reset": "bun run ./scripts/db/reset.ts",
 		"db:generate": "drizzle-kit generate",
 		"db:studio": "drizzle-kit studio"
 	},

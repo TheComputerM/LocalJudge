@@ -1,4 +1,4 @@
-import { taskRunnerDB as db } from "scripts/utils";
+import { taskRunnerDB as db } from "scripts/db/utils";
 import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
 
