@@ -1,12 +1,16 @@
-import { createServerFileRoute } from "@tanstack/react-start/server";
+import { createFileRoute } from "@tanstack/react-router";
 import { baseApp } from "@/api";
 
 const handle = ({ request }: { request: Request }) => baseApp.handle(request);
 
-export const ServerRoute = createServerFileRoute("/api/$").methods({
-	GET: handle,
-	POST: handle,
-	PUT: handle,
-	DELETE: handle,
-	PATCH: handle,
+export const Route = createFileRoute("/api/$")({
+	server: {
+		handlers: {
+			GET: handle,
+			POST: handle,
+			PUT: handle,
+			DELETE: handle,
+			PATCH: handle,
+		},
+	},
 });

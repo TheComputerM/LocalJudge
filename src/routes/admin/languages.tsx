@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, use } from "react";
 import { localjudge } from "@/api/client";
-
+import { Table, TableHead, TableHeader } from "@/components/ui/table";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/languages")({
@@ -18,7 +18,13 @@ function PackageList() {
 		select: (data) => data.packagesPromise,
 	});
 	const packages = use(packagesPromise);
-	return <div>{/* TODO */}</div>;
+	return (
+		<Table>
+			<TableHeader>
+				<TableHead>Package</TableHead>
+			</TableHeader>
+		</Table>
+	);
 }
 
 function RouteComponent() {

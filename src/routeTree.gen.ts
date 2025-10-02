@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
@@ -17,11 +15,13 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as AdminParticipantRouteImport } from './routes/admin/participant'
 import { Route as AdminLanguagesRouteImport } from './routes/admin/languages'
 import { Route as AdminConfigurationRouteImport } from './routes/admin/configuration'
 import { Route as AdminContestIndexRouteImport } from './routes/admin/contest/index'
 import { Route as AppContestIdRouteImport } from './routes/app/contest/$id'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AdminContestNewRouteImport } from './routes/admin/contest/new'
 import { Route as AdminContestIdRouteImport } from './routes/admin/contest/$id'
 import { Route as AppContestIdIndexRouteImport } from './routes/app/contest/$id/index'
@@ -34,10 +34,6 @@ import { Route as AdminContestIdProblemIndexRouteImport } from './routes/admin/c
 import { Route as AppContestIdProblemProblemRouteImport } from './routes/app/contest/$id/problem/$problem'
 import { Route as AdminContestIdProblemNewRouteImport } from './routes/admin/contest/$id/problem/new'
 import { Route as AdminContestIdProblemProblemRouteImport } from './routes/admin/contest/$id/problem/$problem'
-import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
-
-const rootServerRouteImport = createServerRootRoute()
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -69,6 +65,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminParticipantRoute = AdminParticipantRouteImport.update({
   id: '/participant',
   path: '/participant',
@@ -93,6 +94,11 @@ const AppContestIdRoute = AppContestIdRouteImport.update({
   id: '/contest/$id',
   path: '/contest/$id',
   getParentRoute: () => AppRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContestNewRoute = AdminContestNewRouteImport.update({
   id: '/contest/new',
@@ -160,16 +166,6 @@ const AdminContestIdProblemProblemRoute =
     path: '/problem/$problem',
     getParentRoute: () => AdminContestIdRoute,
   } as any)
-const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -179,10 +175,12 @@ export interface FileRoutesByFullPath {
   '/admin/configuration': typeof AdminConfigurationRoute
   '/admin/languages': typeof AdminLanguagesRoute
   '/admin/participant': typeof AdminParticipantRoute
+  '/api/$': typeof ApiSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/admin/contest/$id': typeof AdminContestIdRouteWithChildren
   '/admin/contest/new': typeof AdminContestNewRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/app/contest/$id': typeof AppContestIdRouteWithChildren
   '/admin/contest': typeof AdminContestIndexRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
@@ -202,9 +200,11 @@ export interface FileRoutesByTo {
   '/admin/configuration': typeof AdminConfigurationRoute
   '/admin/languages': typeof AdminLanguagesRoute
   '/admin/participant': typeof AdminParticipantRoute
+  '/api/$': typeof ApiSplatRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/admin/contest/new': typeof AdminContestNewRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/contest': typeof AdminContestIndexRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
   '/admin/contest/$id': typeof AdminContestIdIndexRoute
@@ -225,10 +225,12 @@ export interface FileRoutesById {
   '/admin/configuration': typeof AdminConfigurationRoute
   '/admin/languages': typeof AdminLanguagesRoute
   '/admin/participant': typeof AdminParticipantRoute
+  '/api/$': typeof ApiSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/admin/contest/$id': typeof AdminContestIdRouteWithChildren
   '/admin/contest/new': typeof AdminContestNewRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/app/contest/$id': typeof AppContestIdRouteWithChildren
   '/admin/contest/': typeof AdminContestIndexRoute
   '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
@@ -252,10 +254,12 @@ export interface FileRouteTypes {
     | '/admin/configuration'
     | '/admin/languages'
     | '/admin/participant'
+    | '/api/$'
     | '/admin/'
     | '/app/'
     | '/admin/contest/$id'
     | '/admin/contest/new'
+    | '/api/auth/$'
     | '/app/contest/$id'
     | '/admin/contest'
     | '/app/contest/$id/leaderboard'
@@ -275,9 +279,11 @@ export interface FileRouteTypes {
     | '/admin/configuration'
     | '/admin/languages'
     | '/admin/participant'
+    | '/api/$'
     | '/admin'
     | '/app'
     | '/admin/contest/new'
+    | '/api/auth/$'
     | '/admin/contest'
     | '/app/contest/$id/leaderboard'
     | '/admin/contest/$id'
@@ -297,10 +303,12 @@ export interface FileRouteTypes {
     | '/admin/configuration'
     | '/admin/languages'
     | '/admin/participant'
+    | '/api/$'
     | '/admin/'
     | '/app/'
     | '/admin/contest/$id'
     | '/admin/contest/new'
+    | '/api/auth/$'
     | '/app/contest/$id'
     | '/admin/contest/'
     | '/app/contest/$id/leaderboard'
@@ -320,31 +328,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
-}
-export interface FileServerRoutesByFullPath {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/auth/$'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/auth/$'
-  id: '__root__' | '/api/$' | '/api/auth/$'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiSplatServerRoute: typeof ApiSplatServerRoute
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  ApiSplatRoute: typeof ApiSplatRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -391,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/participant': {
       id: '/admin/participant'
       path: '/participant'
@@ -425,6 +417,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/contest/$id'
       preLoaderRoute: typeof AppContestIdRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/contest/new': {
       id: '/admin/contest/new'
@@ -509,24 +508,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/contest/$id/problem/$problem'
       preLoaderRoute: typeof AdminContestIdProblemProblemRouteImport
       parentRoute: typeof AdminContestIdRoute
-    }
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
     }
   }
 }
@@ -619,14 +600,18 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiSplatRoute: ApiSplatRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiSplatServerRoute: ApiSplatServerRoute,
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
 }
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

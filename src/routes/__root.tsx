@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import jetbrainsMonoFontCss from "@fontsource-variable/jetbrains-mono?url";
 import outfitFontCss from "@fontsource-variable/outfit?url";
 import {
@@ -8,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 import type { ReactNode } from "react";
 import { auth } from "@/lib/auth";
 import { getThemeFn } from "@/lib/server/theme";
@@ -16,7 +17,7 @@ import appCss from "@/styles/app.css?url";
 
 const getAuthFn = createServerFn().handler(async () => {
 	const data = await auth.api.getSession({
-		headers: getWebRequest().headers,
+		headers: getRequest().headers,
 	});
 	return data;
 });

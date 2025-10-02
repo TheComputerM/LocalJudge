@@ -1,12 +1,10 @@
 import { type Treaty, treaty } from "@elysiajs/eden";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 import { type App, baseApp } from ".";
 
 const createClient = createIsomorphicFn()
-	.server(() =>
-		treaty<App>(baseApp, { headers: () => getWebRequest().headers }),
-	)
+	.server(() => treaty<App>(baseApp, { headers: () => getRequest().headers }))
 	.client(() =>
 		treaty<App>(window.location.host, {
 			fetch: {
