@@ -1,4 +1,5 @@
 import { CheckIcon } from "lucide-react";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import {
 	Tags,
 	TagsContent,
@@ -44,8 +45,8 @@ export function MultiselectField({
 	};
 
 	return (
-		<div className="flex flex-col gap-3">
-			{label && <Label htmlFor={field.name}>{label}</Label>}
+		<Field>
+			{label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
 			<Tags>
 				<TagsTrigger onBlur={field.handleBlur} placeholder={placeholder}>
 					{field.state.value.map((tag) => (
@@ -71,10 +72,8 @@ export function MultiselectField({
 					</TagsList>
 				</TagsContent>
 			</Tags>
-			{description && (
-				<p className="text-muted-foreground text-xs">{description}</p>
-			)}
+			{description && <FieldDescription>{description}</FieldDescription>}
 			<FieldInfo field={field} />
-		</div>
+		</Field>
 	);
 }

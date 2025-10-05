@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea as BaseTextarea } from "@/components/ui/textarea";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
@@ -12,8 +12,8 @@ export function Textarea({ label, description, ...props }: TextareaProps) {
 	const field = useFieldContext<string>();
 
 	return (
-		<div className="flex flex-col gap-3">
-			{label && <Label htmlFor={field.name}>{label}</Label>}
+		<Field>
+			{label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
 			<BaseTextarea
 				id={field.name}
 				name={field.name}
@@ -22,10 +22,8 @@ export function Textarea({ label, description, ...props }: TextareaProps) {
 				onChange={(e) => field.handleChange(e.target.value)}
 				{...props}
 			/>
-			{description && (
-				<p className="text-muted-foreground text-xs">{description}</p>
-			)}
+			{description && <FieldDescription>{description}</FieldDescription>}
 			<FieldInfo field={field} />
-		</div>
+		</Field>
 	);
 }

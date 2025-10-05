@@ -5,7 +5,7 @@ import { LucideCalendar } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel } from "@/components/ui/field";
 import {
 	Popover,
 	PopoverContent,
@@ -46,8 +46,8 @@ export function DateTimePicker(props: { label: string }) {
 	};
 
 	return (
-		<div className="flex flex-col gap-3">
-			<Label>{props.label}</Label>
+		<Field>
+			<FieldLabel>{props.label}</FieldLabel>
 			<Popover
 				open={isOpen}
 				onOpenChange={(open) => {
@@ -125,6 +125,6 @@ export function DateTimePicker(props: { label: string }) {
 				</PopoverContent>
 			</Popover>
 			<FieldInfo field={field} />
-		</div>
+		</Field>
 	);
 }

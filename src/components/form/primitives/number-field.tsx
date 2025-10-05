@@ -1,5 +1,5 @@
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
@@ -16,8 +16,8 @@ export function NumberField({
 	const field = useFieldContext<number>();
 
 	return (
-		<div className="flex flex-col gap-3">
-			{label && <Label htmlFor={field.name}>{label}</Label>}
+		<Field>
+			{label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
 			<Input
 				id={field.name}
 				name={field.name}
@@ -27,10 +27,8 @@ export function NumberField({
 				type="number"
 				{...props}
 			/>
-			{description && (
-				<p className="text-muted-foreground text-xs">{description}</p>
-			)}
+			{description && <FieldDescription>{description}</FieldDescription>}
 			<FieldInfo field={field} />
-		</div>
+		</Field>
 	);
 }

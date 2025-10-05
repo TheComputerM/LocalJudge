@@ -7,6 +7,13 @@ import useSWR from "swr";
 import { $localjudge } from "@/api/fetch";
 import { ContestModel } from "@/api/models/contest";
 import { withForm } from "@/components/form/primitives";
+import {
+	FieldDescription,
+	FieldGroup,
+	FieldLegend,
+	FieldSeparator,
+	FieldSet,
+} from "@/components/ui/field";
 import { rejectError } from "@/lib/utils";
 
 const defaultValues = Value.Default(
@@ -40,81 +47,91 @@ export const ContestForm = withForm({
 
 		useBlocker({
 			shouldBlockFn: () => {
-				if (!form.state.isDirty) return false;
+				if (form.state.isPristine) return false;
 				const shouldLeave = confirm("Are you sure you want to leave?");
 				return !shouldLeave;
 			},
 		});
 
 		return (
-			<div className="grid gap-6">
-				<form.AppField name="name">
-					{(field) => (
-						<field.TextField
-							label="Name"
-							placeholder="DSA - Practice Round 2"
-						/>
-					)}
-				</form.AppField>
-				<div className="grid sm:grid-cols-2 gap-6">
-					<form.AppField name="startTime">
-						{(field) => <field.DateTimePicker label="Start time" />}
-					</form.AppField>
-					<form.AppField name="endTime">
-						{(field) => <field.DateTimePicker label="End time" />}
-					</form.AppField>
-				</div>
-				<form.AppField name="settings.leaderboard">
-					{(field) => {
-						const { title, description } =
-							ContestModel.settings.properties.leaderboard;
-						return (
-							<field.ToggleSwitch label={title} description={description} />
-						);
-					}}
-				</form.AppField>
-				<form.AppField name="settings.submissions.limit">
-					{(field) => {
-						const { title, description } =
-							ContestModel.settings.properties.submissions.properties.limit;
-						return (
-							<field.NumberField
-								label={title}
-								description={description}
-								min={0}
+			<FieldGroup>
+				<FieldSet>
+					<FieldLegend>Contest Details</FieldLegend>
+					<FieldDescription>
+						Provide details about the contest.
+					</FieldDescription>
+					<form.AppField name="name">
+						{(field) => (
+							<field.TextField
+								label="Name"
+								placeholder="DSA - Practice Round 2"
 							/>
-						);
-					}}
-				</form.AppField>
-				<form.AppField name="settings.submissions.visible">
-					{(field) => {
-						const { title, description } =
-							ContestModel.settings.properties.submissions.properties.visible;
-						return (
-							<field.ToggleSwitch label={title} description={description} />
-						);
-					}}
-				</form.AppField>
-				<form.AppField name="settings.languages">
-					{(field) => {
-						const { title, description } =
-							ContestModel.settings.properties.languages;
-						return (
-							<field.MultiselectField
-								label={title}
-								description={description}
-								placeholder="Select languages"
-								options={languages}
-							/>
-						);
-					}}
-				</form.AppField>
+						)}
+					</form.AppField>
+					<div className="grid sm:grid-cols-2 gap-4">
+						<form.AppField name="startTime">
+							{(field) => <field.DateTimePicker label="Start time" />}
+						</form.AppField>
+						<form.AppField name="endTime">
+							{(field) => <field.DateTimePicker label="End time" />}
+						</form.AppField>
+					</div>
+					<form.AppField name="settings.leaderboard">
+						{(field) => {
+							const { title, description } =
+								ContestModel.settings.properties.leaderboard;
+							return (
+								<field.ToggleSwitch label={title} description={description} />
+							);
+						}}
+					</form.AppField>
+					<form.AppField name="settings.languages">
+						{(field) => {
+							const { title, description } =
+								ContestModel.settings.properties.languages;
+							return (
+								<field.MultiselectField
+									label={title}
+									description={description}
+									placeholder="Select languages"
+									options={languages}
+								/>
+							);
+						}}
+					</form.AppField>
+				</FieldSet>
+				<FieldSeparator />
+				<FieldSet>
+					<form.AppField name="settings.submissions.limit">
+						{(field) => {
+							const { title, description } =
+								ContestModel.settings.properties.submissions.properties.limit;
+							return (
+								<field.NumberField
+									label={title}
+									description={description}
+									min={0}
+								/>
+							);
+						}}
+					</form.AppField>
+					<form.AppField name="settings.submissions.visible">
+						{(field) => {
+							const { title, description } =
+								ContestModel.settings.properties.submissions.properties.visible;
+							return (
+								<field.ToggleSwitch label={title} description={description} />
+							);
+						}}
+					</form.AppField>
+				</FieldSet>
+				<FieldSeparator />
 				<form.AppForm>
 					<form.SubmitButton>
 						Save <LucideSave />
 					</form.SubmitButton>
 				</form.AppForm>
-			</div>
+			</FieldGroup>
 		);
 	},
 });

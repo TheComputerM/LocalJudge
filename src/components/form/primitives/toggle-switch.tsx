@@ -1,4 +1,9 @@
-import { Label } from "@/components/ui/label";
+import {
+	Field,
+	FieldContent,
+	FieldDescription,
+	FieldLabel,
+} from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { FieldInfo } from "./field-info";
@@ -19,25 +24,24 @@ export function ToggleSwitch({
 				"relative flex w-full items-center gap-2 rounded-md p-4 outline-none border-input has-data-[state=checked]:border-primary/50 border shadow-xs",
 			)}
 		>
-			<div className="grid grow gap-2">
-				<Label htmlFor={field.name}>{label}</Label>
-				{description && (
-					<p
-						id={`${field.name}-description`}
-						className="text-muted-foreground text-xs"
-					>
-						{description}
-					</p>
-				)}
-				<FieldInfo field={field} />
-			</div>
-			<Switch
-				id={field.name}
-				aria-describedby={`${field.name}-description`}
-				checked={field.state.value}
-				onCheckedChange={field.handleChange}
-				onBlur={field.handleBlur}
-			/>
+			<Field orientation="horizontal">
+				<FieldContent>
+					<FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+					{description && (
+						<FieldDescription id={`${field.name}-description`}>
+							{description}
+						</FieldDescription>
+					)}
+					<FieldInfo field={field} />
+				</FieldContent>
+				<Switch
+					id={field.name}
+					aria-describedby={`${field.name}-description`}
+					checked={field.state.value}
+					onCheckedChange={field.handleChange}
+					onBlur={field.handleBlur}
+				/>
+			</Field>
 		</div>
 	);
 }

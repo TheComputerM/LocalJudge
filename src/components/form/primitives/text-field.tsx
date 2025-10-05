@@ -1,5 +1,5 @@
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
@@ -12,8 +12,8 @@ export function TextField({ label, description, ...props }: TextFieldProps) {
 	const field = useFieldContext<string>();
 
 	return (
-		<div className="flex flex-col gap-3">
-			{label && <Label htmlFor={field.name}>{label}</Label>}
+		<Field>
+			{label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
 			<Input
 				id={field.name}
 				name={field.name}
@@ -22,10 +22,8 @@ export function TextField({ label, description, ...props }: TextFieldProps) {
 				onChange={(e) => field.handleChange(e.target.value)}
 				{...props}
 			/>
-			{description && (
-				<p className="text-muted-foreground text-xs">{description}</p>
-			)}
+			{description && <FieldDescription>{description}</FieldDescription>}
 			<FieldInfo field={field} />
-		</div>
+		</Field>
 	);
 }
