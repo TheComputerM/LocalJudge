@@ -7,12 +7,15 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!**/routeTree.gen.ts", "!src/styles/app.css"]
+		"includes": ["**", "!**/routeTree.gen.ts"]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
 	"linter": {
 		"enabled": true,
-		"includes": ["!src/components/{ui,magicui}/**/*.tsx"],
+		"includes": [
+			"!src/components/{ui,magicui}/**/*.tsx",
+			"!src/styles/app.css"
+		],
 		"rules": {
 			"recommended": true,
 			"correctness": {

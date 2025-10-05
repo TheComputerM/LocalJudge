@@ -25,7 +25,7 @@ const [{ id: contestId }] = await db
 				limit: 0,
 				visible: true,
 			},
-			languages: ["c++@10.2.0", "python@3.12.0"],
+			languages: ["cpp", "python"],
 		},
 	})
 	.returning({ id: table.contest.id });

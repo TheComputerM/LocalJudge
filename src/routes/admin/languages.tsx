@@ -1,28 +1,87 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Suspense, use } from "react";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { LucideDownload, LucideLoader2, LucideTrash } from "lucide-react";
+import { Suspense, use, useState } from "react";
 import { localjudge } from "@/api/client";
-import { Table, TableHead, TableHeader } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/languages")({
 	loader: async () => {
-		const packagesPromise = rejectError(localjudge.api.localbox.engine.get());
+		const enginesPromise = rejectError(localjudge.api.localbox.engine.get());
 
-		return { packagesPromise };
+		return { enginesPromise };
 	},
 	component: RouteComponent,
 });
 
-function PackageList() {
-	const packagesPromise = Route.useLoaderData({
-		select: (data) => data.packagesPromise,
+function EngineAction({
+	name,
+	installed,
+}: {
+	name: string;
+	installed: boolean;
+}) {
+	const [loading, setLoading] = useState(false);
+	const router = useRouter();
+
+	return (
+		<Button
+			size="sm"
+			variant={installed ? "destructive" : "default"}
+			disabled={loading}
+			onClick={async () => {
+				setLoading(true);
+				await localjudge.api.localbox
+					.engine({ engine: name })
+					[installed ? "delete" : "post"]();
+				setLoading(false);
+				router.invalidate({ filter: (d) => d.id === Route.id });
+			}}
+		>
+			{loading ? (
+				<LucideLoader2 className="animate-spin" />
+			) : installed ? (
+				<LucideTrash />
+			) : (
+				<LucideDownload />
+			)}
+			{installed ? "Uninstall" : "Install"}
+		</Button>
+	);
+}
+
+function EngineList() {
+	const enginesPromise = Route.useLoaderData({
+		select: (data) => data.enginesPromise,
 	});
-	const packages = use(packagesPromise);
+	const engines = use(enginesPromise);
 	return (
 		<Table>
 			<TableHeader>
-				<TableHead>Package</TableHead>
+				<TableRow>
+					<TableHead>Name</TableHead>
+					<TableHead>Version</TableHead>
+				</TableRow>
 			</TableHeader>
+			<TableBody>
+				{Object.entries(engines).map(([name, engine]) => (
+					<TableRow key={name}>
+						<TableCell>{name}</TableCell>
+						<TableCell>{engine.version}</TableCell>
+						<TableCell className="text-right">
+							<EngineAction name={name} installed={engine.installed} />
+						</TableCell>
+					</TableRow>
+				))}
+			</TableBody>
 		</Table>
 	);
 }
@@ -31,10 +90,10 @@ function RouteComponent() {
 	return (
 		<div className="grid gap-6">
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
-				Packages
+				Engines
 			</h1>
 			<Suspense fallback="Loading...">
-				<PackageList />
+				<EngineList />
 			</Suspense>
 		</div>
 	);

@@ -20,7 +20,7 @@ export const localboxApp = new Elysia({
 	.guard({
 		auth: "admin",
 	})
-	.get("/engine", async () => rejectError($localbox("@get/engine")), {
+	.get("/engine", async () => $localbox("@get/engine"), {
 		detail: { summary: "List Engines" },
 	})
 	.group(
@@ -30,24 +30,21 @@ export const localboxApp = new Elysia({
 			app
 				.get(
 					"/",
-					async ({ params }) =>
-						rejectError($localbox("@get/engine/:engine", { params })),
+					async ({ params }) => $localbox("@get/engine/:engine", { params }),
 					{
 						detail: { summary: "Get Engine Info" },
 					},
 				)
 				.post(
 					"/",
-					async ({ params }) =>
-						rejectError($localbox("@post/engine/:engine", { params })),
+					async ({ params }) => $localbox("@post/engine/:engine", { params }),
 					{
 						detail: { summary: "Install Engine" },
 					},
 				)
 				.delete(
 					"/",
-					async ({ params }) =>
-						rejectError($localbox("@delete/engine/:engine", { params })),
+					async ({ params }) => $localbox("@delete/engine/:engine", { params }),
 					{
 						detail: { summary: "Uninstall Engine" },
 					},
@@ -55,9 +52,8 @@ export const localboxApp = new Elysia({
 				.post(
 					"/execute",
 					async ({ params, body }) =>
-						rejectError(
-							$localbox("@post/engine/:engine/execute", { params, body }),
-						),
+						$localbox("@post/engine/:engine/execute", { params, body }),
+
 					{
 						body: LocalboxExecuteSchema,
 						detail: { summary: "Execute Engine" },

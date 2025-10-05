@@ -1,8 +1,6 @@
 import Editor from "@monaco-editor/react";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { createAtom } from "@xstate/store";
-import { useAtom } from "@xstate/store/react";
-import { LucideCloudUpload, LucideEyeClosed } from "lucide-react";
+import { LucideCloudUpload } from "lucide-react";
 import { Suspense } from "react";
 import Markdown from "react-markdown";
 import useSWR from "swr";
@@ -54,9 +52,6 @@ export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
 	component: RouteComponent,
 });
 
-const languageAtom = createAtom("");
-const codeAtom = createAtom("");
-
 function SubmitCode() {
 	const { id, problem } = Route.useParams();
 	async function handleSubmit() {
@@ -83,12 +78,7 @@ function LanguageSelect() {
 	});
 
 	return (
-		<Select
-			defaultValue={languages[0]}
-			onValueChange={(value) => {
-				languageAtom.set(value.split("@")[0]);
-			}}
-		>
+		<Select defaultValue={languages[0]}>
 			<SelectTrigger>
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
@@ -187,21 +177,17 @@ function ProblemStatement() {
 		select: (data) => data.problem,
 	});
 	return (
-		<>
-			<h1 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-				{problem.title}
-			</h1>
+		<div className="typography my-2">
+			<h1>{problem.title}</h1>
 			<Markdown>{problem.description}</Markdown>
-		</>
+		</div>
 	);
 }
 
 function CodeEditor() {
-	const code = useAtom(codeAtom);
-	const language = useAtom(languageAtom);
 	return (
 		<Editor
-			language={language}
+			language="python"
 			theme="vs-dark"
 			options={{
 				folding: false,
@@ -210,10 +196,6 @@ function CodeEditor() {
 				minimap: {
 					enabled: false,
 				},
-			}}
-			value={code}
-			onChange={(value) => {
-				codeAtom.set(value || "");
 			}}
 		/>
 	);

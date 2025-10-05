@@ -36,9 +36,9 @@ async function createContests() {
 	const data: Static<typeof ContestModel.insert>[] = new Array(
 		CONFIG.count.contests,
 	);
-	const languages = Object.entries(
-		await rejectError($localbox("@get/engine")),
-	).map(([language, { version }]) => `${language}@${version}`);
+	const languages = Object.entries(await $localbox("@get/engine")).map(
+		([language, { version }]) => `${language}@${version}`,
+	);
 
 	for (let i = 0; i < CONFIG.count.contests; i++) {
 		const startTime = faker.date.between({

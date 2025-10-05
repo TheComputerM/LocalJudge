@@ -47,7 +47,7 @@ export function MultiselectField({
 		<div className="flex flex-col gap-3">
 			{label && <Label htmlFor={field.name}>{label}</Label>}
 			<Tags>
-				<TagsTrigger onBlur={field.handleBlur}>
+				<TagsTrigger onBlur={field.handleBlur} placeholder={placeholder}>
 					{field.state.value.map((tag) => (
 						<TagsValue key={tag} onRemove={() => handleRemove(tag)}>
 							{tag}

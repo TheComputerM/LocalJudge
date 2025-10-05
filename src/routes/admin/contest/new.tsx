@@ -9,33 +9,14 @@ import { Separator } from "@/components/ui/separator";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/new")({
-	loader: async ({ abortController }) => {
-		const languages = await rejectError(
-			localjudge.api.localbox.engine.get({
-				fetch: { signal: abortController.signal },
-			}),
-		).then((data) =>
-			Object.entries(data).map(
-				([language, { version }]) => `${language}@${version}`,
-			),
-		);
-
-		return { languages };
-	},
 	component: RouteComponent,
 });
 
 function NewContestForm() {
 	const navigate = Route.useNavigate();
-	const languages = Route.useLoaderData({ select: (data) => data.languages });
-
-	const defaultValues = Value.Default(ContestModel.insert, {
-		settings: { languages },
-	}) as typeof ContestModel.insert.static;
 
 	const form = useAppForm({
 		...ContestFormOptions,
-		defaultValues,
 		onSubmit: async ({ value }) => {
 			const contestData = Value.Parse(ContestModel.insert, value);
 			const { data, error } =

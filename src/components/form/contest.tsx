@@ -28,9 +28,9 @@ export const ContestForm = withForm({
 			"/api/localbox/engine",
 			(url) =>
 				rejectError($localjudge(url, {})).then((data) =>
-					Object.entries(data).map(
-						([language, { version }]) => `${language}@${version}`,
-					),
+					Object.entries(data)
+						.filter(([, { installed }]) => installed)
+						.map(([language]) => language),
 				),
 			{
 				suspense: true,
@@ -101,7 +101,6 @@ export const ContestForm = withForm({
 							ContestModel.settings.properties.languages;
 						return (
 							<field.MultiselectField
-								key={languages.length}
 								label={title}
 								description={description}
 								placeholder="Select languages"
