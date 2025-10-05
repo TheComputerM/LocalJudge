@@ -22,7 +22,7 @@ export function RefreshButton({
 				setLoading(false);
 			}}
 		>
-			<LucideRefreshCw className={loading ? "animate-spin" : ""} />
+			<LucideRefreshCw className={cn(loading && "animate-spin")} />
 		</Button>
 	);
 }

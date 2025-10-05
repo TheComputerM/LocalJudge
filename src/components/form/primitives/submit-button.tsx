@@ -1,5 +1,6 @@
 import { LucideLoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useFormContext } from "./form-context";
 
 export function SubmitButton({
@@ -11,7 +12,7 @@ export function SubmitButton({
 		<form.Subscribe selector={(state) => state.isSubmitting}>
 			{(isSubmitting) => (
 				<Button type="submit" disabled={isSubmitting} {...props}>
-					{isSubmitting && <LucideLoaderCircle className="animate-spin" />}
+					{isSubmitting && <Spinner />}
 					{children}
 				</Button>
 			)}

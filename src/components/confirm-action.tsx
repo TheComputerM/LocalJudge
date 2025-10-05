@@ -11,6 +11,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
+import { Spinner } from "./ui/spinner";
 
 export function ConfirmActionDialog({
 	children,
@@ -43,7 +44,7 @@ export function ConfirmActionDialog({
 							setOpen(false);
 						}}
 					>
-						{loading && <LucideLoader2 className="animate-spin" />}
+						{loading && <Spinner />}
 						Confirm
 					</Button>
 				</AlertDialogFooter>
