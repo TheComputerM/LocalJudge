@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { $localbox } from "./client";
-import { LocalboxFileSchema, LocalboxSandboxOptions } from "./schema";
+import { LocalboxSchema } from "./schema";
 
 const worker = self as unknown as Worker;
 
@@ -11,8 +11,8 @@ worker.onmessage = async (event) => {
 			id: Type.String(),
 			testcase: Type.Number(),
 			engine: Type.String(),
-			files: Type.Array(LocalboxFileSchema),
-			options: LocalboxSandboxOptions,
+			files: Type.Array(LocalboxSchema.File),
+			options: LocalboxSchema.PhaseOptions,
 		}),
 		event.data,
 	);

@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { $localbox, LocalboxExecuteSchema } from "@/api/localbox/client";
-import { rejectError } from "@/lib/utils";
+import { $localbox } from "@/api/localbox/client";
+import { LocalboxSchema } from "./schema";
 
 /**
  * LocalBox is the underlying code sandbox and execution engine
@@ -55,7 +55,10 @@ export const localboxApp = new Elysia({
 						$localbox("@post/engine/:engine/execute", { params, body }),
 
 					{
-						body: LocalboxExecuteSchema,
+						body: t.Object({
+							files: t.Array(LocalboxSchema.File),
+							options: LocalboxSchema.PhaseOptions,
+						}),
 						detail: { summary: "Execute Engine" },
 					},
 				),

@@ -3,7 +3,7 @@ import { Value } from "@sinclair/typebox/value";
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
-import { LocalboxResultSchema } from "./schema";
+import { LocalboxSchema } from "./schema";
 
 const worker = new Worker(new URL("./worker.ts", import.meta.url));
 
@@ -12,7 +12,7 @@ worker.onmessage = async (event) => {
 		Type.Object({
 			id: Type.String(),
 			testcase: Type.Number(),
-			result: LocalboxResultSchema,
+			result: LocalboxSchema.Result,
 		}),
 		event.data,
 	);
