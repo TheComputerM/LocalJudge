@@ -6,7 +6,6 @@ import { ContestModel } from "@/api/models/contest";
 import { ContestForm, ContestFormOptions } from "@/components/form/contest";
 import { useAppForm } from "@/components/form/primitives";
 import { Separator } from "@/components/ui/separator";
-import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/contest/new")({
 	component: RouteComponent,

@@ -16,13 +16,8 @@ import {
 } from "@/components/ui/field";
 import { rejectError } from "@/lib/utils";
 
-const defaultValues = Value.Default(
-	ContestModel.insert,
-	{},
-) as typeof ContestModel.insert.static;
-
 export const ContestFormOptions = formOptions({
-	defaultValues,
+	defaultValues: Value.Create(ContestModel.insert),
 	validators: {
 		onChange: Compile(ContestModel.insert),
 	},

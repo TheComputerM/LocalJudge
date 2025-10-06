@@ -1,3 +1,5 @@
+import { Type } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
 import { LucidePlus, LucideSave, LucideTrash } from "lucide-react";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
@@ -13,13 +15,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConfirmActionDialog } from "../confirm-action";
 import { withForm } from "./primitives";
 
-const defaultValues = {} as {
-	problem: typeof ProblemModel.insert.static;
-	testcases: (typeof TestcaseModel.upsert.static)[];
+export const ProblemFormOptions = {
+	defaultValues: {
+		problem: Value.Cast(
+			ProblemModel.insert,
+			Value.Default(ProblemModel.insert, Value.Create(ProblemModel.insert)),
+		),
+		testcases: Value.Create(Type.Array(TestcaseModel.upsert)),
+	},
 };
 
 export const ProblemForm = withForm({
-	defaultValues,
+	...ProblemFormOptions,
 	render: function Render({ form }) {
 		return (
 			<FieldGroup>
