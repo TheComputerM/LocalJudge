@@ -1,9 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LucidePlus, LucideTrash, LucideView } from "lucide-react";
+import {
+	LucideNotebookPen,
+	LucidePlus,
+	LucideTrash,
+	LucideView,
+} from "lucide-react";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
 import { ContestCard } from "@/components/contest-card";
 import { Button } from "@/components/ui/button";
+import {
+	Empty,
+	EmptyContent,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { rejectError } from "@/lib/utils";
 
@@ -21,6 +34,14 @@ export const Route = createFileRoute("/admin/contest/")({
 	component: RouteComponent,
 });
 
+const CreateContestButton = () => (
+	<Button asChild>
+		<Link to="/admin/contest/new">
+			<LucidePlus /> Create New
+		</Link>
+	</Button>
+);
+
 function RouteComponent() {
 	const contests = Route.useLoaderData();
 	return (
@@ -29,13 +50,25 @@ function RouteComponent() {
 				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
 					Contests
 				</h1>
-				<Button asChild>
-					<Link to="/admin/contest/new">
-						<LucidePlus /> Create New
-					</Link>
-				</Button>
+				<CreateContestButton />
 			</div>
 			<Separator className="my-6" />
+			{contests.length === 0 && (
+				<Empty>
+					<EmptyHeader>
+						<EmptyMedia variant="icon">
+							<LucideNotebookPen />
+						</EmptyMedia>
+						<EmptyTitle>No Contests Found</EmptyTitle>
+						<EmptyDescription>
+							Create a new contest on LocalJudge
+						</EmptyDescription>
+					</EmptyHeader>
+					<EmptyContent>
+						<CreateContestButton />
+					</EmptyContent>
+				</Empty>
+			)}
 			<div className="grid gap-3">
 				{contests.map((contest) => (
 					<ContestCard key={contest.id} {...contest}>
