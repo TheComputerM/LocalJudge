@@ -118,7 +118,6 @@ export const testcase = operatorSchema.table(
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
 		number: smallint("number").notNull(),
-		points: integer("points").notNull().default(25),
 		hidden: boolean("hidden").notNull().default(false),
 		input: text("input").notNull(),
 		output: text("output").notNull(),

@@ -86,7 +86,6 @@ export const ProblemForm = withForm({
 												input: "stdin",
 												output: "stdout",
 												hidden: false,
-												points: 25,
 											});
 										}}
 									>
@@ -109,14 +108,6 @@ export const ProblemForm = withForm({
 													{(field) => <field.Textarea label="Expected" />}
 												</form.AppField>
 											</div>
-											<form.AppField name={`testcases[${i}].points`}>
-												{(field) => (
-													<field.NumberField
-														label="Points"
-														description="Points awarded if this testcase is passed"
-													/>
-												)}
-											</form.AppField>
 											<form.AppField name={`testcases[${i}].hidden`}>
 												{(field) => (
 													<field.ToggleSwitch
