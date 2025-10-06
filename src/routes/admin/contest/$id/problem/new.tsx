@@ -23,9 +23,7 @@ function RouteComponent() {
 		},
 		onSubmit: async ({ value }) => {
 			const { data, error } = await localjudge.api.admin
-				.contest({
-					id: contestId,
-				})
+				.contest({ id: contestId })
 				.problem.post(value.problem);
 			if (error) {
 				alert(JSON.stringify(error));

@@ -1,18 +1,10 @@
 import Editor from "@monaco-editor/react";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { LucideCloudUpload } from "lucide-react";
-import { Suspense } from "react";
 import Markdown from "react-markdown";
 import useSWR from "swr";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	ResizableHandle,
@@ -26,7 +18,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { rejectError } from "@/lib/utils";
 
@@ -108,39 +102,32 @@ function Navbar() {
 
 function TestcaseContent({ number }: { number: number }) {
 	const { id, problem } = Route.useParams();
-	const { data } = useSWR(
-		`/api/contest/${id}/problem/${problem}/testcase/${number}`,
-		() =>
-			rejectError(
-				$localjudge("/api/contest/:id/problem/:problem/testcase/:testcase", {
-					params: {
-						id,
-						problem: Number.parseInt(problem),
-						testcase: number,
-					},
-				}),
-			),
+	const { data, error, isLoading } = useSWR(
+		[
+			"/api/contest/:id/problem/:problem/testcase/:testcase" as const,
+			{ id, problem: Number.parseInt(problem), testcase: number },
+		],
+		([url, params]) => rejectError($localjudge(url, { params })),
 		{
-			suspense: true,
-			fallbackData: {
-				number,
-				hidden: false,
-				points: 25,
-				input: "...",
-				output: "...",
-			},
+			revalidateIfStale: false,
 		},
 	);
 
+	if (isLoading) return <Spinner />;
+	if (error || !data) return <div>Error: {JSON.stringify(error)}</div>;
+
 	return (
-		<>
-			<div className="p-2 bg-muted rounded">
-				<pre className="text-wrap max-h-48 overflow-y-auto">{data.input}</pre>
-			</div>
-			<div className="p-2 bg-muted rounded">
-				<pre className="text-wrap max-h-48 overflow-y-auto">{data.output}</pre>
-			</div>
-		</>
+		<div className="typography">
+			<span>Input: </span>
+			<pre>
+				<code>{data.input}</code>
+			</pre>
+			<Separator className="my-4" />
+			<span>Expected Output: </span>
+			<pre>
+				<code>{data.output}</code>
+			</pre>
+		</div>
 	);
 }
 
@@ -148,27 +135,31 @@ function TestcaseList() {
 	const testcases = Route.useLoaderData({ select: (data) => data.testcases });
 
 	return (
-		<Accordion type="single" collapsible>
-			{testcases.map((tc) => (
-				<AccordionItem
-					key={tc.number}
-					value={tc.number.toString()}
-					disabled={tc.hidden}
-				>
-					<AccordionTrigger className="mb-2">
-						<div className="inline-flex items-center justify-between w-full">
-							Testcase {tc.number}
-							<Badge>{tc.points} points</Badge>
-						</div>
-					</AccordionTrigger>
-					<AccordionContent className="grid grid-cols-2 gap-2 text-xs">
-						<Suspense>
-							<TestcaseContent number={tc.number} />
-						</Suspense>
-					</AccordionContent>
-				</AccordionItem>
-			))}
-		</Accordion>
+		<Tabs
+			orientation="vertical"
+			className="w-full flex-row items-start"
+			defaultValue={testcases[0]?.number.toString()}
+		>
+			<TabsList className="flex-col h-auto" aria-label="Testcases">
+				{testcases.map((tc) => (
+					<TabsTrigger
+						disabled={tc.hidden}
+						value={tc.number.toString()}
+						key={tc.number}
+						className="w-full"
+					>
+						Case {tc.number}
+					</TabsTrigger>
+				))}
+			</TabsList>
+			<div className="grow p-4">
+				{testcases.map((tc) => (
+					<TabsContent value={tc.number.toString()} key={tc.number}>
+						<TestcaseContent number={tc.number} />
+					</TabsContent>
+				))}
+			</div>
+		</Tabs>
 	);
 }
 
@@ -177,7 +168,7 @@ function ProblemStatement() {
 		select: (data) => data.problem,
 	});
 	return (
-		<div className="typography my-2">
+		<div className="typography">
 			<h1>{problem.title}</h1>
 			<Markdown>{problem.description}</Markdown>
 		</div>
