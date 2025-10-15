@@ -12,6 +12,7 @@
 /.nitro
 /.tanstack
 /.output
+dist
 
 # misc
 .DS_Store

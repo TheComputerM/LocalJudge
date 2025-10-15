@@ -5,7 +5,7 @@ import { useState } from "react";
 import { localjudge } from "@/api/client";
 import { ContestCard } from "@/components/contest-card";
 import { SignOutButton } from "@/components/sign-out";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";

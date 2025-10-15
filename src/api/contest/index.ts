@@ -31,7 +31,7 @@ export const contestApp = new Elysia({
 		},
 		{
 			body: t.Object({
-				code: t.String(),
+				code: t.String({ description: "Contest ID" }),
 			}),
 			detail: {
 				summary: "Register for contest",
@@ -43,7 +43,7 @@ export const contestApp = new Elysia({
 	.group(
 		"/:id",
 		{
-			params: t.Object({ id: t.String() }),
+			params: t.Object({ id: t.String({ description: "Contest ID" }) }),
 		},
 		(app) =>
 			app

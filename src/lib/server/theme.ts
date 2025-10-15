@@ -1,11 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, setCookie } from "@tanstack/react-start/server";
 
+export type Theme = "light" | "dark";
+
 const THEME_KEY = "ui-mode";
 
 export const getThemeFn = createServerFn({ method: "GET" }).handler(
 	async () => {
-		return getCookie(THEME_KEY) || "light";
+		return (getCookie(THEME_KEY) || "light") as Theme;
 	},
 );
 
@@ -14,7 +16,7 @@ export const setThemeFn = createServerFn({ method: "POST" })
 		if (typeof data !== "string" || (data !== "dark" && data !== "light")) {
 			throw new Error("Invalid theme provided");
 		}
-		return data;
+		return data as Theme;
 	})
 	.handler(async ({ data }) => {
 		setCookie(THEME_KEY, data);

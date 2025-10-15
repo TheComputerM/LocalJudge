@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { RefreshButton } from "@/components/refresh-button";
 import { SignOutButton } from "@/components/sign-out";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import {
 	Sidebar,

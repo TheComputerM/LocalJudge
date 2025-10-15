@@ -1,10 +1,13 @@
 import Editor from "@monaco-editor/react";
+import { useThrottledCallback } from "@tanstack/react-pacer/throttler";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { useSelector } from "@xstate/store/react";
 import { LucideCloudUpload } from "lucide-react";
 import Markdown from "react-markdown";
 import useSWR from "swr";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
 	ResizableHandle,
@@ -20,12 +23,16 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+	SolutionStoreProvider,
+	useSolutionStore,
+} from "@/lib/client/solution-store";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
-	loader: async ({ params, abortController }) => {
+	loader: async ({ params, abortController, context }) => {
 		const [problem, testcases] = await Promise.all([
 			rejectError(
 				localjudge.api
@@ -37,7 +44,7 @@ export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
 				localjudge.api
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
-					.testcase.get(),
+					.testcase.get({ fetch: { signal: abortController.signal } }),
 			),
 		]);
 
@@ -70,9 +77,16 @@ function LanguageSelect() {
 		from: "/app/contest/$id",
 		select: (data) => data.settings.languages,
 	});
+	const store = useSolutionStore();
+	const value = useSelector(store, (state) => state.context.language);
 
 	return (
-		<Select defaultValue={languages[0]}>
+		<Select
+			value={value}
+			onValueChange={(language) =>
+				store.trigger.param({ key: "language", value: language })
+			}
+		>
 			<SelectTrigger>
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
@@ -84,19 +98,6 @@ function LanguageSelect() {
 				))}
 			</SelectContent>
 		</Select>
-	);
-}
-
-function Navbar() {
-	return (
-		<div className="flex shrink-0 h-14 items-center justify-between gap-2 border-b px-4">
-			<div className="inline-flex items-center gap-2">
-				<SidebarTrigger className="-ml-1" />
-				Problems
-			</div>
-			<SubmitCode />
-			<LanguageSelect />
-		</div>
 	);
 }
 
@@ -113,11 +114,11 @@ function TestcaseContent({ number }: { number: number }) {
 		},
 	);
 
-	if (isLoading) return <Spinner />;
+	if (isLoading) return <Skeleton className="h-64" />;
 	if (error || !data) return <div>Error: {JSON.stringify(error)}</div>;
 
 	return (
-		<div className="typography">
+		<>
 			<span>Input: </span>
 			<pre>
 				<code>{data.input}</code>
@@ -127,7 +128,7 @@ function TestcaseContent({ number }: { number: number }) {
 			<pre>
 				<code>{data.output}</code>
 			</pre>
-		</div>
+		</>
 	);
 }
 
@@ -137,7 +138,7 @@ function TestcaseList() {
 	return (
 		<Tabs
 			orientation="vertical"
-			className="w-full flex-row items-start"
+			className="w-full flex-row items-start mt-2"
 			defaultValue={testcases[0]?.number.toString()}
 		>
 			<TabsList className="flex-col h-auto" aria-label="Testcases">
@@ -152,9 +153,13 @@ function TestcaseList() {
 					</TabsTrigger>
 				))}
 			</TabsList>
-			<div className="grow p-4">
+			<div className="grow pl-4">
 				{testcases.map((tc) => (
-					<TabsContent value={tc.number.toString()} key={tc.number}>
+					<TabsContent
+						key={tc.number}
+						value={tc.number.toString()}
+						className="typography"
+					>
 						<TestcaseContent number={tc.number} />
 					</TabsContent>
 				))}
@@ -167,6 +172,7 @@ function ProblemStatement() {
 	const problem = Route.useLoaderData({
 		select: (data) => data.problem,
 	});
+
 	return (
 		<div className="typography">
 			<h1>{problem.title}</h1>
@@ -176,14 +182,37 @@ function ProblemStatement() {
 }
 
 function CodeEditor() {
+	const [theme] = useTheme();
+	const store = useSolutionStore();
+	const language = useSelector(store, (state) => state.context.language);
+	const file = useSelector(store, (state) => state.context.file);
+	const value = useSelector(
+		store,
+		({ context: ctx }) =>
+			ctx.solutions[ctx.problem]?.[ctx.language]?.[ctx.file] ?? "",
+	);
+
+	const throttledUpdate = useThrottledCallback(
+		(content: string) => store.trigger.write({ content }),
+		{
+			wait: 500,
+		},
+	);
+
 	return (
 		<Editor
-			language="python"
-			theme="vs-dark"
+			theme={theme === "dark" ? "vs-dark" : "light"}
+			language={language}
+			path={file}
+			value={value}
+			onChange={(value) => throttledUpdate(value ?? "")}
 			options={{
 				folding: false,
-				lineNumbers: "off",
+				lineNumbers: "on",
 				fontFamily: "'JetBrains Mono Variable', monospace",
+				padding: {
+					top: 8,
+				},
 				minimap: {
 					enabled: false,
 				},
@@ -194,10 +223,17 @@ function CodeEditor() {
 
 function RouteComponent() {
 	return (
-		<>
-			<Navbar />
+		<SolutionStoreProvider>
+			<div className="flex shrink-0 h-14 items-center justify-between gap-2 border-b px-4">
+				<div className="inline-flex items-center gap-2">
+					<SidebarTrigger className="-ml-1" />
+					Problems
+				</div>
+				<SubmitCode />
+				<LanguageSelect />
+			</div>
 			<ResizablePanelGroup direction="horizontal" className="h-full">
-				<ResizablePanel className="p-2">
+				<ResizablePanel className="py-2 px-4">
 					<Tabs defaultValue="statement">
 						<TabsList className="w-full">
 							<TabsTrigger value="statement">Statement</TabsTrigger>
@@ -216,6 +252,6 @@ function RouteComponent() {
 					<CodeEditor />
 				</ResizablePanel>
 			</ResizablePanelGroup>
-		</>
+		</SolutionStoreProvider>
 	);
 }

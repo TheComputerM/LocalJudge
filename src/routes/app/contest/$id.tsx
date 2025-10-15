@@ -16,7 +16,7 @@ import {
 import { useMemo } from "react";
 import { localjudge } from "@/api/client";
 import { RefreshButton } from "@/components/refresh-button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
 	NavigationMenu,

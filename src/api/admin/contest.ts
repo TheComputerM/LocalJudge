@@ -35,84 +35,88 @@ export const adminContestApp = new Elysia({ prefix: "/contest" })
 			},
 		},
 	)
-	.group("/:id", (app) =>
-		app
-			.patch(
-				"/",
-				async ({ params, body }) => {
-					await AdminService.updateContest(params.id, body);
-					return status(204);
-				},
-				{
-					body: ContestModel.update,
-					detail: {
-						summary: "Update contest",
-						description: "Update a specific contest by its ID",
+	.group(
+		"/:id",
+		{
+			params: t.Object({ id: t.String({ description: "Contest ID" }) }),
+		},
+		(app) =>
+			app
+				.patch(
+					"/",
+					async ({ params, body }) => {
+						await AdminService.updateContest(params.id, body);
+						return status(204);
 					},
-				},
-			)
-			.group("/problem", (app) =>
-				app
-					.post(
-						"/",
-						async ({ params, body }) => {
-							return AdminService.createProblem(params.id, body);
+					{
+						body: ContestModel.update,
+						detail: {
+							summary: "Update contest",
+							description: "Update a specific contest by its ID",
 						},
-						{
-							body: ProblemModel.insert,
-							detail: {
-								summary: "Add problem to contest",
-								description: "Add a new problem to a specific contest",
+					},
+				)
+				.group("/problem", (app) =>
+					app
+						.post(
+							"/",
+							async ({ params, body }) => {
+								return AdminService.createProblem(params.id, body);
 							},
-						},
-					)
-					.group(
-						"/:problem",
-						{
-							params: t.Object({
-								id: t.String(),
-								problem: t.Number(),
-							}),
-						},
-						(app) =>
-							app
-								.patch(
-									"/",
-									async ({ params, body }) => {
-										return AdminService.updateProblem(
-											params.id,
-											params.problem,
-											body,
-										);
-									},
-									{
-										body: ProblemModel.update,
-										detail: {
-											summary: "Update problem",
-											description: "Update a specific problem in a contest",
-										},
-									},
-								)
-								.group("/testcase", (app) =>
-									app.put(
+							{
+								body: ProblemModel.insert,
+								detail: {
+									summary: "Add problem to contest",
+									description: "Add a new problem to a specific contest",
+								},
+							},
+						)
+						.group(
+							"/:problem",
+							{
+								params: t.Object({
+									problem: t.Numeric(),
+								}),
+							},
+							(app) =>
+								app
+									.patch(
 										"/",
 										async ({ params, body }) => {
-											return await AdminService.upsertTestcases(
+											return AdminService.updateProblem(
 												params.id,
 												params.problem,
 												body,
 											);
 										},
 										{
-											body: t.Array(TestcaseModel.upsert),
+											body: ProblemModel.update,
 											detail: {
-												summary: "Upsert testcases",
-												description:
-													"Insert or update testcases for a specific problem in a contest",
+												summary: "Update problem",
+												description: "Update a specific problem in a contest",
 											},
 										},
+									)
+									.group("/testcase", (app) =>
+										app.put(
+											"/",
+											async ({ params, body }) => {
+												return await AdminService.upsertTestcases(
+													params.id,
+													params.problem,
+													body,
+												);
+											},
+											{
+												body: t.Array(TestcaseModel.upsert),
+												detail: {
+													summary: "Upsert testcases",
+													description:
+														"Insert or update testcases for a specific problem in a contest",
+												},
+											},
+										),
 									),
-								),
-					),
-			),
+						),
+				),
 	);

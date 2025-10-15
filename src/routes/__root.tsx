@@ -11,6 +11,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import type { ReactNode } from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 import { auth } from "@/lib/auth";
 import { getThemeFn } from "@/lib/server/theme";
 import appCss from "@/styles/app.css?url";
@@ -76,7 +77,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body>
-				{children}
+				<ThemeProvider theme={theme}>{children}</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>

@@ -2,12 +2,16 @@ import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { ProblemModel } from "@/api/models/problem";
 import { TestcaseModel } from "@/api/models/testcase";
+import boilerplateRaw from "./boilerplate.yaml?raw";
 import { ProblemService } from "./service";
+
+const boilerplate = Bun.YAML.parse(boilerplateRaw) as Record<string, string>;
 
 export const problemApp = new Elysia({ prefix: "/problem" })
 	.use(betterAuthPlugin)
 	.guard({
 		auth: "any",
+		params: t.Object({ id: t.String({ description: "Contest ID" }) }),
 	})
 	.get(
 		"/",
@@ -15,7 +19,6 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 			return ProblemService.getProblems(params.id);
 		},
 		{
-			params: t.Object({ id: t.String() }),
 			response: ProblemModel.groupSelect,
 			detail: {
 				summary: "List problems",
@@ -27,8 +30,9 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 		"/:problem",
 		{
 			params: t.Object({
-				id: t.String(),
-				problem: t.Number(),
+				problem: t.Numeric({
+					description: "Problem number within the contest",
+				}),
 			}),
 		},
 		(app) =>
@@ -64,6 +68,21 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 							summary: "Submit solution",
 							description:
 								"Submit a solution for a specific problem in a contest",
+						},
+					},
+				)
+				.get(
+					"/boilerplate/:language",
+					async ({ params }) => {
+						if (!(params.language in boilerplate)) {
+							return { "@": "good luck" };
+						}
+						return { "@": boilerplate[params.language] };
+					},
+					{
+						detail: {
+							summary: "Get boilerplate code",
+							description: "Get boilerplate code for a specific language",
 						},
 					},
 				)
@@ -106,9 +125,9 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 							403: t.Literal("Testcase is hidden"),
 						},
 						params: t.Object({
-							id: t.String(),
-							problem: t.Number(),
-							testcase: t.Number(),
+							testcase: t.Numeric({
+								description: "Testcase number within the problem",
+							}),
 						}),
 						detail: {
 							summary: "Get testcase",
