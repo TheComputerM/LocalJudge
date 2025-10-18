@@ -2,12 +2,12 @@ import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { LocalboxService } from "@/api/localbox/service";
 import { APIParams } from "@/api/models/params";
+import boilerplateYAML from "./boilerplate.yaml?raw";
 import { ProblemModel } from "./model";
-// import boilerplateYAML from "./boilerplate.yaml?raw";
 import { ProblemAdminService, ProblemService } from "./service";
 import { testcaseApp } from "./testcase";
 
-// const boilerplate = Bun.YAML.parse(boilerplateYAML) as Record<string, string>;
+const boilerplate = Bun.YAML.parse(boilerplateYAML) as Record<string, string>;
 
 export const problemApp = new Elysia({
 	prefix: "/problem",
@@ -116,11 +116,10 @@ export const problemApp = new Elysia({
 				.get(
 					"/boilerplate/:language",
 					async ({ params }) => {
-						// if (!(params.language in boilerplate)) {
-						// 	return { "@": "good luck" };
-						// }
-						// return { "@": boilerplate[params.language] };
-						return { "@": "good luck" };
+						if (!(params.language in boilerplate)) {
+							return { "@": "good luck" };
+						}
+						return { "@": boilerplate[params.language] };
 					},
 					{
 						detail: {
