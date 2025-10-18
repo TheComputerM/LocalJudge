@@ -15,42 +15,51 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { useTime } from "@/hooks/use-time";
-import { Badge } from "./ui/badge";
+import { Pill, PillIndicator, PillIndicatorProps } from "./kibo-ui/pill";
 
 function ContestStatusBadge(props: { startTime: Date; endTime: Date }) {
 	const time = useTime();
-	const { color, message } = useMemo(() => {
-		if (isBefore(time, props.startTime))
-			return {
-				color: "bg-green-100 text-green-800",
-				message:
-					"starts " +
-					formatDistance(props.startTime, time, {
-						addSuffix: true,
-					}),
-			};
+	const {
+		status,
+		message,
+	}: { status: PillIndicatorProps["variant"]; message: string } =
+		useMemo(() => {
+			if (isBefore(time, props.startTime))
+				return {
+					status: "success",
+					message:
+						"starts " +
+						formatDistance(props.startTime, time, {
+							addSuffix: true,
+						}),
+				};
 
-		if (isBefore(time, props.endTime))
+			if (isBefore(time, props.endTime))
+				return {
+					status: "info",
+					message:
+						"ends " +
+						formatDistance(props.endTime, time, {
+							addSuffix: true,
+						}),
+				};
+
 			return {
-				color: "bg-amber-100 text-amber-800",
+				status: "error",
 				message:
-					"ends " +
+					"ended " +
 					formatDistance(props.endTime, time, {
 						addSuffix: true,
 					}),
 			};
+		}, [time, props.startTime, props.endTime]);
 
-		return {
-			color: "bg-red-100 text-red-800",
-			message:
-				"ended " +
-				formatDistance(props.endTime, time, {
-					addSuffix: true,
-				}),
-		};
-	}, [time, props.startTime, props.endTime]);
-
-	return <Badge className={color}>{message}</Badge>;
+	return (
+		<Pill>
+			<PillIndicator pulse variant={status} />
+			{message}
+		</Pill>
+	);
 }
 
 export function ContestCard(props: {
