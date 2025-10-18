@@ -5,25 +5,32 @@ import { localjudge } from "@/api/client";
 import { ContestModel } from "@/api/contest/model";
 import { ContestForm, ContestFormOptions } from "@/components/form/contest";
 import { useAppForm } from "@/components/form/primitives";
-import { Separator } from "@/components/ui/separator";
+import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/admin/contest/new")({
+export const Route = createFileRoute("/admin/contest/$id/settings")({
+	loader: async ({ params, abortController }) => {
+		const contest = await rejectError(
+			localjudge.contest({ id: params.id }).get({
+				fetch: { signal: abortController.signal },
+			}),
+		);
+
+		return { contest };
+	},
 	component: RouteComponent,
 });
 
-function NewContestForm() {
-	const navigate = Route.useNavigate();
+function RouteComponent() {
+	const contest = Route.useLoaderData({ select: (data) => data.contest });
 
 	const form = useAppForm({
 		...ContestFormOptions,
+		defaultValues: Value.Parse(ContestModel.insert, contest),
 		onSubmit: async ({ value }) => {
-			const contestData = Value.Parse(ContestModel.insert, value);
-			const { data, error } = await localjudge.contest.post(contestData);
-			if (error || data.length === 0) {
-				alert(JSON.stringify(error));
-				return;
-			}
-			navigate({ to: "/admin/contest/$id", params: { id: data[0].id } });
+			const response = await localjudge
+				.contest({ id: contest.id })
+				.patch(value);
+			console.log(response);
 		},
 	});
 
@@ -39,17 +46,5 @@ function NewContestForm() {
 				<ContestForm form={form} />
 			</Suspense>
 		</form>
-	);
-}
-
-function RouteComponent() {
-	return (
-		<div>
-			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
-				Create New Contest
-			</h1>
-			<Separator className="my-8" />
-			<NewContestForm />
-		</div>
 	);
 }

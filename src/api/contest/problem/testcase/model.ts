@@ -1,6 +1,10 @@
 import { t } from "elysia";
+import {
+	createInsertSchema,
+	createSelectSchema,
+	createUpdateSchema,
+} from "@/api/models";
 import { testcase } from "@/db/schema";
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from ".";
 
 const _selectSchema = createSelectSchema(testcase);
 const _insertSchema = createInsertSchema(testcase);

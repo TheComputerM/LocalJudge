@@ -17,7 +17,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/app/contest/$id/problem")({
 	beforeLoad: async ({ params, abortController }) => {
 		const problems = await rejectError(
-			localjudge.api
+			localjudge
 				.contest({ id: params.id })
 				.problem.get({ fetch: { signal: abortController.signal } }),
 		);
@@ -42,9 +42,7 @@ function AppSidebar() {
 									<SidebarMenuButton asChild>
 										<Link
 											from={Route.fullPath}
-											activeProps={{
-												className: "bg-accent text-accent-foreground",
-											}}
+											activeProps={{ "data-active": "true" }}
 											to="./$problem"
 											params={{ problem: problem.number.toString() }}
 										>

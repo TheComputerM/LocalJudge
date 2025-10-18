@@ -11,7 +11,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/admin/")({
 	loader: async ({ abortController }) => {
 		const overview = await rejectError(
-			localjudge.api.admin.overview.get({
+			localjudge.admin.overview.get({
 				fetch: {
 					signal: abortController.signal,
 				},

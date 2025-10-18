@@ -26,8 +26,11 @@ function RouteComponent() {
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="w-24">No.</TableHead>
-						<TableHead>Problem</TableHead>
+						<TableHead className="w-32">Number</TableHead>
+						<TableHead>Title</TableHead>
+						<TableHead>Time Limit</TableHead>
+						<TableHead>Memory Limit</TableHead>
+						<TableHead aria-label="Link" />
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -35,7 +38,9 @@ function RouteComponent() {
 						<TableRow key={problem.number}>
 							<TableCell>{problem.number}</TableCell>
 							<TableCell>{problem.title}</TableCell>
-							<TableCell className="text-right">
+							<TableCell>{problem.timeLimit}ms</TableCell>
+							<TableCell>{problem.memoryLimit}KB</TableCell>
+							<TableCell>
 								<Button variant="link" asChild>
 									<Link
 										from={Route.fullPath}

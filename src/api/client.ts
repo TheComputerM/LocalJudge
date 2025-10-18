@@ -13,4 +13,4 @@ const createClient = createIsomorphicFn()
 		}),
 	);
 
-export const localjudge: Treaty.Create<App> = createClient();
+export const localjudge: Treaty.Create<App>["api"] = createClient().api;

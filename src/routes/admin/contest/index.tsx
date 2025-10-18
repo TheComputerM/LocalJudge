@@ -23,7 +23,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/admin/contest/")({
 	loader: async ({ abortController }) => {
 		const contests = await rejectError(
-			localjudge.api.admin.contest.get({
+			localjudge.admin.contest.get({
 				fetch: {
 					signal: abortController.signal,
 				},
@@ -42,52 +42,55 @@ const CreateContestButton = () => (
 	</Button>
 );
 
+const EmptyContests = () => (
+	<Empty>
+		<EmptyHeader>
+			<EmptyMedia variant="icon">
+				<LucideNotebookPen />
+			</EmptyMedia>
+			<EmptyTitle>No Contests Found</EmptyTitle>
+			<EmptyDescription>Create a new contest on LocalJudge</EmptyDescription>
+		</EmptyHeader>
+		<EmptyContent>
+			<CreateContestButton />
+		</EmptyContent>
+	</Empty>
+);
+
 function RouteComponent() {
 	const contests = Route.useLoaderData();
 	return (
 		<>
-			<div className="flex items-center justify-between mb-4">
+			<div className="flex items-center justify-between">
 				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
 					Contests
 				</h1>
 				<CreateContestButton />
 			</div>
 			<Separator className="my-6" />
-			{contests.length === 0 && (
-				<Empty>
-					<EmptyHeader>
-						<EmptyMedia variant="icon">
-							<LucideNotebookPen />
-						</EmptyMedia>
-						<EmptyTitle>No Contests Found</EmptyTitle>
-						<EmptyDescription>
-							Create a new contest on LocalJudge
-						</EmptyDescription>
-					</EmptyHeader>
-					<EmptyContent>
-						<CreateContestButton />
-					</EmptyContent>
-				</Empty>
-			)}
-			<div className="grid gap-3">
-				{contests.map((contest) => (
-					<ContestCard key={contest.id} {...contest}>
-						<div className="flex gap-2 w-full">
-							<ConfirmActionDialog>
-								<Button variant="destructive">
-									Delete <LucideTrash />
+			{contests.length > 0 ? (
+				<div className="grid gap-3">
+					{contests.map((contest) => (
+						<ContestCard key={contest.id} {...contest}>
+							<div className="flex gap-2 w-full">
+								<ConfirmActionDialog>
+									<Button variant="destructive">
+										Delete <LucideTrash />
+									</Button>
+								</ConfirmActionDialog>
+								<Button asChild className="flex-1">
+									<Link to="/admin/contest/$id" params={{ id: contest.id }}>
+										View Details
+										<LucideView />
+									</Link>
 								</Button>
-							</ConfirmActionDialog>
-							<Button asChild className="flex-1">
-								<Link to="/admin/contest/$id" params={{ id: contest.id }}>
-									View Details
-									<LucideView />
-								</Link>
-							</Button>
-						</div>
-					</ContestCard>
-				))}
-			</div>
+							</div>
+						</ContestCard>
+					))}
+				</div>
+			) : (
+				<EmptyContests />
+			)}
 		</>
 	);
 }

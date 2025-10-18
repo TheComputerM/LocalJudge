@@ -15,7 +15,7 @@ import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/languages")({
 	loader: async () => {
-		const enginesPromise = rejectError(localjudge.api.localbox.engine.get());
+		const enginesPromise = rejectError(localjudge.localbox.engine.get());
 
 		return { enginesPromise };
 	},
@@ -39,7 +39,7 @@ function EngineAction({
 			disabled={loading}
 			onClick={async () => {
 				setLoading(true);
-				await localjudge.api.localbox
+				await localjudge.localbox
 					.engine({ engine: name })
 					[installed ? "delete" : "post"]();
 				setLoading(false);

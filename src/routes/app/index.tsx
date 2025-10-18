@@ -15,7 +15,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/app/")({
 	loader: async ({ abortController }) => {
 		const contests = await rejectError(
-			localjudge.api.contest.get({
+			localjudge.contest.get({
 				fetch: { signal: abortController.signal },
 			}),
 		);
@@ -65,7 +65,7 @@ function RegisterForm() {
 			onSubmit={async (e) => {
 				e.preventDefault();
 				e.stopPropagation();
-				await localjudge.api.contest.post({ code });
+				await localjudge.contest.register.post({ code });
 				router.invalidate({ filter: (d) => d.fullPath === Route.fullPath });
 			}}
 		>

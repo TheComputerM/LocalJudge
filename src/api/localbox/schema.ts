@@ -50,10 +50,20 @@ export namespace LocalboxSchema {
 			description: "Human-readable message",
 			examples: ["Executed"],
 		}),
-		status: Type.String({
-			description: "Two-letter status code",
-			examples: ["OK"],
-		}),
+		status: Type.Enum(
+			{
+				OK: "OK",
+				RE: "RE",
+				SG: "SG",
+				TO: "TO",
+				XX: "XX",
+				OE: "OE",
+				CE: "CE",
+			},
+			{
+				description: "Two-letter status code",
+			},
+		),
 		stderr: Type.String({
 			description: "stderr of the program",
 			examples: [""],

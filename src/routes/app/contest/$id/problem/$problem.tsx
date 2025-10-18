@@ -1,7 +1,7 @@
 import Editor from "@monaco-editor/react";
 import { useThrottledCallback } from "@tanstack/react-pacer/throttler";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { useSelector } from "@xstate/store/react";
+import { useStore } from "@tanstack/react-store";
 import { LucideCloudUpload } from "lucide-react";
 import Markdown from "react-markdown";
 import useSWR from "swr";
@@ -35,13 +35,13 @@ export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
 	loader: async ({ params, abortController, context }) => {
 		const [problem, testcases] = await Promise.all([
 			rejectError(
-				localjudge.api
+				localjudge
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.get({ fetch: { signal: abortController.signal } }),
 			),
 			rejectError(
-				localjudge.api
+				localjudge
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.testcase.get({ fetch: { signal: abortController.signal } }),
@@ -55,11 +55,15 @@ export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
 
 function SubmitCode() {
 	const { id, problem } = Route.useParams();
+	const store = useSolutionStore();
+
 	async function handleSubmit() {
-		const { data, error } = await localjudge.api
+		const { data, error } = await localjudge
 			.contest({ id })
 			.problem({ problem })
-			.post();
+			.submit({ language: store.selected.state.language })
+			.post(store.content.state);
+
 		if (error) alert(JSON.stringify(error));
 		console.log(data);
 	}
@@ -77,14 +81,14 @@ function LanguageSelect() {
 		from: "/app/contest/$id",
 		select: (data) => data.settings.languages,
 	});
-	const store = useSolutionStore();
-	const value = useSelector(store, (state) => state.context.language);
+	const { selected } = useSolutionStore();
+	const value = useStore(selected, (state) => state.language);
 
 	return (
 		<Select
 			value={value}
 			onValueChange={(language) =>
-				store.trigger.param({ key: "language", value: language })
+				selected.setState((prev) => ({ ...prev, language }))
 			}
 		>
 			<SelectTrigger>
@@ -184,26 +188,22 @@ function ProblemStatement() {
 function CodeEditor() {
 	const [theme] = useTheme();
 	const store = useSolutionStore();
-	const language = useSelector(store, (state) => state.context.language);
-	const file = useSelector(store, (state) => state.context.file);
-	const value = useSelector(
-		store,
-		({ context: ctx }) =>
-			ctx.solutions[ctx.problem]?.[ctx.language]?.[ctx.file] ?? "",
+	const language = useStore(store.selected, (state) => state.language);
+	const path = useStore(
+		store.selected,
+		(state) => `${state.problem}/${state.file}`,
 	);
+	const value = useStore(store.content);
 
-	const throttledUpdate = useThrottledCallback(
-		(content: string) => store.trigger.write({ content }),
-		{
-			wait: 500,
-		},
-	);
+	const throttledUpdate = useThrottledCallback(store.setContent, {
+		wait: 500,
+	});
 
 	return (
 		<Editor
 			theme={theme === "dark" ? "vs-dark" : "light"}
 			language={language}
-			path={file}
+			path={path}
 			value={value}
 			onChange={(value) => throttledUpdate(value ?? "")}
 			options={{

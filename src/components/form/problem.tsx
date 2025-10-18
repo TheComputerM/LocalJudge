@@ -1,8 +1,8 @@
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { LucidePlus, LucideSave, LucideTrash } from "lucide-react";
-import { ProblemModel } from "@/api/models/problem";
-import { TestcaseModel } from "@/api/models/testcase";
+import { ProblemModel } from "@/api/contest/problem/model";
+import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { Button } from "@/components/ui/button";
 import {
 	FieldDescription,

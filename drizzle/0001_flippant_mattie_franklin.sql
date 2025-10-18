@@ -1,1 +1,0 @@
-ALTER TABLE "operator"."testcase" DROP COLUMN "points";

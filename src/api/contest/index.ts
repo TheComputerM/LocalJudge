@@ -1,7 +1,9 @@
 import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { ContestService } from "@/api/contest/service";
-import { ContestModel } from "@/api/models/contest";
+import { ContestModel } from "@/api/contest/model";
+import { ContestAdminService, ContestService } from "@/api/contest/service";
+import { SubmissionService } from "@/api/submission/service";
+import { APIParams } from "../models/params";
 import { problemApp } from "./problem";
 
 export const contestApp = new Elysia({
@@ -9,7 +11,9 @@ export const contestApp = new Elysia({
 	detail: { tags: ["Contest"] },
 })
 	.use(betterAuthPlugin)
-	.guard({ auth: "any" })
+	.guard({
+		auth: "any",
+	})
 	.get(
 		"/",
 		async ({ auth }) => {
@@ -25,6 +29,20 @@ export const contestApp = new Elysia({
 	)
 	.post(
 		"/",
+		async ({ body }) => {
+			return ContestAdminService.createContest(body);
+		},
+		{
+			auth: "admin",
+			body: ContestModel.insert,
+			detail: {
+				summary: "Create contest",
+				description: "Create a new contest with the given details",
+			},
+		},
+	)
+	.post(
+		"/register",
 		async ({ auth, body }) => {
 			await ContestService.registerContest(body.code, auth.user.id);
 			return status(201, "Successfully registered for the contest");
@@ -43,10 +61,30 @@ export const contestApp = new Elysia({
 	.group(
 		"/:id",
 		{
-			params: t.Object({ id: t.String({ description: "Contest ID" }) }),
+			params: t.Object({ id: APIParams.contest }),
 		},
 		(app) =>
 			app
+				.guard(
+					{
+						auth: "admin",
+					},
+					(app) =>
+						app.patch(
+							"/",
+							async ({ params, body }) => {
+								await ContestAdminService.updateContest(params.id, body);
+								return status(204);
+							},
+							{
+								body: ContestModel.update,
+								detail: {
+									summary: "Update contest",
+									description: "Update a specific contest by its ID",
+								},
+							},
+						),
+				)
 				.onBeforeHandle(async ({ params, auth }) => {
 					if (auth.user.role?.includes("admin")) return;
 
@@ -77,5 +115,11 @@ export const contestApp = new Elysia({
 						},
 					},
 				)
+				.get("/submission", async ({ auth, params }) => {
+					return SubmissionService.getSubmissions({
+						contest: params.id,
+						user: auth.user.id,
+					});
+				})
 				.use(problemApp),
 	);

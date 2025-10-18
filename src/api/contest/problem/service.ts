@@ -1,6 +1,7 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
+import { ProblemModel } from "./model";
 
 export namespace ProblemService {
 	/** Get all problems in a contest */
@@ -28,41 +29,6 @@ export namespace ProblemService {
 		});
 	}
 
-	/** Get all test cases for a specific problem in a contest */
-	export async function getTestcases(contestId: string, problemNumber: number) {
-		return db.query.testcase.findMany({
-			columns: {
-				contestId: false,
-				problemNumber: false,
-				input: false,
-				output: false,
-			},
-			where: and(
-				eq(table.testcase.contestId, contestId),
-				eq(table.testcase.problemNumber, problemNumber),
-			),
-			orderBy: asc(table.testcase.number),
-		});
-	}
-
-	export async function getTestcase(
-		contestId: string,
-		problemNumber: number,
-		testcaseNumber: number,
-	) {
-		return db.query.testcase.findFirst({
-			columns: {
-				contestId: false,
-				problemNumber: false,
-			},
-			where: and(
-				eq(table.testcase.contestId, contestId),
-				eq(table.testcase.problemNumber, problemNumber),
-				eq(table.testcase.number, testcaseNumber),
-			),
-		});
-	}
-
 	/** Get all submissions for a specific problem in a contest */
 	export async function getSubmissionsByUser(
 		userId: string,
@@ -74,7 +40,7 @@ export namespace ProblemService {
 				userId: false,
 				contestId: false,
 				problemNumber: false,
-				code: false,
+				content: false,
 			},
 			with: {
 				problem: {
@@ -89,5 +55,40 @@ export namespace ProblemService {
 				eq(table.submission.problemNumber, problemNumber),
 			),
 		});
+	}
+}
+
+export namespace ProblemAdminService {
+	export async function createProblem(
+		contestId: string,
+		problem: typeof ProblemModel.insert.static,
+	) {
+		const [data] = await db
+			.insert(table.problem)
+			.values({
+				...problem,
+				contestId,
+				number: sql`${db.$count(table.problem, eq(table.problem.contestId, contestId))} + 1`,
+			})
+			.returning();
+		return data;
+	}
+
+	export async function updateProblem(
+		contestId: string,
+		problemNumber: number,
+		problem: typeof ProblemModel.update.static,
+	) {
+		const [data] = await db
+			.update(table.problem)
+			.set(problem)
+			.where(
+				and(
+					eq(table.problem.contestId, contestId),
+					eq(table.problem.number, problemNumber),
+				),
+			)
+			.returning();
+		return data;
 	}
 }

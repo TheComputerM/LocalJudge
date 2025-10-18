@@ -14,7 +14,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import type { contestSettingsSchema } from "@/api/models/contest";
+import type { contestSettingsSchema } from "@/api/contest/model";
 import { user } from "./auth";
 
 export const operatorSchema = pgSchema("operator");
@@ -156,8 +156,11 @@ export const submission = operatorSchema.table(
 			}),
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
-		code: text("code").notNull(),
+		content: jsonb("content").$type<Record<string, string>>().notNull(),
 		language: varchar("language", { length: 24 }).notNull(),
+		createdAt: timestamp("created_at", { withTimezone: true })
+			.notNull()
+			.defaultNow(),
 	},
 	(t) => [
 		foreignKey({
@@ -182,12 +185,11 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 }));
 
 export const statusEnum = operatorSchema.enum("status", [
-	"accepted",
-	"incorrect_answer",
-	"time_limit_exceeded",
-	"memory_limit_exceeded",
-	"compilation_error",
-	"runtime_error",
+	"CA",
+	"WA",
+	"RE",
+	"CE",
+	"XX",
 ]);
 
 /**
@@ -203,8 +205,10 @@ export const result = operatorSchema.table(
 				onUpdate: "cascade",
 			}),
 		testcaseNumber: smallint("testcase_number").notNull(),
-		// TODO: use a code execution engine that reports memory and time
 		status: statusEnum("status").notNull(),
+		time: integer("time").notNull(),
+		memory: integer("memory").notNull(),
+		stdout: text("stdout").notNull(),
 		message: text("message").notNull(),
 	},
 	(t) => [

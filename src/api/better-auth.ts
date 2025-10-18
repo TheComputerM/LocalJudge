@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 export const betterAuthPlugin = new Elysia({
 	name: "better-auth",
 }).macro({
-	auth: (role: string) => ({
+	auth: (role: "any" | "user" | "admin") => ({
 		async resolve({ status, request: { headers } }) {
 			const data = await auth.api.getSession({
 				headers,

@@ -1,15 +1,14 @@
 import { getRouteApi, useLoaderData } from "@tanstack/react-router";
-import { createStore } from "@xstate/store";
+import { Derived, Store } from "@tanstack/react-store";
 import { create } from "mutative";
 import { createContext, useContext, useEffect, useRef } from "react";
 import { localjudge } from "@/api/client";
 
-interface StoreContext {
+interface SolutionStoreContext {
 	contest: string;
 	problem: number;
 	language: string;
 	file: string;
-	solutions: Record<number, Record<string, Record<string, string>>>;
 }
 
 function set(obj: object, path: (string | number)[], value: any) {
@@ -22,74 +21,65 @@ function set(obj: object, path: (string | number)[], value: any) {
 	current[path[path.length - 1]] = value;
 }
 
-const createSolutionStore = (initial: StoreContext) => {
-	const store = createStore({
-		context: initial,
-		on: {
-			init(
-				ctx,
-				event: {
-					contest: string;
-					problem: number;
-					language: string;
-					content: Record<string, string>;
-				},
-			) {
-				return create(ctx, (draft) => {
-					set(draft.solutions, [event.problem, event.language], event.content);
-				});
-			},
+const createSolutionStore = (initial: SolutionStoreContext) => {
+	const solutions = new Store({
+		solutions: {} as Record<number, Record<string, Record<string, string>>>,
+	});
 
-			param(
-				_ctx,
-				event: { key: keyof Omit<StoreContext, "solutions">; value: any },
-				enqueue,
-			) {
-				const ctx = {
-					..._ctx,
-					[event.key]: event.value,
-				};
-
-				if (!ctx.solutions[ctx.problem]?.[ctx.language]?.[ctx.file]) {
-					enqueue.effect(async () => {
-						const { data } = await localjudge.api
-							.contest({ id: ctx.contest })
-							.problem({ problem: ctx.problem.toString() })
-							.boilerplate({ language: ctx.language })
-							.get();
-
-						if (!data) return;
-
-						store.trigger.init({
-							contest: ctx.contest,
-							problem: ctx.problem,
-							language: ctx.language,
-							content: data,
-						});
-					});
-				}
-
-				return ctx;
-			},
-
-			write(ctx, event: { content: string }) {
-				return create(ctx, (draft) => {
-					set(
-						draft.solutions,
-						[draft.problem, draft.language, draft.file],
-						event.content,
-					);
-				});
-			},
+	const selected = new Store(initial, {
+		onUpdate: async () => {
+			const p = selected.state;
+			if (!solutions.state.solutions[p.problem]?.[p.language]?.[p.file]) {
+				// fetch new data if doesn't exist
+				const { data } = await localjudge
+					.contest({ id: p.contest })
+					.problem({
+						problem: p.problem,
+					})
+					.boilerplate({
+						language: p.language,
+					})
+					.get();
+				if (!data) return;
+				solutions.setState((prev) =>
+					create(prev, (draft) => {
+						set(draft.solutions, [p.problem, p.language], data);
+					}),
+				);
+			}
 		},
 	});
 
-	return store;
+	const content = new Derived({
+		deps: [selected, solutions],
+		fn: () => {
+			const p = selected.state;
+			return solutions.state.solutions[p.problem]?.[p.language]?.[p.file] ?? "";
+		},
+	});
+
+	function setContent(content: string) {
+		solutions.setState((prev) =>
+			create(prev, (draft) => {
+				set(
+					draft.solutions,
+					[
+						selected.state.problem,
+						selected.state.language,
+						selected.state.file,
+					],
+					content,
+				);
+			}),
+		);
+	}
+
+	return { selected, content, setContent };
 };
 
 type StoreAPI = ReturnType<typeof createSolutionStore>;
 
-const StoreContext = createContext<StoreAPI | null>(null);
+const SolutionStoreContext = createContext<StoreAPI | null>(null);
 
 const Route = getRouteApi("/app/contest/$id/problem/$problem");
 
@@ -111,27 +101,31 @@ export const SolutionStoreProvider = (props: { children: React.ReactNode }) => {
 			problem,
 			language,
 			file: "@",
-			solutions: {},
 		});
 	}
 
 	useEffect(() => {
-		ref.current?.trigger.param({ key: "contest", value: contest });
+		const unmount = ref.current?.content.mount();
+		return () => unmount?.();
+	}, []);
+
+	useEffect(() => {
+		ref.current?.selected.setState((prev) => ({ ...prev, contest }));
 	}, [contest]);
 
 	useEffect(() => {
-		ref.current?.trigger.param({ key: "problem", value: problem });
+		ref.current?.selected.setState((prev) => ({ ...prev, problem }));
 	}, [problem]);
 
 	return (
-		<StoreContext.Provider value={ref.current}>
+		<SolutionStoreContext.Provider value={ref.current}>
 			{props.children}
-		</StoreContext.Provider>
+		</SolutionStoreContext.Provider>
 	);
 };
 
 export const useSolutionStore = () => {
-	const store = useContext(StoreContext);
+	const store = useContext(SolutionStoreContext);
 	if (!store) {
 		throw new Error("SolutionStore not initialized");
 	}

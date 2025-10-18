@@ -17,12 +17,21 @@ export const Route = createFileRoute("/admin/contest/$id")({
 
 const links = linkOptions([
 	{
-		to: Route.id,
+		from: Route.fullPath,
+		to: ".",
 		activeOptions: { exact: true },
-		// @ts-ignore: TODO: see how to reload the index page
+		label: "Overview",
+	},
+	{
+		from: Route.fullPath,
+		to: "./settings",
 		label: "Settings",
 	},
-	{ from: Route.fullPath, to: "./problem", label: "Problems" },
+	{
+		from: Route.fullPath,
+		to: "./problem",
+		label: "Problems",
+	},
 ]);
 
 function Navbar() {

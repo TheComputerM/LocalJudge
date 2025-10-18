@@ -72,12 +72,7 @@ function AppSidebar() {
 							{navLinks.map((link) => (
 								<SidebarMenuItem key={link.to}>
 									<SidebarMenuButton asChild>
-										<Link
-											{...link}
-											activeProps={{
-												className: "bg-accent text-accent-foreground",
-											}}
-										>
+										<Link {...link} activeProps={{ "data-active": true }}>
 											<link.icon />
 											{link.label}
 										</Link>

@@ -1,5 +1,5 @@
 {
-	"id": "9bce6f65-d773-448a-a141-417ed0c660d3",
+	"id": "5a7f1127-8501-467b-9a88-87029fd79ec0",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -518,6 +518,24 @@
 					"primaryKey": false,
 					"notNull": true
 				},
+				"time": {
+					"name": "time",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"memory": {
+					"name": "memory",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"stdout": {
+					"name": "stdout",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
 				"message": {
 					"name": "message",
 					"type": "text",
@@ -578,9 +596,9 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"code": {
-					"name": "code",
-					"type": "text",
+				"content": {
+					"name": "content",
+					"type": "jsonb",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -589,6 +607,13 @@
 					"type": "varchar(24)",
 					"primaryKey": false,
 					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
 				}
 			},
 			"indexes": {},
@@ -641,13 +666,6 @@
 					"type": "smallint",
 					"primaryKey": false,
 					"notNull": true
-				},
-				"points": {
-					"name": "points",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true,
-					"default": 25
 				},
 				"hidden": {
 					"name": "hidden",
@@ -703,14 +721,7 @@
 		"operator.status": {
 			"name": "status",
 			"schema": "operator",
-			"values": [
-				"accepted",
-				"incorrect_answer",
-				"time_limit_exceeded",
-				"memory_limit_exceeded",
-				"compilation_error",
-				"runtime_error"
-			]
+			"values": ["CA", "WA", "RE", "CE", "XX"]
 		}
 	},
 	"schemas": {

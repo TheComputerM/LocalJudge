@@ -36,7 +36,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/app/contest/$id")({
 	beforeLoad: async ({ params, abortController }) => {
 		const contest = await rejectError(
-			localjudge.api.contest({ id: params.id }).get({
+			localjudge.contest({ id: params.id }).get({
 				fetch: { signal: abortController.signal },
 			}),
 		);

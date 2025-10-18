@@ -1,6 +1,10 @@
 import { t } from "elysia";
+import {
+	createInsertSchema,
+	createSelectSchema,
+	createUpdateSchema,
+} from "@/api/models";
 import { contest } from "@/db/schema";
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from ".";
 
 export const contestSettingsSchema = t.Object({
 	leaderboard: t.Boolean({

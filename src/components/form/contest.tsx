@@ -4,8 +4,8 @@ import { formOptions } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
 import { LucideSave } from "lucide-react";
 import useSWR from "swr";
+import { ContestModel } from "@/api/contest/model";
 import { $localjudge } from "@/api/fetch";
-import { ContestModel } from "@/api/models/contest";
 import { withForm } from "@/components/form/primitives";
 import {
 	FieldDescription,

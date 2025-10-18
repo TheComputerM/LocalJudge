@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "@/components/ui/badge";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { localjudge } from "@/api/client";
+import { SubmissionStatusPill } from "@/components/submission-status-pill";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -10,22 +11,54 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/contest/$id/submission/")({
+	loader: async ({ params }) => {
+		const submissions = await rejectError(
+			localjudge.contest({ id: params.id }).submission.get(),
+		);
+		return { submissions };
+	},
 	component: RouteComponent,
 });
 
 function Submissions() {
+	const submissions = Route.useLoaderData({
+		select: ({ submissions }) => submissions,
+	});
 	return (
-		<TableRow>
-			<TableCell>Problem ID</TableCell>
-			<TableCell>Problem Name</TableCell>
-			<TableCell>
-				<Badge>10 / 20</Badge>
-			</TableCell>
-			<TableCell>C++@10.0.0</TableCell>
-			<TableCell>DateTime</TableCell>
-		</TableRow>
+		<>
+			{submissions.map((submission) => (
+				<TableRow key={submission.id}>
+					<TableCell>
+						<Link
+							from={Route.fullPath}
+							to="../problem/$problem"
+							params={{ problem: submission.problemNumber.toString() }}
+						>
+							{submission.problemNumber}. {submission.problem.title}
+						</Link>
+					</TableCell>
+					<TableCell>
+						<SubmissionStatusPill {...submission.results} />
+					</TableCell>
+					<TableCell>{submission.language}</TableCell>
+					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
+					<TableCell>
+						<Button variant="link" asChild>
+							<Link
+								to="/app/submission/$id"
+								params={{ id: submission.id }}
+								target="_blank"
+							>
+								View
+							</Link>
+						</Button>
+					</TableCell>
+				</TableRow>
+			))}
+		</>
 	);
 }
 
@@ -39,11 +72,11 @@ function RouteComponent() {
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead>ID</TableHead>
 						<TableHead>Problem</TableHead>
-						<TableHead>Passed</TableHead>
+						<TableHead>Status</TableHead>
 						<TableHead>Language</TableHead>
 						<TableHead>When</TableHead>
+						<TableHead aria-label="Link" />
 					</TableRow>
 				</TableHeader>
 				<TableBody>

@@ -2,7 +2,7 @@ CREATE SCHEMA "auth";
 --> statement-breakpoint
 CREATE SCHEMA "operator";
 --> statement-breakpoint
-CREATE TYPE "operator"."status" AS ENUM('accepted', 'incorrect_answer', 'time_limit_exceeded', 'memory_limit_exceeded', 'compilation_error', 'runtime_error');--> statement-breakpoint
+CREATE TYPE "operator"."status" AS ENUM('CA', 'WA', 'RE', 'CE', 'XX');--> statement-breakpoint
 CREATE TABLE "auth"."account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -86,6 +86,9 @@ CREATE TABLE "operator"."result" (
 	"submission_id" uuid NOT NULL,
 	"testcase_number" smallint NOT NULL,
 	"status" "operator"."status" NOT NULL,
+	"time" integer NOT NULL,
+	"memory" integer NOT NULL,
+	"stdout" text NOT NULL,
 	"message" text NOT NULL,
 	CONSTRAINT "result_submission_id_testcase_number_pk" PRIMARY KEY("submission_id","testcase_number")
 );
@@ -95,15 +98,15 @@ CREATE TABLE "operator"."submission" (
 	"user_id" text NOT NULL,
 	"contest_id" text NOT NULL,
 	"problem_number" smallint NOT NULL,
-	"code" text NOT NULL,
-	"language" varchar(24) NOT NULL
+	"content" jsonb NOT NULL,
+	"language" varchar(24) NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "operator"."testcase" (
 	"contest_id" text NOT NULL,
 	"problem_number" smallint NOT NULL,
 	"number" smallint NOT NULL,
-	"points" integer DEFAULT 25 NOT NULL,
 	"hidden" boolean DEFAULT false NOT NULL,
 	"input" text NOT NULL,
 	"output" text NOT NULL,

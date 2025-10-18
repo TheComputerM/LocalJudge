@@ -1,6 +1,7 @@
-import Elysia from "elysia";
+import Elysia, { t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { adminContestApp } from "./contest";
+import { ContestModel } from "@/api/contest/model";
+import { ParticipantModel } from "@/api/models/participant";
 import { AdminService } from "./service";
 
 export const adminApp = new Elysia({
@@ -22,4 +23,37 @@ export const adminApp = new Elysia({
 			},
 		},
 	)
-	.use(adminContestApp);
+	.get(
+		"/contest",
+		async () => {
+			return AdminService.getContests();
+		},
+		{
+			response: t.Array(ContestModel.select),
+			detail: {
+				summary: "List contests",
+				description: "List all contests present in the system",
+			},
+		},
+	)
+	.get(
+		"/participant",
+		async () => {
+			return AdminService.getParticipants();
+		},
+		{
+			detail: {
+				summary: "List participants",
+				description: "List all participants present in the system",
+			},
+		},
+	)
+	.post(
+		"/participant",
+		async ({ body }) => {
+			return AdminService.createParticipant(body);
+		},
+		{
+			body: ParticipantModel.insert,
+		},
+	);

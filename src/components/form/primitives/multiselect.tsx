@@ -1,5 +1,4 @@
 import { CheckIcon } from "lucide-react";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import {
 	Tags,
 	TagsContent,
@@ -10,8 +9,8 @@ import {
 	TagsList,
 	TagsTrigger,
 	TagsValue,
-} from "@/components/ui/kibo-ui/tags";
-import { Label } from "@/components/ui/label";
+} from "@/components/kibo-ui/tags";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 

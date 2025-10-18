@@ -2,8 +2,8 @@ import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
 import { t } from "elysia";
 import { localjudge } from "@/api/client";
-import { ProblemModel } from "@/api/models/problem";
-import { TestcaseModel } from "@/api/models/testcase";
+import { ProblemModel } from "@/api/contest/problem/model";
+import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
 import { rejectError } from "@/lib/utils";
@@ -12,13 +12,13 @@ export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
 	loader: async ({ params }) => {
 		const [problem, testcases] = await Promise.all([
 			rejectError(
-				localjudge.api
+				localjudge
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.get(),
 			),
 			rejectError(
-				localjudge.api
+				localjudge
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.testcase.get(),
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/admin/contest/$id/problem/$problem")({
 				Promise.all(
 					data.map((tc) =>
 						rejectError(
-							localjudge.api
+							localjudge
 								.contest({ id: params.id })
 								.problem({ problem: params.problem })
 								.testcase({ testcase: tc.number })
@@ -51,11 +51,11 @@ function RouteComponent() {
 			testcases: Value.Parse(t.Array(TestcaseModel.upsert), testcases),
 		},
 		onSubmit: async ({ value }) => {
-			await localjudge.api.admin
+			await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.patch(value.problem);
-			await localjudge.api.admin
+			await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.testcase.put(value.testcases);

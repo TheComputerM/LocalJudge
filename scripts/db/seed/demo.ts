@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
 import { Static } from "@sinclair/typemap";
 import { taskRunnerDB as db } from "scripts/db/utils";
+import { ContestModel } from "@/api/contest/model";
 import { $localbox } from "@/api/localbox/client";
-import { ContestModel } from "@/api/models/contest";
 import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { rejectError } from "@/lib/utils";

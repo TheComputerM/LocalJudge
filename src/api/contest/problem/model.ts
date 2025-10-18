@@ -1,6 +1,10 @@
 import { t } from "elysia";
+import {
+	createInsertSchema,
+	createSelectSchema,
+	createUpdateSchema,
+} from "@/api/models";
 import { problem } from "@/db/schema";
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from ".";
 
 const timeLimit = t.Number({
 	title: "Time Limit",

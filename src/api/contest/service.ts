@@ -1,6 +1,7 @@
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
+import { ContestModel } from "./model";
 
 export namespace ContestService {
 	/** Check if a user is registered for a contest */
@@ -29,12 +30,6 @@ export namespace ContestService {
 		});
 	}
 
-	export async function getContests() {
-		return db.query.contest.findMany({
-			orderBy: asc(table.contest.startTime),
-		});
-	}
-
 	/** Get all contests a user is registered for */
 	export async function getContestsByUser(userId: string) {
 		const registrations = await db.query.registration.findMany({
@@ -47,5 +42,20 @@ export namespace ContestService {
 		});
 
 		return registrations.map(({ contest }) => contest);
+	}
+}
+
+export namespace ContestAdminService {
+	export async function createContest(
+		contest: typeof ContestModel.insert.static,
+	) {
+		return db.insert(table.contest).values(contest).returning();
+	}
+
+	export async function updateContest(
+		id: string,
+		contest: typeof ContestModel.update.static,
+	) {
+		await db.update(table.contest).set(contest).where(eq(table.contest.id, id));
 	}
 }

@@ -7,7 +7,6 @@
 		"target": "ES2022",
 		"skipLibCheck": true,
 		"strictNullChecks": true,
-		"types": ["bun-types"],
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["src/*"]

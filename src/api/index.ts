@@ -1,14 +1,17 @@
-import { swagger } from "@elysiajs/swagger";
+import * as path from "node:path";
+import { fromTypes, openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { adminApp } from "./admin";
 import { contestApp } from "./contest";
 import { localboxApp } from "./localbox";
+import { submissionApp } from "./submission";
 
 export const baseApp = new Elysia({ prefix: "/api" })
 	.use(
-		swagger({
-			path: "/swagger",
-			specPath: "swagger/json",
+		openapi({
+			// references: fromTypes("./src/api/index.ts", {
+			// 	tsconfigPath: path.join(process.cwd(), "tsconfig.json"),
+			// }),
 			documentation: {
 				info: {
 					title: "LocalJudge Documentation",
@@ -21,6 +24,7 @@ export const baseApp = new Elysia({ prefix: "/api" })
 		console.log(error);
 	})
 	.use(contestApp)
+	.use(submissionApp)
 	.use(adminApp)
 	.use(localboxApp);
 

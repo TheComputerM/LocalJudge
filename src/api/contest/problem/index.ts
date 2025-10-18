@@ -1,17 +1,22 @@
 import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
-import { ProblemModel } from "@/api/models/problem";
-import { TestcaseModel } from "@/api/models/testcase";
-import boilerplateRaw from "./boilerplate.yaml?raw";
-import { ProblemService } from "./service";
+import { LocalboxService } from "@/api/localbox/service";
+import { APIParams } from "@/api/models/params";
+import { ProblemModel } from "./model";
+// import boilerplateYAML from "./boilerplate.yaml?raw";
+import { ProblemAdminService, ProblemService } from "./service";
+import { testcaseApp } from "./testcase";
 
-const boilerplate = Bun.YAML.parse(boilerplateRaw) as Record<string, string>;
+// const boilerplate = Bun.YAML.parse(boilerplateYAML) as Record<string, string>;
 
-export const problemApp = new Elysia({ prefix: "/problem" })
+export const problemApp = new Elysia({
+	prefix: "/problem",
+	detail: { tags: ["Problem"] },
+})
 	.use(betterAuthPlugin)
 	.guard({
 		auth: "any",
-		params: t.Object({ id: t.String({ description: "Contest ID" }) }),
+		params: t.Object({ id: APIParams.contest }),
 	})
 	.get(
 		"/",
@@ -26,13 +31,25 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 			},
 		},
 	)
+	.post(
+		"/",
+		async ({ params, body }) => {
+			return ProblemAdminService.createProblem(params.id, body);
+		},
+		{
+			auth: "admin",
+			body: ProblemModel.insert,
+			detail: {
+				summary: "Add problem to contest",
+				description: "Add a new problem to a specific contest",
+			},
+		},
+	)
 	.group(
 		"/:problem",
 		{
 			params: t.Object({
-				problem: t.Numeric({
-					description: "Problem number within the contest",
-				}),
+				problem: APIParams.problem,
 			}),
 		},
 		(app) =>
@@ -58,9 +75,33 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 						},
 					},
 				)
-				.post(
+				.patch(
 					"/",
-					async ({ auth, params }) => {
+					async ({ params, body }) => {
+						return ProblemAdminService.updateProblem(
+							params.id,
+							params.problem,
+							body,
+						);
+					},
+					{
+						body: ProblemModel.update,
+						detail: {
+							summary: "Update problem",
+							description: "Update a specific problem in a contest",
+						},
+					},
+				)
+				.post(
+					"/submit/:language",
+					async ({ auth, params, body }) => {
+						await LocalboxService.submit(
+							auth.user.id,
+							params.id,
+							params.problem,
+							params.language,
+							body,
+						);
 						return status(201, "Code submitted successfully");
 					},
 					{
@@ -69,15 +110,17 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 							description:
 								"Submit a solution for a specific problem in a contest",
 						},
+						body: t.String(),
 					},
 				)
 				.get(
 					"/boilerplate/:language",
 					async ({ params }) => {
-						if (!(params.language in boilerplate)) {
-							return { "@": "good luck" };
-						}
-						return { "@": boilerplate[params.language] };
+						// if (!(params.language in boilerplate)) {
+						// 	return { "@": "good luck" };
+						// }
+						// return { "@": boilerplate[params.language] };
+						return { "@": "good luck" };
 					},
 					{
 						detail: {
@@ -86,53 +129,5 @@ export const problemApp = new Elysia({ prefix: "/problem" })
 						},
 					},
 				)
-				.get(
-					"/testcase",
-					async ({ params }) => {
-						const testcases = await ProblemService.getTestcases(
-							params.id,
-							params.problem,
-						);
-						return testcases;
-					},
-					{
-						response: TestcaseModel.groupSelect,
-						detail: {
-							summary: "List testcases",
-							description:
-								"List all testcases for a specific problem in a contest",
-						},
-					},
-				)
-				.get(
-					"/testcase/:testcase",
-					async ({ params, auth }) => {
-						const testcase = await ProblemService.getTestcase(
-							params.id,
-							params.problem,
-							params.testcase,
-						);
-						if (!testcase) return status(404, "Testcase not found");
-						if (!auth.user.role?.includes("admin") && testcase.hidden) {
-							return status(403, "Testcase is hidden");
-						}
-						return testcase;
-					},
-					{
-						response: {
-							200: TestcaseModel.select,
-							404: t.Literal("Testcase not found"),
-							403: t.Literal("Testcase is hidden"),
-						},
-						params: t.Object({
-							testcase: t.Numeric({
-								description: "Testcase number within the problem",
-							}),
-						}),
-						detail: {
-							summary: "Get testcase",
-							description: "Get a specific testcase for a problem in a contest",
-						},
-					},
-				),
+				.use(testcaseApp),
 	);

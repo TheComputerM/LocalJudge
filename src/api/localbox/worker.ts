@@ -16,6 +16,7 @@ worker.onmessage = async (event) => {
 		}),
 		event.data,
 	);
+
 	const result = await $localbox("@post/engine/:engine/execute", {
 		params: { engine },
 		body: { files, options },

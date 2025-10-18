@@ -1,9 +1,8 @@
-import { and, eq, SQL, sql } from "drizzle-orm";
-import { ContestModel } from "@/api/models/contest";
-import { ProblemModel } from "@/api/models/problem";
-import { TestcaseModel } from "@/api/models/testcase";
+import { asc, desc, eq } from "drizzle-orm";
+import { ParticipantModel } from "@/api/models/participant";
 import { db } from "@/db";
 import * as table from "@/db/schema";
+import { auth } from "@/lib/auth";
 
 export namespace AdminService {
 	export async function getOverview() {
@@ -22,82 +21,28 @@ export namespace AdminService {
 		};
 	}
 
-	export async function createContest(
-		contest: typeof ContestModel.insert.static,
-	) {
-		return db.insert(table.contest).values(contest).returning();
+	export async function getContests() {
+		return db.query.contest.findMany({
+			orderBy: asc(table.contest.startTime),
+		});
 	}
 
-	export async function updateContest(
-		id: string,
-		contest: typeof ContestModel.update.static,
-	) {
-		await db.update(table.contest).set(contest).where(eq(table.contest.id, id));
+	export async function getParticipants() {
+		return db.query.user.findMany({
+			where: eq(table.user.role, "user"),
+			orderBy: desc(table.user.createdAt),
+		});
 	}
 
-	export async function createProblem(
-		contestId: string,
-		problem: typeof ProblemModel.insert.static,
+	export async function createParticipant(
+		data: typeof ParticipantModel.insert.static,
 	) {
-		const [data] = await db
-			.insert(table.problem)
-			.values({
-				...problem,
-				contestId,
-				number: sql`${db.$count(table.problem, eq(table.problem.contestId, contestId))} + 1`,
-			})
-			.returning();
-		return data;
-	}
-
-	export async function updateProblem(
-		contestId: string,
-		problemNumber: number,
-		problem: typeof ProblemModel.update.static,
-	) {
-		const [data] = await db
-			.update(table.problem)
-			.set(problem)
-			.where(
-				and(
-					eq(table.problem.contestId, contestId),
-					eq(table.problem.number, problemNumber),
-				),
-			)
-			.returning();
-		return data;
-	}
-
-	export async function upsertTestcases(
-		contestId: string,
-		problemNumber: number,
-		testcases: (typeof TestcaseModel.upsert.static)[],
-	) {
-		const updateColumns = Object.keys(TestcaseModel.update.properties).reduce(
-			(acc, v) => {
-				acc[v] = sql.raw(`EXCLUDED.${v}`);
-				return acc;
+		const { user } = await auth.api.createUser({
+			body: {
+				...data,
+				role: "user",
 			},
-			{} as Record<string, SQL>,
-		);
-
-		return db
-			.insert(table.testcase)
-			.values(
-				testcases.map((tc) => ({
-					contestId,
-					problemNumber,
-					...tc,
-				})),
-			)
-			.onConflictDoUpdate({
-				target: [
-					table.testcase.contestId,
-					table.testcase.problemNumber,
-					table.testcase.number,
-				],
-				set: updateColumns,
-			})
-			.returning();
+		});
+		return user;
 	}
 }
