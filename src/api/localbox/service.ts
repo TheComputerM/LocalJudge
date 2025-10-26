@@ -4,6 +4,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { LocalboxSchema } from "./schema";
+import { submissionWatcher } from "./watcher";
 
 const worker = new Worker(new URL("./worker.ts", import.meta.url));
 
@@ -86,6 +87,7 @@ worker.onmessage = async (event) => {
 	}
 
 	await db.insert(table.result).values(record);
+	submissionWatcher.trigger({ id, testcase, status: record.status });
 };
 
 export namespace LocalboxService {
@@ -128,5 +130,9 @@ export namespace LocalboxService {
 				},
 			});
 		}
+
+		return id;
 	}
+
+	export const watcher = submissionWatcher;
 }

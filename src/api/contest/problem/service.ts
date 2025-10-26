@@ -1,4 +1,4 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, gt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { ProblemModel } from "./model";
@@ -59,7 +59,7 @@ export namespace ProblemService {
 }
 
 export namespace ProblemAdminService {
-	export async function createProblem(
+	export async function create(
 		contestId: string,
 		problem: typeof ProblemModel.insert.static,
 	) {
@@ -74,7 +74,7 @@ export namespace ProblemAdminService {
 		return data;
 	}
 
-	export async function updateProblem(
+	export async function update(
 		contestId: string,
 		problemNumber: number,
 		problem: typeof ProblemModel.update.static,
@@ -90,5 +90,27 @@ export namespace ProblemAdminService {
 			)
 			.returning();
 		return data;
+	}
+
+	export async function remove(contestId: string, problemNumber: number) {
+		await db.transaction(async (txn) => {
+			await txn
+				.delete(table.problem)
+				.where(
+					and(
+						eq(table.problem.contestId, contestId),
+						eq(table.problem.number, problemNumber),
+					),
+				);
+			await txn
+				.update(table.problem)
+				.set({ number: sql`${table.problem.number} - 1` })
+				.where(
+					and(
+						eq(table.problem.contestId, contestId),
+						gt(table.problem.number, problemNumber),
+					),
+				);
+		});
 	}
 }

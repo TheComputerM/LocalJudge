@@ -55,10 +55,18 @@ function RouteComponent() {
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.patch(value.problem);
+			// TODO: don't do this because all the results will be invalidated because the
+			// testcases are recreated
 			await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
-				.testcase.put(value.testcases);
+				.testcase.delete();
+			for (const testcase of value.testcases) {
+				await localjudge
+					.contest({ id })
+					.problem({ problem: problemNumber })
+					.testcase.post(testcase);
+			}
 		},
 	});
 

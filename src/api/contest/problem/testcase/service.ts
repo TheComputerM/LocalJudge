@@ -1,4 +1,4 @@
-import { and, asc, eq, SQL, sql } from "drizzle-orm";
+import { and, asc, eq, gt, SQL, sql } from "drizzle-orm";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { db } from "@/db";
 import * as table from "@/db/schema";
@@ -41,6 +41,41 @@ export namespace TestcaseService {
 }
 
 export namespace TestcaseAdminService {
+	export async function truncate(contestId: string, problemNumber: number) {
+		await db
+			.delete(table.testcase)
+			.where(
+				and(
+					eq(table.testcase.contestId, contestId),
+					eq(table.testcase.problemNumber, problemNumber),
+				),
+			);
+	}
+
+	export async function create(
+		contestId: string,
+		problemNumber: number,
+		testcase: typeof TestcaseModel.insert.static,
+	) {
+		const count = db.$count(
+			table.testcase,
+			and(
+				eq(table.testcase.contestId, contestId),
+				eq(table.testcase.problemNumber, problemNumber),
+			),
+		);
+		const [data] = await db
+			.insert(table.testcase)
+			.values({
+				...testcase,
+				contestId,
+				problemNumber,
+				number: sql`${count} + 1`,
+			})
+			.returning();
+		return data;
+	}
+
 	export async function upsertTestcases(
 		contestId: string,
 		problemNumber: number,
@@ -72,5 +107,35 @@ export namespace TestcaseAdminService {
 				set: updateColumns,
 			})
 			.returning();
+	}
+
+	export async function remove(
+		contestId: string,
+		problemNumber: number,
+		testcaseNumber: number,
+	) {
+		await db.transaction(async (txn) => {
+			await txn
+				.delete(table.testcase)
+				.where(
+					and(
+						eq(table.testcase.contestId, contestId),
+						eq(table.testcase.problemNumber, problemNumber),
+						eq(table.testcase.number, testcaseNumber),
+					),
+				);
+			await txn
+				.update(table.testcase)
+				.set({
+					number: sql`${table.testcase.number} - 1`,
+				})
+				.where(
+					and(
+						eq(table.testcase.contestId, contestId),
+						eq(table.testcase.problemNumber, problemNumber),
+						gt(table.testcase.number, testcaseNumber),
+					),
+				);
+		});
 	}
 }

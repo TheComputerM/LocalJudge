@@ -22,23 +22,63 @@ export const submissionApp = new Elysia({
 			},
 		},
 	)
-	.get(
+	.group(
 		"/:submission",
-		async ({ params }) => {
-			const submission = await SubmissionService.getSubmission(
-				params.submission,
-			);
-			if (submission === undefined) return status(404, "Submission not found");
-			return submission;
-		},
 		{
+			beforeHandle({ params }) {
+				if (!SubmissionService.isExists(params.submission)) {
+					return status(404, "Submission not found");
+				}
+			},
 			response: {
-				200: SubmissionModel.select,
 				404: t.Literal("Submission not found"),
 			},
-			detail: {
-				summary: "Get submission",
-				description: "Retrieve details of a specific submission by its ID",
-			},
 		},
+		(app) =>
+			app
+				.get(
+					"/",
+					async ({ params }) => {
+						const submission = await SubmissionService.getSubmission(
+							params.submission,
+						);
+						return submission!;
+					},
+					{
+						response: SubmissionModel.select,
+						detail: {
+							summary: "Get submission",
+							description:
+								"Retrieve details of a specific submission by its ID",
+						},
+					},
+				)
+				.get(
+					"/status",
+					async ({ params }) => {
+						return SubmissionService.getStatus(params.submission);
+					},
+					{
+						response: SubmissionModel.status,
+						detail: {
+							summary: "Get submission status",
+							description:
+								"Retrieve the number of total and passed test cases for a submission",
+						},
+					},
+				)
+				.get(
+					"/results",
+					async ({ params }) => {
+						return SubmissionService.getResults(params.submission);
+					},
+					{
+						response: t.Array(SubmissionModel.Result.select),
+						detail: {
+							summary: "Get submission results",
+							description:
+								"Retrieve detailed results for each test case of a submission",
+						},
+					},
+				),
 	);

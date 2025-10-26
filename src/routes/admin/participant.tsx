@@ -2,11 +2,16 @@ import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import {
+	ColumnDef,
+	flexRender,
+	getCoreRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
+import {
 	LucideEdit,
 	LucideFileUp,
 	LucidePlus,
 	LucideTrash,
-	LucideUserRoundX,
 } from "lucide-react";
 import { useState } from "react";
 import { localjudge } from "@/api/client";
@@ -25,24 +30,17 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-	Empty,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyMedia,
-	EmptyTitle,
-} from "@/components/ui/empty";
 import { FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-	Item,
-	ItemActions,
-	ItemContent,
-	ItemDescription,
-	ItemGroup,
-	ItemTitle,
-} from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/participant")({
@@ -52,47 +50,6 @@ export const Route = createFileRoute("/admin/participant")({
 	},
 	component: RouteComponent,
 });
-
-const EmptyParticipants = () => (
-	<Empty>
-		<EmptyHeader>
-			<EmptyMedia variant="icon">
-				<LucideUserRoundX />
-			</EmptyMedia>
-			<EmptyTitle>No Participants</EmptyTitle>
-			<EmptyDescription>
-				No participants have been added to Localjudge yet.
-			</EmptyDescription>
-		</EmptyHeader>
-	</Empty>
-);
-
-function ParticipantCard(props: { id: string; name: string; email: string }) {
-	return (
-		<Item key={props.id} variant="muted">
-			<ItemContent>
-				<ItemTitle>{props.name}</ItemTitle>
-				<ItemDescription>{props.email}</ItemDescription>
-			</ItemContent>
-			<ItemActions>
-				<ButtonGroup>
-					<ConfirmActionDialog>
-						<Button
-							variant="destructive"
-							size="icon"
-							aria-label="Delete Participant"
-						>
-							<LucideTrash />
-						</Button>
-					</ConfirmActionDialog>
-					<Button size="icon" aria-label="Edit Participant">
-						<LucideEdit />
-					</Button>
-				</ButtonGroup>
-			</ItemActions>
-		</Item>
-	);
-}
 
 function NewParticipantDialog() {
 	const [open, setOpen] = useState(false);
@@ -205,6 +162,94 @@ function ImportParticipantsDialog() {
 	);
 }
 
+function ParticipantsTable() {
+	const users = Route.useLoaderData({
+		select: ({ participants }) => participants,
+	});
+	const columns: ColumnDef<(typeof users)[number]>[] = [
+		{
+			accessorKey: "name",
+			header: "Name",
+		},
+		{
+			accessorKey: "email",
+			header: "Email",
+		},
+		{
+			accessorKey: "createdAt",
+			header: "Created At",
+			cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
+		},
+		{
+			header: "Actions",
+			cell: ({ row }) => (
+				<ButtonGroup>
+					<ConfirmActionDialog>
+						<Button variant="destructive" size="icon">
+							<LucideTrash />
+						</Button>
+					</ConfirmActionDialog>
+					<Button size="icon">
+						<LucideEdit />
+					</Button>
+				</ButtonGroup>
+			),
+		},
+	];
+	const table = useReactTable({
+		data: users,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+	});
+
+	return (
+		<div>
+			<Table>
+				<TableHeader>
+					{table.getHeaderGroups().map((headerGroup) => (
+						<TableRow key={headerGroup.id}>
+							{headerGroup.headers.map((header) => {
+								return (
+									<TableHead key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
+									</TableHead>
+								);
+							})}
+						</TableRow>
+					))}
+				</TableHeader>
+				<TableBody>
+					{table.getRowModel().rows.length ? (
+						table.getRowModel().rows.map((row) => (
+							<TableRow
+								key={row.id}
+								data-state={row.getIsSelected() && "selected"}
+							>
+								{row.getVisibleCells().map((cell) => (
+									<TableCell key={cell.id}>
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</TableCell>
+								))}
+							</TableRow>
+						))
+					) : (
+						<TableRow>
+							<TableCell colSpan={columns.length} className="h-24 text-center">
+								No participants found.
+							</TableCell>
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
+		</div>
+	);
+}
+
 function RouteComponent() {
 	const users = Route.useLoaderData({
 		select: ({ participants }) => participants,
@@ -221,11 +266,7 @@ function RouteComponent() {
 				</div>
 			</div>
 			<Separator className="my-6" />
-			{users.length > 0 ? (
-				<ItemGroup className="gap-3">{users.map(ParticipantCard)}</ItemGroup>
-			) : (
-				<EmptyParticipants />
-			)}
+			<ParticipantsTable />
 		</>
 	);
 }

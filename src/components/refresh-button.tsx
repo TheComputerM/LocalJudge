@@ -4,6 +4,9 @@ import { type ComponentProps, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 
+/**
+ * A button component that invalidates and refreshes the entire site.
+ */
 export function RefreshButton({
 	className,
 	...props

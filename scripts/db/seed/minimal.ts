@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { taskRunnerDB as db } from "scripts/db/utils";
 import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -6,7 +7,7 @@ console.info("Creating test user...");
 const { user } = await auth.api.createUser({
 	body: {
 		name: "Test User",
-		email: "testuser@localjudge.com",
+		email: faker.internet.email(),
 		password: "pass123",
 		role: "user",
 	},
@@ -21,10 +22,8 @@ const [{ id: contestId }] = await db
 		endTime: new Date(Date.now() + 1000 * 60 * 60 * 2),
 		settings: {
 			leaderboard: true,
-			submissions: {
-				limit: 0,
-				visible: true,
-			},
+			submissions_limit: 0,
+			visible_results: true,
 			languages: ["cpp", "python"],
 		},
 	})
@@ -46,15 +45,12 @@ for (let i = 1; i <= 3; i++) {
 }
 
 console.info("Creating testcases...");
-const problems = await db
-	.select({ contestId: table.problem.contestId, number: table.problem.number })
-	.from(table.problem);
-for (const problem of problems) {
+for (let problemNumber = 1; problemNumber <= 3; problemNumber++) {
 	for (let i = 1; i <= 3; i++) {
 		const stdin = `hello world ${i}`;
 		await db.insert(table.testcase).values({
-			contestId: problem.contestId,
-			problemNumber: problem.number,
+			contestId: contestId,
+			problemNumber,
 			number: i,
 			hidden: false,
 			input: stdin,

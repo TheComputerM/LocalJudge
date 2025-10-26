@@ -2,6 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
 import { formOptions } from "@tanstack/react-form";
 import { useBlocker } from "@tanstack/react-router";
+import { addHours, addMinutes } from "date-fns";
 import { LucideSave } from "lucide-react";
 import useSWR from "swr";
 import { ContestModel } from "@/api/contest/model";
@@ -16,8 +17,16 @@ import {
 } from "@/components/ui/field";
 import { rejectError } from "@/lib/utils";
 
+const startTime = addMinutes(new Date(), 5);
+const defaultValues = {
+	...Value.Create(ContestModel.insert),
+	name: "",
+	startTime: startTime,
+	endTime: addHours(startTime, 2),
+};
+
 export const ContestFormOptions = formOptions({
-	defaultValues: Value.Create(ContestModel.insert),
+	defaultValues,
 	validators: {
 		onChange: Compile(ContestModel.insert),
 	},
@@ -97,10 +106,10 @@ export const ContestForm = withForm({
 				</FieldSet>
 				<FieldSeparator />
 				<FieldSet>
-					<form.AppField name="settings.submissions.limit">
+					<form.AppField name="settings.submissions_limit">
 						{(field) => {
 							const { title, description } =
-								ContestModel.settings.properties.submissions.properties.limit;
+								ContestModel.settings.properties.submissions_limit;
 							return (
 								<field.NumberField
 									label={title}
@@ -110,10 +119,10 @@ export const ContestForm = withForm({
 							);
 						}}
 					</form.AppField>
-					<form.AppField name="settings.submissions.visible">
+					<form.AppField name="settings.visible_results">
 						{(field) => {
 							const { title, description } =
-								ContestModel.settings.properties.submissions.properties.visible;
+								ContestModel.settings.properties.visible_results;
 							return (
 								<field.ToggleSwitch label={title} description={description} />
 							);

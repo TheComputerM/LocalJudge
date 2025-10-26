@@ -15,24 +15,18 @@ const _resultSelect = createSelectSchema(result);
 const _select = createSelectSchema(submission);
 
 export namespace SubmissionModel {
-	export const select = t.Intersect([
-		_select,
-		t.Object({
-			...additional,
-			results: t.Array(t.Omit(_resultSelect, ["submissionId"])),
-		}),
-	]);
+	export const select = t.Intersect([_select, t.Object(additional)]);
 
 	export const groupSelect = t.Array(
-		t.Intersect([
-			t.Omit(_select, ["content"]),
-			t.Object({
-				...additional,
-				results: t.Object({
-					total: t.Number(),
-					passed: t.Number(),
-				}),
-			}),
-		]),
+		t.Intersect([t.Omit(_select, ["content"]), t.Object(additional)]),
 	);
+
+	export const status = t.Object({
+		total: t.Number(),
+		passed: t.Number(),
+	});
+
+	export namespace Result {
+		export const select = _resultSelect;
+	}
 }

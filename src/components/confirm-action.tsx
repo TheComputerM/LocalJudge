@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -38,9 +39,16 @@ export function ConfirmActionDialog({
 						disabled={loading}
 						onClick={async () => {
 							setLoading(true);
-							await onConfirm?.();
-							setLoading(false);
-							setOpen(false);
+							try {
+								await onConfirm?.();
+								toast.success("Action completed successfully");
+								setLoading(false);
+								setOpen(false);
+							} catch (e) {
+								toast.error("An error occurred. Please try again.", {
+									description: JSON.stringify(e),
+								});
+							}
 						}}
 					>
 						{loading && <Spinner />}

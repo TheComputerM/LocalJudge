@@ -1,18 +1,15 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { lightFormat } from "date-fns";
-import { LucideDoorOpen, LucideGavel } from "lucide-react";
+import { LucideDoorOpen } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ContestCard } from "@/components/contest-card";
-import { SignOutButton } from "@/components/sign-out";
-import { ThemeToggle } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useTime } from "@/hooks/use-time";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/app/")({
+export const Route = createFileRoute("/app/_dashboard/")({
 	loader: async ({ abortController }) => {
 		const contests = await rejectError(
 			localjudge.contest.get({
@@ -24,37 +21,6 @@ export const Route = createFileRoute("/app/")({
 	component: RouteComponent,
 });
 
-function NavClock() {
-	const currentTime = useTime();
-	return <span>{lightFormat(currentTime, "HH:mm:ss")}</span>;
-}
-
-function Navbar() {
-	return (
-		<header className="border-b px-4 md:px-6">
-			<div className="flex h-16 items-center justify-between gap-4">
-				<div className="flex-1 inline-flex items-center gap-2 text-primary">
-					<LucideGavel />
-					<span className="font-semibold text-lg max-sm:hidden">
-						LocalJudge
-					</span>
-				</div>
-				<div className="grow text-center">
-					<NavClock />
-				</div>
-				<div className="flex flex-1 items-center justify-end gap-2">
-					<ThemeToggle />
-					<Separator
-						orientation="vertical"
-						className="mr-2 data-[orientation=vertical]:h-4"
-					/>
-					<SignOutButton />
-				</div>
-			</div>
-		</header>
-	);
-}
-
 function RegisterForm() {
 	const [code, setCode] = useState("");
 	const router = useRouter();
@@ -65,8 +31,15 @@ function RegisterForm() {
 			onSubmit={async (e) => {
 				e.preventDefault();
 				e.stopPropagation();
-				await localjudge.contest.register.post({ code });
-				router.invalidate({ filter: (d) => d.fullPath === Route.fullPath });
+				const { error } = await localjudge.contest.register.post({ code });
+				if (error) {
+					toast.error("Failed to register for contest");
+				} else {
+					toast.success("Registered successfully");
+				}
+				await router.invalidate({
+					filter: (d) => d.fullPath === Route.fullPath,
+				});
 			}}
 		>
 			<Input
@@ -101,12 +74,11 @@ function ContestList() {
 function RouteComponent() {
 	return (
 		<>
-			<Navbar />
 			<div className="container mx-auto p-4">
 				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
 					Contests
 				</h1>
-				<p className="leading-7 [&:not(:first-child)]:my-6">
+				<p className="leading-7 not-first:my-6">
 					List of contests you are registered for, ask your admistrator for the
 					contest code if it doesn't appear here.
 				</p>

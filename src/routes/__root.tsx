@@ -12,6 +12,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import { getThemeFn } from "@/lib/server/theme";
 import appCss from "@/styles/app.css?url";
@@ -77,7 +78,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body>
-				<ThemeProvider theme={theme}>{children}</ThemeProvider>
+				<ThemeProvider theme={theme}>
+					{children}
+					<Toaster position="top-center" />
+				</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>

@@ -106,7 +106,7 @@ function Navbar() {
 				className="mr-2 data-[orientation=vertical]:h-4"
 			/>
 			{/* TODO: add breadcrumbs when implemented */}
-			<div className="grow-1" />
+			<div className="grow" />
 			<RefreshButton />
 			<ThemeToggle />
 			<Separator

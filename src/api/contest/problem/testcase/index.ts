@@ -33,24 +33,69 @@ export const testcaseApp = new Elysia({
 			},
 		},
 	)
-	.put(
-		"/",
-		async ({ params, body }) => {
-			return await TestcaseAdminService.upsertTestcases(
-				params.id,
-				params.problem,
-				body,
-			);
-		},
+	.guard(
 		{
 			auth: "admin",
-			body: t.Array(TestcaseModel.upsert),
-			detail: {
-				summary: "Upsert testcases",
-				description:
-					"Insert or update testcases for a specific problem in a contest",
-			},
 		},
+		(app) =>
+			app
+				.post(
+					"/",
+					async ({ params, body }) => {
+						return await TestcaseAdminService.create(
+							params.id,
+							params.problem,
+							body,
+						);
+					},
+					{
+						body: TestcaseModel.insert,
+						detail: {
+							summary: "Create testcase",
+							description:
+								"Create a new testcase for a specific problem in a contest",
+						},
+					},
+				)
+				.delete(
+					"/",
+					async ({ params }) => {
+						try {
+							await TestcaseAdminService.truncate(params.id, params.problem);
+							return status(204);
+						} catch (error) {
+							return status(
+								500,
+								`Failed to delete testcases: ${JSON.stringify(error)}`,
+							);
+						}
+					},
+					{
+						detail: {
+							summary: "Delete all testcases",
+							description:
+								"Delete all testcases of a specific problem in a contest",
+						},
+					},
+				)
+				.put(
+					"/",
+					async ({ params, body }) => {
+						return await TestcaseAdminService.upsertTestcases(
+							params.id,
+							params.problem,
+							body,
+						);
+					},
+					{
+						body: t.Array(TestcaseModel.upsert),
+						detail: {
+							summary: "Upsert testcases",
+							description:
+								"Insert or update testcases for a specific problem in a contest",
+						},
+					},
+				),
 	)
 	.group(
 		"/:testcase",
@@ -60,35 +105,67 @@ export const testcaseApp = new Elysia({
 			}),
 		},
 		(app) =>
-			app.get(
-				"/",
-				async ({ params, auth }) => {
-					const testcase = await TestcaseService.getTestcase(
-						params.id,
-						params.problem,
-						params.testcase,
-					);
-					if (!testcase) return status(404, "Testcase not found");
-					if (!auth.user.role?.includes("admin") && testcase.hidden) {
-						return status(403, "Testcase is hidden");
-					}
-					return testcase;
-				},
-				{
-					response: {
-						200: TestcaseModel.select,
-						404: t.Literal("Testcase not found"),
-						403: t.Literal("Testcase is hidden"),
+			app
+				.get(
+					"/",
+					async ({ params, auth }) => {
+						const testcase = await TestcaseService.getTestcase(
+							params.id,
+							params.problem,
+							params.testcase,
+						);
+						if (!testcase) return status(404, "Testcase not found");
+						if (!auth.user.role?.includes("admin") && testcase.hidden) {
+							return status(403, "Testcase is hidden");
+						}
+						return testcase;
 					},
-					params: t.Object({
-						testcase: t.Numeric({
-							description: "Testcase number within the problem",
+					{
+						response: {
+							200: TestcaseModel.select,
+							404: t.Literal("Testcase not found"),
+							403: t.Literal("Testcase is hidden"),
+						},
+						params: t.Object({
+							testcase: t.Numeric({
+								description: "Testcase number within the problem",
+							}),
 						}),
-					}),
-					detail: {
-						summary: "Get testcase",
-						description: "Get a specific testcase for a problem in a contest",
+						detail: {
+							summary: "Get testcase",
+							description: "Get a specific testcase for a problem in a contest",
+						},
 					},
-				},
-			),
+				)
+				.guard(
+					{
+						auth: "admin",
+					},
+					(app) =>
+						app.delete(
+							"/",
+							async ({ params }) => {
+								try {
+									await TestcaseAdminService.remove(
+										params.id,
+										params.problem,
+										params.testcase,
+									);
+									return status(204);
+								} catch (error) {
+									return status(
+										500,
+										`Failed to delete testcase: ${JSON.stringify(error)}`,
+									);
+								}
+							},
+							{
+								detail: {
+									summary: "Delete testcase",
+									description:
+										"Delete a specific testcase for a problem in a contest",
+								},
+							},
+						),
+				),
 	);

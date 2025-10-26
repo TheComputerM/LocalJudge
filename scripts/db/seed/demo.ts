@@ -5,7 +5,6 @@ import { ContestModel } from "@/api/contest/model";
 import { $localbox } from "@/api/localbox/client";
 import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { rejectError } from "@/lib/utils";
 
 const CONFIG = {
 	count: {
@@ -52,10 +51,8 @@ async function createContests() {
 			endTime: faker.date.soon({ refDate: startTime }),
 			settings: {
 				leaderboard: faker.datatype.boolean(),
-				submissions: {
-					limit: faker.number.int({ min: 0, max: 8 }),
-					visible: faker.datatype.boolean(),
-				},
+				submissions_limit: faker.number.int({ min: 0, max: 8 }),
+				visible_results: faker.datatype.boolean(),
 				languages: faker.helpers.arrayElements(languages, {
 					min: 1,
 					max: languages.length,

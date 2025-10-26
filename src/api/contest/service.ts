@@ -17,7 +17,7 @@ export namespace ContestService {
 	}
 
 	/** Register a user for a contest */
-	export async function registerContest(contestId: string, userId: string) {
+	export async function register(contestId: string, userId: string) {
 		await db
 			.insert(table.registration)
 			.values({ userId: userId, contestId: contestId });
@@ -46,16 +46,30 @@ export namespace ContestService {
 }
 
 export namespace ContestAdminService {
-	export async function createContest(
-		contest: typeof ContestModel.insert.static,
-	) {
+	export async function create(contest: typeof ContestModel.insert.static) {
 		return db.insert(table.contest).values(contest).returning();
 	}
 
-	export async function updateContest(
+	export async function update(
 		id: string,
 		contest: typeof ContestModel.update.static,
 	) {
 		await db.update(table.contest).set(contest).where(eq(table.contest.id, id));
+	}
+
+	export async function remove(id: string) {
+		await db.delete(table.contest).where(eq(table.contest.id, id));
+	}
+
+	export async function overview(id: string) {
+		const [registrations, submissions] = await Promise.all([
+			db.$count(table.registration, eq(table.registration.contestId, id)),
+			db.$count(table.submission, eq(table.submission.contestId, id)),
+		]);
+
+		return {
+			registrations,
+			submissions,
+		};
 	}
 }

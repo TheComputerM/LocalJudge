@@ -3,6 +3,9 @@ import { LucideLogOut } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { Button } from "./ui/button";
 
+/**
+ * A button component that signs the user out.
+ */
 export function SignOutButton() {
 	const router = useRouter();
 	async function signOut() {

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import {
 	LucideNotebookPen,
 	LucidePlus,
@@ -59,6 +59,7 @@ const EmptyContests = () => (
 
 function RouteComponent() {
 	const contests = Route.useLoaderData();
+	const router = useRouter();
 	return (
 		<>
 			<div className="flex items-center justify-between">
@@ -73,7 +74,16 @@ function RouteComponent() {
 					{contests.map((contest) => (
 						<ContestCard key={contest.id} {...contest}>
 							<div className="flex gap-2 w-full">
-								<ConfirmActionDialog>
+								<ConfirmActionDialog
+									onConfirm={async () => {
+										await rejectError(
+											localjudge.contest({ id: contest.id }).delete(),
+										);
+										await router.invalidate({
+											filter: (r) => r.id === Route.id,
+										});
+									}}
+								>
 									<Button variant="destructive">
 										Delete <LucideTrash />
 									</Button>

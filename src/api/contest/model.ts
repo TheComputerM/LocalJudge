@@ -13,19 +13,17 @@ export const contestSettingsSchema = t.Object({
 		description:
 			"Allows the participants to view the leaderboard for the contest if true.",
 	}),
-	submissions: t.Object({
-		limit: t.Number({
-			default: 0,
-			title: "Submission Limit",
-			description:
-				"The maximum number of submissions allowed per question by a participant. A value of 0 means unlimited submissions.",
-		}),
-		visible: t.Boolean({
-			default: true,
-			title: "Submission Visibility",
-			description:
-				"Allows participants to view the results of their own submissions if true.",
-		}),
+	submissions_limit: t.Number({
+		default: 0,
+		title: "Submission Limit",
+		description:
+			"The maximum number of submissions allowed per question by a participant. A value of 0 means unlimited submissions.",
+	}),
+	visible_results: t.Boolean({
+		default: true,
+		title: "Visible Results",
+		description:
+			"Allows participants to view the results of their own submissions if true.",
 	}),
 	languages: t.Array(t.String(), {
 		default: [],
@@ -35,7 +33,7 @@ export const contestSettingsSchema = t.Object({
 	}),
 });
 
-const name = t.String({ minLength: 4, maxLength: 48, default: "" });
+const name = t.String({ minLength: 4, maxLength: 48 });
 
 const _selectSchema = createSelectSchema(contest, {
 	name,

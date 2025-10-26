@@ -4,9 +4,11 @@ import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { LucideCloudUpload } from "lucide-react";
 import Markdown from "react-markdown";
+import { toast } from "sonner";
 import useSWR from "swr";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
+import { BufferTextBlock } from "@/components/buffer-text-block";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,8 +66,20 @@ function SubmitCode() {
 			.submit({ language: store.selected.state.language })
 			.post(store.content.state);
 
-		if (error) alert(JSON.stringify(error));
-		console.log(data);
+		if (error) {
+			toast.error("Submission failed", { description: JSON.stringify(error) });
+			return;
+		}
+
+		toast.info("Submission in progress...");
+
+		for await (const chunk of data) {
+			if (chunk.data.status === "CA") {
+				toast.success(`Testcase ${chunk.data.testcase}: Correct Answer`);
+			} else {
+				toast.error(`Testcase ${chunk.data.testcase}: failed`);
+			}
+		}
 	}
 
 	return (
@@ -112,7 +126,7 @@ function TestcaseContent({ number }: { number: number }) {
 			"/api/contest/:id/problem/:problem/testcase/:testcase" as const,
 			{ id, problem: Number.parseInt(problem), testcase: number },
 		],
-		([url, params]) => rejectError($localjudge(url, { params })),
+		([url, params]) => rejectError($localjudge(url, { method: "GET", params })),
 		{
 			revalidateIfStale: false,
 		},
@@ -123,15 +137,9 @@ function TestcaseContent({ number }: { number: number }) {
 
 	return (
 		<>
-			<span>Input: </span>
-			<pre>
-				<code>{data.input}</code>
-			</pre>
+			<BufferTextBlock label="Input">{data.input}</BufferTextBlock>
 			<Separator className="my-4" />
-			<span>Expected Output: </span>
-			<pre>
-				<code>{data.output}</code>
-			</pre>
+			<BufferTextBlock label="Expected Output">{data.input}</BufferTextBlock>
 		</>
 	);
 }
@@ -159,11 +167,7 @@ function TestcaseList() {
 			</TabsList>
 			<div className="grow pl-4">
 				{testcases.map((tc) => (
-					<TabsContent
-						key={tc.number}
-						value={tc.number.toString()}
-						className="typography"
-					>
+					<TabsContent key={tc.number} value={tc.number.toString()}>
 						<TestcaseContent number={tc.number} />
 					</TabsContent>
 				))}

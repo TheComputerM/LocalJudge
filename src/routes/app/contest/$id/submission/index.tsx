@@ -41,7 +41,7 @@ function Submissions() {
 						</Link>
 					</TableCell>
 					<TableCell>
-						<SubmissionStatusPill {...submission.results} />
+						<SubmissionStatusPill id={submission.id} />
 					</TableCell>
 					<TableCell>{submission.language}</TableCell>
 					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>

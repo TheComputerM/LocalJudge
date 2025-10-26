@@ -30,7 +30,7 @@ export const contestApp = new Elysia({
 	.post(
 		"/",
 		async ({ body }) => {
-			return ContestAdminService.createContest(body);
+			return ContestAdminService.create(body);
 		},
 		{
 			auth: "admin",
@@ -44,7 +44,7 @@ export const contestApp = new Elysia({
 	.post(
 		"/register",
 		async ({ auth, body }) => {
-			await ContestService.registerContest(body.code, auth.user.id);
+			await ContestService.register(body.code, auth.user.id);
 			return status(201, "Successfully registered for the contest");
 		},
 		{
@@ -70,20 +70,58 @@ export const contestApp = new Elysia({
 						auth: "admin",
 					},
 					(app) =>
-						app.patch(
-							"/",
-							async ({ params, body }) => {
-								await ContestAdminService.updateContest(params.id, body);
-								return status(204);
-							},
-							{
-								body: ContestModel.update,
-								detail: {
-									summary: "Update contest",
-									description: "Update a specific contest by its ID",
+						app
+							.patch(
+								"/",
+								async ({ params, body }) => {
+									await ContestAdminService.update(params.id, body);
+									return status(204);
 								},
-							},
-						),
+								{
+									body: ContestModel.update,
+									detail: {
+										summary: "Update contest",
+										description: "Update a specific contest by its ID",
+									},
+								},
+							)
+							.delete(
+								"/",
+								async ({ params }) => {
+									try {
+										await ContestAdminService.remove(params.id);
+										return status(204);
+									} catch (error) {
+										return status(
+											500,
+											`Failed to delete contest: ${JSON.stringify(error)}`,
+										);
+									}
+								},
+								{
+									detail: {
+										summary: "Delete contest",
+										description: "Delete a specific contest by its ID",
+									},
+								},
+							)
+							.get(
+								"/overview",
+								async ({ params }) => {
+									return ContestAdminService.overview(params.id);
+								},
+								{
+									response: t.Object({
+										registrations: t.Number(),
+										submissions: t.Number(),
+									}),
+									detail: {
+										summary: "Contest overview",
+										description:
+											"Get an overview of a specific contest including registrations and submissions count",
+									},
+								},
+							),
 				)
 				.onBeforeHandle(async ({ params, auth }) => {
 					if (auth.user.role?.includes("admin")) return;

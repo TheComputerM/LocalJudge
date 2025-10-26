@@ -1,4 +1,6 @@
-import Elysia, { status, t } from "elysia";
+// needed because of elysia openai type analysis
+/// <reference types="vite/client" />
+import Elysia, { sse, status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { LocalboxService } from "@/api/localbox/service";
 import { APIParams } from "@/api/models/params";
@@ -34,7 +36,7 @@ export const problemApp = new Elysia({
 	.post(
 		"/",
 		async ({ params, body }) => {
-			return ProblemAdminService.createProblem(params.id, body);
+			return ProblemAdminService.create(params.id, body);
 		},
 		{
 			auth: "admin",
@@ -75,34 +77,65 @@ export const problemApp = new Elysia({
 						},
 					},
 				)
-				.patch(
-					"/",
-					async ({ params, body }) => {
-						return ProblemAdminService.updateProblem(
-							params.id,
-							params.problem,
-							body,
-						);
-					},
+				.guard(
 					{
-						body: ProblemModel.update,
-						detail: {
-							summary: "Update problem",
-							description: "Update a specific problem in a contest",
-						},
+						auth: "admin",
 					},
+					(app) =>
+						app
+							.patch(
+								"/",
+								async ({ params, body }) => {
+									return ProblemAdminService.update(
+										params.id,
+										params.problem,
+										body,
+									);
+								},
+								{
+									body: ProblemModel.update,
+									detail: {
+										summary: "Update problem",
+										description: "Update a specific problem in a contest",
+									},
+								},
+							)
+							.delete(
+								"/",
+								async ({ params }) => {
+									try {
+										await ProblemAdminService.remove(params.id, params.problem);
+										return status(204);
+									} catch (error) {
+										return status(
+											500,
+											`Failed to delete problem: ${JSON.stringify(error)}`,
+										);
+									}
+								},
+								{
+									detail: {
+										summary: "Delete Problem",
+										description: "",
+									},
+								},
+							),
 				)
 				.post(
 					"/submit/:language",
-					async ({ auth, params, body }) => {
-						await LocalboxService.submit(
+					async function* ({ auth, params, body }) {
+						const submissionId = await LocalboxService.submit(
 							auth.user.id,
 							params.id,
 							params.problem,
 							params.language,
 							body,
 						);
-						return status(201, "Code submitted successfully");
+						for await (const value of LocalboxService.watcher) {
+							if (value.id === submissionId) {
+								yield sse({ data: value });
+							}
+						}
 					},
 					{
 						detail: {

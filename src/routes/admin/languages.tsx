@@ -69,6 +69,7 @@ function EngineList() {
 				<TableRow>
 					<TableHead>Name</TableHead>
 					<TableHead>Version</TableHead>
+					<TableHead />
 				</TableRow>
 			</TableHeader>
 			<TableBody>
