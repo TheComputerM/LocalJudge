@@ -1,7 +1,7 @@
-import Elysia, { t } from "elysia";
+import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { ContestModel } from "@/api/contest/model";
-import { ParticipantModel } from "@/api/models/participant";
+import { ContestService } from "../contest/service";
 import { AdminService } from "./service";
 
 export const adminApp = new Elysia({
@@ -24,19 +24,43 @@ export const adminApp = new Elysia({
 		},
 	)
 	.group("/contest", (app) =>
-		app.get(
-			"/",
-			async () => {
-				return AdminService.getContests();
-			},
-			{
-				response: t.Array(ContestModel.select),
-				detail: {
-					summary: "List contests",
-					description: "List all contests present in the system",
+		app
+			.get(
+				"/",
+				async () => {
+					return AdminService.getContests();
 				},
-			},
-		),
+				{
+					response: t.Array(ContestModel.select),
+					detail: {
+						summary: "List contests",
+						description: "List all contests present in the system",
+					},
+				},
+			)
+			.group(
+				"/:id",
+				{
+					beforeHandle: async ({ params }) => {
+						if (!(await ContestService.isExists(params.id))) {
+							return status(404, "Contest not found");
+						}
+					},
+				},
+				(app) =>
+					app.get(
+						"/results",
+						async () => {
+							// TODO: Implement contest results retrieval
+						},
+						{
+							detail: {
+								summary: "Get contest results",
+								description: "Get the results for a specific contest",
+							},
+						},
+					),
+			),
 	)
 	.group("/participant", (app) =>
 		app.get(
