@@ -26,7 +26,7 @@ function RouteComponent() {
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="w-32">Number</TableHead>
+						<TableHead className="w-16">No.</TableHead>
 						<TableHead>Title</TableHead>
 						<TableHead>Time Limit</TableHead>
 						<TableHead>Memory Limit</TableHead>

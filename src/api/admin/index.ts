@@ -23,37 +23,32 @@ export const adminApp = new Elysia({
 			},
 		},
 	)
-	.get(
-		"/contest",
-		async () => {
-			return AdminService.getContests();
-		},
-		{
-			response: t.Array(ContestModel.select),
-			detail: {
-				summary: "List contests",
-				description: "List all contests present in the system",
+	.group("/contest", (app) =>
+		app.get(
+			"/",
+			async () => {
+				return AdminService.getContests();
 			},
-		},
-	)
-	.get(
-		"/participant",
-		async () => {
-			return AdminService.getParticipants();
-		},
-		{
-			detail: {
-				summary: "List participants",
-				description: "List all participants present in the system",
+			{
+				response: t.Array(ContestModel.select),
+				detail: {
+					summary: "List contests",
+					description: "List all contests present in the system",
+				},
 			},
-		},
+		),
 	)
-	.post(
-		"/participant",
-		async ({ body }) => {
-			return AdminService.createParticipant(body);
-		},
-		{
-			body: ParticipantModel.insert,
-		},
+	.group("/participant", (app) =>
+		app.get(
+			"/",
+			async () => {
+				return AdminService.getParticipants();
+			},
+			{
+				detail: {
+					summary: "List participants",
+					description: "List all participants present in the system",
+				},
+			},
+		),
 	);

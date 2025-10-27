@@ -108,7 +108,7 @@ function LanguageSelect() {
 			<SelectTrigger>
 				<SelectValue placeholder="Language" />
 			</SelectTrigger>
-			<SelectContent>
+			<SelectContent align="end">
 				{languages.map((lang) => (
 					<SelectItem key={lang} value={lang}>
 						{lang}
@@ -195,7 +195,7 @@ function CodeEditor() {
 	const language = useStore(store.selected, (state) => state.language);
 	const path = useStore(
 		store.selected,
-		(state) => `${state.problem}/${state.file}`,
+		(state) => `${state.problem}/${state.language}`,
 	);
 	const value = useStore(store.content);
 

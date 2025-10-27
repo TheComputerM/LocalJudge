@@ -1,6 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
 import { t } from "elysia";
+import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
@@ -51,22 +52,27 @@ function RouteComponent() {
 			testcases: Value.Parse(t.Array(TestcaseModel.upsert), testcases),
 		},
 		onSubmit: async ({ value }) => {
-			await localjudge
+			const { error } = await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.patch(value.problem);
-			// TODO: don't do this because all the results will be invalidated because the
-			// testcases are recreated
-			await localjudge
+			if (error) {
+				toast.error("Failed to update problem", {
+					description: JSON.stringify(error),
+				});
+				return;
+			}
+			const { error: error2 } = await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
-				.testcase.delete();
-			for (const testcase of value.testcases) {
-				await localjudge
-					.contest({ id })
-					.problem({ problem: problemNumber })
-					.testcase.post(testcase);
+				.testcase.put(value.testcases);
+			if (error2) {
+				toast.error("Failed to update testcases", {
+					description: JSON.stringify(error),
+				});
+				return;
 			}
+			toast.success("Problem and testcases updated successfully");
 		},
 	});
 

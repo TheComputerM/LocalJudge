@@ -33,16 +33,4 @@ export namespace AdminService {
 			orderBy: desc(table.user.createdAt),
 		});
 	}
-
-	export async function createParticipant(
-		data: typeof ParticipantModel.insert.static,
-	) {
-		const { user } = await auth.api.createUser({
-			body: {
-				...data,
-				role: "user",
-			},
-		});
-		return user;
-	}
 }

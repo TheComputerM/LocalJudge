@@ -7,6 +7,7 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import { parse as csvParse } from "csv/browser/esm/sync";
 import {
 	LucideEdit,
 	LucideFileUp,
@@ -14,6 +15,7 @@ import {
 	LucideTrash,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ParticipantModel } from "@/api/models/participant";
 import { ConfirmActionDialog } from "@/components/confirm-action";
@@ -41,6 +43,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { authClient } from "@/lib/auth/client";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/participant")({
@@ -60,9 +63,16 @@ function NewParticipantDialog() {
 			onChange: Compile(ParticipantModel.insert),
 		},
 		onSubmit: async ({ value }) => {
-			const { data, error } = await localjudge.admin.participant.post(value);
+			const { error } = await authClient.admin.createUser({
+				name: value.name,
+				email: value.email,
+				password: value.password,
+				role: "user",
+			});
 			if (error) {
-				alert(`Error ${error.status}: ${error.value.message}`);
+				toast.error(`error creating user: ${error.status}`, {
+					description: error.message,
+				});
 				return;
 			}
 			await router.invalidate({ filter: (route) => route.id === Route.id });
@@ -131,7 +141,33 @@ function NewParticipantDialog() {
 }
 
 function ImportParticipantsDialog() {
-	async function handleSubmit(formdata: FormData) {}
+	const router = useRouter();
+	async function handleSubmit(formdata: FormData) {
+		const file = formdata.get("file") as File;
+		if (!file) {
+			toast.error("No file selected");
+			return;
+		}
+		const records: { name: string; email: string; password: string }[] =
+			csvParse(await file.text(), {
+				bom: true,
+				columns: ["name", "email", "password"],
+			});
+		let errorCount = 0;
+		for (const record of records) {
+			const { error } = await authClient.admin.createUser({
+				name: record.name,
+				email: record.email,
+				password: record.password,
+				role: "user",
+			});
+			if (error) {
+				errorCount++;
+			}
+		}
+		toast.info(`Imported ${records.length - errorCount} participants`);
+		await router.invalidate({ filter: (r) => r.id === Route.id });
+	}
 
 	return (
 		<Dialog>
@@ -182,18 +218,31 @@ function ParticipantsTable() {
 		},
 		{
 			header: "Actions",
-			cell: ({ row }) => (
-				<ButtonGroup>
-					<ConfirmActionDialog>
-						<Button variant="destructive" size="icon">
-							<LucideTrash />
+			cell: ({ row }) => {
+				const router = useRouter();
+				return (
+					<ButtonGroup>
+						<ConfirmActionDialog
+							onConfirm={async () => {
+								await rejectError(
+									authClient.admin.removeUser({
+										userId: row.original.id,
+									}),
+								);
+								toast.success("User deleted successfully");
+								await router.invalidate({ filter: (r) => r.id === Route.id });
+							}}
+						>
+							<Button variant="destructive" size="icon">
+								<LucideTrash />
+							</Button>
+						</ConfirmActionDialog>
+						<Button size="icon">
+							<LucideEdit />
 						</Button>
-					</ConfirmActionDialog>
-					<Button size="icon">
-						<LucideEdit />
-					</Button>
-				</ButtonGroup>
-			),
+					</ButtonGroup>
+				);
+			},
 		},
 	];
 	const table = useReactTable({
@@ -251,9 +300,6 @@ function ParticipantsTable() {
 }
 
 function RouteComponent() {
-	const users = Route.useLoaderData({
-		select: ({ participants }) => participants,
-	});
 	return (
 		<>
 			<div className="flex items-center justify-between">

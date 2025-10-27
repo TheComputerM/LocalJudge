@@ -1,26 +1,25 @@
+import { Editor } from "@monaco-editor/react";
 import { createFileRoute } from "@tanstack/react-router";
 import useSWR from "swr";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
-import { SubmissionModel } from "@/api/submission/model";
 import { BufferTextBlock } from "@/components/buffer-text-block";
 import { Pill, PillIndicator } from "@/components/kibo-ui/pill";
 import { SubmissionStatusPill } from "@/components/submission-status-pill";
+import { useTheme } from "@/components/theme-provider";
 import {
-	Card,
-	CardAction,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
 	TableBody,
 	TableCell,
 	TableHead,
-	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
 import { rejectError } from "@/lib/utils";
@@ -38,14 +37,11 @@ export const Route = createFileRoute("/app/_dashboard/submission/$id")({
 	component: RouteComponent,
 });
 
-type Result = typeof SubmissionModel.Result.select.static;
-
-interface ResultCardProps extends Result {
+function TestcaseContent(props: {
 	contestId: string;
 	problemNumber: number;
-}
-
-function ResultCard(props: ResultCardProps) {
+	testcaseNumber: number;
+}) {
 	const { data, error, isLoading } = useSWR(
 		[
 			"/api/contest/:id/problem/:problem/testcase/:testcase" as const,
@@ -64,50 +60,32 @@ function ResultCard(props: ResultCardProps) {
 			),
 	);
 
+	if (isLoading) {
+		return (
+			<>
+				<Skeleton className="h-24" />
+				<Skeleton className="h-24" />
+			</>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="text-red-500 col-span-2">
+				Failed to load testcases: {JSON.stringify(error)}
+			</div>
+		);
+	}
+
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>Testcase {props.testcaseNumber}</CardTitle>
-				<CardDescription>{props.message}</CardDescription>
-				<CardAction>
-					<Pill>
-						<PillIndicator
-							variant={props.status === "CA" ? "success" : "error"}
-						/>
-						{props.status}
-					</Pill>
-				</CardAction>
-			</CardHeader>
-			<CardContent className="grid grid-cols-2 gap-3">
-				<BufferTextBlock className="col-span-2" label="Input">
-					{isLoading ? (
-						"..."
-					) : data ? (
-						data.input
-					) : error?.status === 403 ? (
-						<i>Hidden</i>
-					) : (
-						"error"
-					)}
-				</BufferTextBlock>
-				<BufferTextBlock label="Expected">
-					{isLoading ? (
-						"..."
-					) : data ? (
-						data.output
-					) : error?.status === 403 ? (
-						<i>Hidden</i>
-					) : (
-						"error"
-					)}
-				</BufferTextBlock>
-				<BufferTextBlock label="Actual">{props.stdout}</BufferTextBlock>
-			</CardContent>
-			<CardFooter className="justify-between">
-				<span>Time: {props.time}ms</span>
-				<span>Memory: {props.memory}KB</span>
-			</CardFooter>
-		</Card>
+		<>
+			<BufferTextBlock label="Input">
+				{data?.input ?? <i>Hidden</i>}
+			</BufferTextBlock>
+			<BufferTextBlock label="Expected Output">
+				{data?.output ?? <i>Hidden</i>}
+			</BufferTextBlock>
+		</>
 	);
 }
 
@@ -120,31 +98,61 @@ function Results() {
 	});
 
 	return (
-		<div className="grid gap-4">
+		<Accordion type="single" collapsible>
 			{results.map((result) => (
-				<ResultCard
+				<AccordionItem
 					key={result.testcaseNumber}
-					contestId={params.id}
-					problemNumber={params.problem}
-					{...result}
-				/>
+					value={result.testcaseNumber.toString()}
+				>
+					<AccordionTrigger className="items-center px-2">
+						<div className="inline-flex items-center gap-3 grow">
+							<Pill>
+								<PillIndicator
+									variant={result.status === "CA" ? "success" : "error"}
+								/>
+								{result.status}
+							</Pill>
+							<div className="inline-flex flex-col text-md">
+								Testcase {result.testcaseNumber}
+							</div>
+						</div>
+						<span className="text-sm text-muted-foreground">
+							{result.message}
+						</span>
+					</AccordionTrigger>
+					<AccordionContent className="mt-2">
+						<div className="flex items-center justify-between">
+							<span>Time: {result.time}ms</span>
+							<span>Memory: {result.memory}KB</span>
+						</div>
+						<br />
+						<div className="grid grid-cols-2 gap-3">
+							<TestcaseContent
+								contestId={params.id}
+								problemNumber={params.problem}
+								testcaseNumber={result.testcaseNumber}
+							/>
+							<BufferTextBlock label="Output" className="col-span-2">
+								{result.stdout}
+							</BufferTextBlock>
+						</div>
+					</AccordionContent>
+				</AccordionItem>
 			))}
-		</div>
+		</Accordion>
 	);
 }
 
-function SubmissionTable() {
+function Details() {
 	const submission = Route.useLoaderData({
 		select: ({ submission }) => submission,
 	});
-
 	return (
-		<Table>
+		<Table className="table-fixed">
 			<TableBody>
 				<TableRow>
 					<TableHead>User</TableHead>
-					<TableCell>{submission.user.name}</TableCell>
-
+					<TableCell className="border-r">{submission.user.name}</TableCell>
 					<TableHead>Status</TableHead>
 					<TableCell>
 						<SubmissionStatusPill id={submission.id} />
@@ -152,16 +160,13 @@ function SubmissionTable() {
 				</TableRow>
 				<TableRow>
 					<TableHead>Contest</TableHead>
-					<TableCell>{submission.contestId}</TableCell>
-
+					<TableCell className="border-r">{submission.contest.name}</TableCell>
 					<TableHead>Language</TableHead>
 					<TableCell>{submission.language}</TableCell>
 				</TableRow>
 				<TableRow>
 					<TableHead>Problem</TableHead>
-					<TableCell>
-						{submission.problemNumber}. {submission.problem.title}
-					</TableCell>
+					<TableCell className="border-r">{submission.problem.title}</TableCell>
 					<TableHead>Time</TableHead>
 					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
 				</TableRow>
@@ -170,19 +175,46 @@ function SubmissionTable() {
 	);
 }
 
+function Source() {
+	const [theme] = useTheme();
+	const submission = Route.useLoaderData({
+		select: ({ submission }) => submission,
+	});
+	return (
+		<Editor
+			height="350px"
+			theme={theme === "dark" ? "vs-dark" : "light"}
+			language={submission.language}
+			value={submission.content}
+			options={{
+				readOnly: true,
+				lineNumbers: "on",
+				fontFamily: "'JetBrains Mono Variable', monospace",
+				padding: {
+					top: 8,
+				},
+			}}
+		/>
+	);
+}
+
 function RouteComponent() {
 	return (
 		<div className="container mx-auto p-4">
-			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
+			<h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
 				Submission
-			</h1>
-			<br />
-			<SubmissionTable />
-			<br />
-			<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-				Results
 			</h2>
 			<br />
+			<Details />
+			<Separator className="my-6" />
+			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
+				Source
+			</h3>
+			<Source />
+			<Separator className="my-6" />
+			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
+				Results
+			</h3>
 			<Results />
 		</div>
 	);

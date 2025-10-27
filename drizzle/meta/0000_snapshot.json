@@ -1,5 +1,5 @@
 {
-	"id": "5a7f1127-8501-467b-9a88-87029fd79ec0",
+	"id": "4cc8f9a7-6674-49de-b833-5a6b99bf7545",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -324,9 +324,9 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"operator.contest": {
+		"localjudge.contest": {
 			"name": "contest",
-			"schema": "operator",
+			"schema": "localjudge",
 			"columns": {
 				"id": {
 					"name": "id",
@@ -357,6 +357,20 @@
 					"type": "jsonb",
 					"primaryKey": false,
 					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
 				}
 			},
 			"indexes": {},
@@ -367,14 +381,14 @@
 			"checkConstraints": {
 				"time_check": {
 					"name": "time_check",
-					"value": "\"operator\".\"contest\".\"start_time\" < \"operator\".\"contest\".\"end_time\""
+					"value": "\"localjudge\".\"contest\".\"start_time\" < \"localjudge\".\"contest\".\"end_time\""
 				}
 			},
 			"isRLSEnabled": false
 		},
-		"operator.problem": {
+		"localjudge.problem": {
 			"name": "problem",
-			"schema": "operator",
+			"schema": "localjudge",
 			"columns": {
 				"contest_id": {
 					"name": "contest_id",
@@ -421,7 +435,7 @@
 					"name": "problem_contest_id_contest_id_fk",
 					"tableFrom": "problem",
 					"tableTo": "contest",
-					"schemaTo": "operator",
+					"schemaTo": "localjudge",
 					"columnsFrom": ["contest_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
@@ -439,14 +453,14 @@
 			"checkConstraints": {
 				"valid_number": {
 					"name": "valid_number",
-					"value": "\"operator\".\"problem\".\"number\" > 0"
+					"value": "\"localjudge\".\"problem\".\"number\" > 0"
 				}
 			},
 			"isRLSEnabled": false
 		},
-		"operator.registration": {
+		"localjudge.registration": {
 			"name": "registration",
-			"schema": "operator",
+			"schema": "localjudge",
 			"columns": {
 				"user_id": {
 					"name": "user_id",
@@ -459,6 +473,13 @@
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
 				}
 			},
 			"indexes": {},
@@ -477,7 +498,7 @@
 					"name": "registration_contest_id_contest_id_fk",
 					"tableFrom": "registration",
 					"tableTo": "contest",
-					"schemaTo": "operator",
+					"schemaTo": "localjudge",
 					"columnsFrom": ["contest_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
@@ -495,9 +516,9 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"operator.result": {
+		"localjudge.result": {
 			"name": "result",
-			"schema": "operator",
+			"schema": "localjudge",
 			"columns": {
 				"submission_id": {
 					"name": "submission_id",
@@ -514,7 +535,7 @@
 				"status": {
 					"name": "status",
 					"type": "status",
-					"typeSchema": "operator",
+					"typeSchema": "localjudge",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -541,6 +562,13 @@
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
 				}
 			},
 			"indexes": {},
@@ -549,7 +577,7 @@
 					"name": "result_submission_id_submission_id_fk",
 					"tableFrom": "result",
 					"tableTo": "submission",
-					"schemaTo": "operator",
+					"schemaTo": "localjudge",
 					"columnsFrom": ["submission_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
@@ -567,9 +595,9 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"operator.submission": {
+		"localjudge.submission": {
 			"name": "submission",
-			"schema": "operator",
+			"schema": "localjudge",
 			"columns": {
 				"id": {
 					"name": "id",
@@ -598,7 +626,7 @@
 				},
 				"content": {
 					"name": "content",
-					"type": "jsonb",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -632,7 +660,7 @@
 					"name": "submission_contest_id_problem_number_problem_contest_id_number_fk",
 					"tableFrom": "submission",
 					"tableTo": "problem",
-					"schemaTo": "operator",
+					"schemaTo": "localjudge",
 					"columnsFrom": ["contest_id", "problem_number"],
 					"columnsTo": ["contest_id", "number"],
 					"onDelete": "cascade",
@@ -645,9 +673,9 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"operator.testcase": {
+		"localjudge.testcase": {
 			"name": "testcase",
-			"schema": "operator",
+			"schema": "localjudge",
 			"columns": {
 				"contest_id": {
 					"name": "contest_id",
@@ -693,7 +721,7 @@
 					"name": "testcase_contest_id_problem_number_problem_contest_id_number_fk",
 					"tableFrom": "testcase",
 					"tableTo": "problem",
-					"schemaTo": "operator",
+					"schemaTo": "localjudge",
 					"columnsFrom": ["contest_id", "problem_number"],
 					"columnsTo": ["contest_id", "number"],
 					"onDelete": "cascade",
@@ -711,22 +739,22 @@
 			"checkConstraints": {
 				"valid_number": {
 					"name": "valid_number",
-					"value": "\"operator\".\"testcase\".\"number\" > 0"
+					"value": "\"localjudge\".\"testcase\".\"number\" > 0"
 				}
 			},
 			"isRLSEnabled": false
 		}
 	},
 	"enums": {
-		"operator.status": {
+		"localjudge.status": {
 			"name": "status",
-			"schema": "operator",
+			"schema": "localjudge",
 			"values": ["CA", "WA", "RE", "CE", "XX"]
 		}
 	},
 	"schemas": {
 		"auth": "auth",
-		"operator": "operator"
+		"localjudge": "localjudge"
 	},
 	"sequences": {},
 	"roles": {},

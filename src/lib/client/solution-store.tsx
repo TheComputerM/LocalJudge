@@ -8,7 +8,6 @@ interface SolutionStoreContext {
 	contest: string;
 	problem: number;
 	language: string;
-	file: string;
 }
 
 function set(obj: object, path: (string | number)[], value: any) {
@@ -23,13 +22,13 @@ function set(obj: object, path: (string | number)[], value: any) {
 
 const createSolutionStore = (initial: SolutionStoreContext) => {
 	const solutions = new Store({
-		solutions: {} as Record<number, Record<string, Record<string, string>>>,
+		solutions: {} as Record<number, Record<string, string>>,
 	});
 
 	const selected = new Store(initial, {
 		onUpdate: async () => {
 			const p = selected.state;
-			if (!solutions.state.solutions[p.problem]?.[p.language]?.[p.file]) {
+			if (!solutions.state.solutions[p.problem]?.[p.language]) {
 				// fetch new data if doesn't exist
 				const { data } = await localjudge
 					.contest({ id: p.contest })
@@ -54,7 +53,7 @@ const createSolutionStore = (initial: SolutionStoreContext) => {
 		deps: [selected, solutions],
 		fn: () => {
 			const p = selected.state;
-			return solutions.state.solutions[p.problem]?.[p.language]?.[p.file] ?? "";
+			return solutions.state.solutions[p.problem]?.[p.language] ?? "";
 		},
 	});
 
@@ -63,11 +62,7 @@ const createSolutionStore = (initial: SolutionStoreContext) => {
 			create(prev, (draft) => {
 				set(
 					draft.solutions,
-					[
-						selected.state.problem,
-						selected.state.language,
-						selected.state.file,
-					],
+					[selected.state.problem, selected.state.language],
 					content,
 				);
 			}),
@@ -100,7 +95,6 @@ export const SolutionStoreProvider = (props: { children: React.ReactNode }) => {
 			contest,
 			problem,
 			language,
-			file: "@",
 		});
 	}
 

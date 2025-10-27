@@ -112,9 +112,7 @@ export namespace LocalboxService {
 				userId: user,
 				contestId: contest,
 				problemNumber: problem,
-				content: {
-					"@": code,
-				},
+				content: code,
 				language: engine,
 			})
 			.returning({ id: table.submission.id });

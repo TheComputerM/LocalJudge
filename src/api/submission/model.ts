@@ -2,12 +2,14 @@ import { t } from "elysia";
 import { ProblemModel } from "@/api/contest/problem/model";
 import { createSelectSchema } from "@/api/models";
 import { result, submission } from "@/db/schema";
+import { ContestModel } from "../contest/model";
 
 const additional = {
 	user: t.Object({
 		name: t.String(),
 	}),
 	problem: t.Pick(ProblemModel.select, ["title"]),
+	contest: t.Pick(ContestModel.select, ["name"]),
 };
 
 const _resultSelect = createSelectSchema(result);

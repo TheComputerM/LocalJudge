@@ -1,8 +1,8 @@
 CREATE SCHEMA "auth";
 --> statement-breakpoint
-CREATE SCHEMA "operator";
+CREATE SCHEMA "localjudge";
 --> statement-breakpoint
-CREATE TYPE "operator"."status" AS ENUM('CA', 'WA', 'RE', 'CE', 'XX');--> statement-breakpoint
+CREATE TYPE "localjudge"."status" AS ENUM('CA', 'WA', 'RE', 'CE', 'XX');--> statement-breakpoint
 CREATE TABLE "auth"."account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -56,16 +56,18 @@ CREATE TABLE "auth"."verification" (
 	"updated_at" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE "operator"."contest" (
+CREATE TABLE "localjudge"."contest" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" varchar(48) NOT NULL,
 	"start_time" timestamp with time zone NOT NULL,
 	"end_time" timestamp with time zone NOT NULL,
 	"settings" jsonb NOT NULL,
-	CONSTRAINT "time_check" CHECK ("operator"."contest"."start_time" < "operator"."contest"."end_time")
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "time_check" CHECK ("localjudge"."contest"."start_time" < "localjudge"."contest"."end_time")
 );
 --> statement-breakpoint
-CREATE TABLE "operator"."problem" (
+CREATE TABLE "localjudge"."problem" (
 	"contest_id" text NOT NULL,
 	"number" smallint NOT NULL,
 	"title" varchar(32) NOT NULL,
@@ -73,37 +75,39 @@ CREATE TABLE "operator"."problem" (
 	"time_limit" integer DEFAULT 1000 NOT NULL,
 	"memory_limit" integer DEFAULT 256 NOT NULL,
 	CONSTRAINT "problem_contest_id_number_pk" PRIMARY KEY("contest_id","number"),
-	CONSTRAINT "valid_number" CHECK ("operator"."problem"."number" > 0)
+	CONSTRAINT "valid_number" CHECK ("localjudge"."problem"."number" > 0)
 );
 --> statement-breakpoint
-CREATE TABLE "operator"."registration" (
+CREATE TABLE "localjudge"."registration" (
 	"user_id" text NOT NULL,
 	"contest_id" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "registration_user_id_contest_id_pk" PRIMARY KEY("user_id","contest_id")
 );
 --> statement-breakpoint
-CREATE TABLE "operator"."result" (
+CREATE TABLE "localjudge"."result" (
 	"submission_id" uuid NOT NULL,
 	"testcase_number" smallint NOT NULL,
-	"status" "operator"."status" NOT NULL,
+	"status" "localjudge"."status" NOT NULL,
 	"time" integer NOT NULL,
 	"memory" integer NOT NULL,
 	"stdout" text NOT NULL,
 	"message" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "result_submission_id_testcase_number_pk" PRIMARY KEY("submission_id","testcase_number")
 );
 --> statement-breakpoint
-CREATE TABLE "operator"."submission" (
+CREATE TABLE "localjudge"."submission" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text NOT NULL,
 	"contest_id" text NOT NULL,
 	"problem_number" smallint NOT NULL,
-	"content" jsonb NOT NULL,
+	"content" text NOT NULL,
 	"language" varchar(24) NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "operator"."testcase" (
+CREATE TABLE "localjudge"."testcase" (
 	"contest_id" text NOT NULL,
 	"problem_number" smallint NOT NULL,
 	"number" smallint NOT NULL,
@@ -111,15 +115,15 @@ CREATE TABLE "operator"."testcase" (
 	"input" text NOT NULL,
 	"output" text NOT NULL,
 	CONSTRAINT "testcase_contest_id_problem_number_number_pk" PRIMARY KEY("contest_id","problem_number","number"),
-	CONSTRAINT "valid_number" CHECK ("operator"."testcase"."number" > 0)
+	CONSTRAINT "valid_number" CHECK ("localjudge"."testcase"."number" > 0)
 );
 --> statement-breakpoint
 ALTER TABLE "auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth"."session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "operator"."problem" ADD CONSTRAINT "problem_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "operator"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "operator"."registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "operator"."registration" ADD CONSTRAINT "registration_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "operator"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "operator"."result" ADD CONSTRAINT "result_submission_id_submission_id_fk" FOREIGN KEY ("submission_id") REFERENCES "operator"."submission"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "operator"."submission" ADD CONSTRAINT "submission_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "operator"."submission" ADD CONSTRAINT "submission_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "operator"."problem"("contest_id","number") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "operator"."testcase" ADD CONSTRAINT "testcase_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "operator"."problem"("contest_id","number") ON DELETE cascade ON UPDATE cascade;
+ALTER TABLE "localjudge"."problem" ADD CONSTRAINT "problem_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "localjudge"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."registration" ADD CONSTRAINT "registration_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "localjudge"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."result" ADD CONSTRAINT "result_submission_id_submission_id_fk" FOREIGN KEY ("submission_id") REFERENCES "localjudge"."submission"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."submission" ADD CONSTRAINT "submission_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."submission" ADD CONSTRAINT "submission_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "localjudge"."problem"("contest_id","number") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."testcase" ADD CONSTRAINT "testcase_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "localjudge"."problem"("contest_id","number") ON DELETE cascade ON UPDATE cascade;

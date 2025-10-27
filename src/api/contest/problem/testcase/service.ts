@@ -4,6 +4,22 @@ import { db } from "@/db";
 import * as table from "@/db/schema";
 
 export namespace TestcaseService {
+	export async function isExists(
+		contestId: string,
+		problemNumber: number,
+		testcaseNumber: number,
+	) {
+		const count = await db.$count(
+			table.testcase,
+			and(
+				eq(table.testcase.contestId, contestId),
+				eq(table.testcase.problemNumber, problemNumber),
+				eq(table.testcase.number, testcaseNumber),
+			),
+		);
+		return count > 0;
+	}
+
 	/** Get all test cases for a specific problem in a contest */
 	export async function getTestcases(contestId: string, problemNumber: number) {
 		return db.query.testcase.findMany({
@@ -76,7 +92,7 @@ export namespace TestcaseAdminService {
 		return data;
 	}
 
-	export async function upsertTestcases(
+	export async function upsert(
 		contestId: string,
 		problemNumber: number,
 		testcases: (typeof TestcaseModel.upsert.static)[],

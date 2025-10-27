@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/app/contest/$id/submission/")({
+export const Route = createFileRoute("/app/contest/$id/submission")({
 	loader: async ({ params }) => {
 		const submissions = await rejectError(
 			localjudge.contest({ id: params.id }).submission.get(),
@@ -73,7 +73,7 @@ function RouteComponent() {
 				<TableHeader>
 					<TableRow>
 						<TableHead>Problem</TableHead>
-						<TableHead>Status</TableHead>
+						<TableHead>Stat1us</TableHead>
 						<TableHead>Language</TableHead>
 						<TableHead>When</TableHead>
 						<TableHead aria-label="Link" />

@@ -81,11 +81,10 @@ export const testcaseApp = new Elysia({
 				.put(
 					"/",
 					async ({ params, body }) => {
-						return await TestcaseAdminService.upsertTestcases(
-							params.id,
-							params.problem,
-							body,
-						);
+						if (body.length === 0) {
+							return [];
+						}
+						return TestcaseAdminService.upsert(params.id, params.problem, body);
 					},
 					{
 						body: t.Array(TestcaseModel.upsert),
@@ -103,6 +102,17 @@ export const testcaseApp = new Elysia({
 			params: t.Object({
 				testcase: APIParams.testcase,
 			}),
+			async beforeHandle({ params }) {
+				if (
+					!(await TestcaseService.isExists(
+						params.id,
+						params.problem,
+						params.testcase,
+					))
+				) {
+					return status(404, "Testcase not found");
+				}
+			},
 		},
 		(app) =>
 			app
@@ -114,23 +124,16 @@ export const testcaseApp = new Elysia({
 							params.problem,
 							params.testcase,
 						);
-						if (!testcase) return status(404, "Testcase not found");
-						if (!auth.user.role?.includes("admin") && testcase.hidden) {
+						if (!auth.user.role?.includes("admin") && testcase!.hidden) {
 							return status(403, "Testcase is hidden");
 						}
-						return testcase;
+						return testcase!;
 					},
 					{
 						response: {
 							200: TestcaseModel.select,
-							404: t.Literal("Testcase not found"),
 							403: t.Literal("Testcase is hidden"),
 						},
-						params: t.Object({
-							testcase: t.Numeric({
-								description: "Testcase number within the problem",
-							}),
-						}),
 						detail: {
 							summary: "Get testcase",
 							description: "Get a specific testcase for a problem in a contest",

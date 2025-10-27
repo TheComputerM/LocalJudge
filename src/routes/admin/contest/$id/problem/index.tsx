@@ -6,6 +6,7 @@ import {
 	LucideEdit,
 	LucideTrash,
 } from "lucide-react";
+import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,7 @@ function ProblemCard(props: { number: number; title: string }) {
 									.problem({ problem: props.number })
 									.delete(),
 							);
+							toast.success("Problem deleted successfully");
 							await router.invalidate();
 						}}
 					>

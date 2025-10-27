@@ -18,6 +18,11 @@ export namespace SubmissionService {
 						title: true,
 					},
 				},
+				contest: {
+					columns: {
+						name: true,
+					},
+				},
 			},
 		});
 		return submission;
@@ -85,6 +90,11 @@ export namespace SubmissionService {
 				problem: {
 					columns: {
 						title: true,
+					},
+				},
+				contest: {
+					columns: {
+						name: true,
 					},
 				},
 			},

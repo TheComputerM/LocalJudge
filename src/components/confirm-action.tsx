@@ -41,11 +41,10 @@ export function ConfirmActionDialog({
 							setLoading(true);
 							try {
 								await onConfirm?.();
-								toast.success("Action completed successfully");
 								setLoading(false);
 								setOpen(false);
 							} catch (e) {
-								toast.error("An error occurred. Please try again.", {
+								toast.error("An error occurred.", {
 									description: JSON.stringify(e),
 								});
 							}

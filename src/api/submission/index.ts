@@ -25,8 +25,8 @@ export const submissionApp = new Elysia({
 	.group(
 		"/:submission",
 		{
-			beforeHandle({ params }) {
-				if (!SubmissionService.isExists(params.submission)) {
+			async beforeHandle({ params }) {
+				if (!(await SubmissionService.isExists(params.submission))) {
 					return status(404, "Submission not found");
 				}
 			},

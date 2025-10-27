@@ -1,6 +1,11 @@
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { LucidePlus, LucideSave, LucideTrash } from "lucide-react";
+import {
+	LucideBugPlay,
+	LucidePlus,
+	LucideSave,
+	LucideTrash,
+} from "lucide-react";
 import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { Button } from "@/components/ui/button";
@@ -13,6 +18,13 @@ import {
 } from "@/components/ui/field";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConfirmActionDialog } from "../confirm-action";
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "../ui/empty";
 import { withForm } from "./primitives";
 
 export const ProblemFormOptions = {
@@ -101,6 +113,21 @@ export const ProblemForm = withForm({
 									</Button>
 								</div>
 								<div className="grow p-4 rounded-md border border-dashed">
+									{field.state.value.length === 0 && (
+										<Empty>
+											<EmptyHeader>
+												<EmptyMedia variant="icon">
+													<LucideBugPlay />
+												</EmptyMedia>
+												<EmptyTitle>No Testcases</EmptyTitle>
+												<EmptyDescription>
+													Testcases help evaluate the correctness of
+													submissions. Click The "Add" button to create your
+													first testcase.
+												</EmptyDescription>
+											</EmptyHeader>
+										</Empty>
+									)}
 									{field.state.value.map((_, i) => (
 										<TabsContent
 											key={i}

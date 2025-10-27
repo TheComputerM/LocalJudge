@@ -4,6 +4,17 @@ import * as table from "@/db/schema";
 import { ProblemModel } from "./model";
 
 export namespace ProblemService {
+	export async function isExists(contestId: string, problemNumber: number) {
+		const count = await db.$count(
+			table.problem,
+			and(
+				eq(table.problem.contestId, contestId),
+				eq(table.problem.number, problemNumber),
+			),
+		);
+		return count > 0;
+	}
+
 	/** Get all problems in a contest */
 	export async function getProblems(contestId: string) {
 		return db.query.problem.findMany({

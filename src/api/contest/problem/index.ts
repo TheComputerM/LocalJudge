@@ -53,6 +53,11 @@ export const problemApp = new Elysia({
 			params: t.Object({
 				problem: APIParams.problem,
 			}),
+			beforeHandle: async ({ params }) => {
+				if (!(await ProblemService.isExists(params.id, params.problem))) {
+					return status(404, "Problem not found");
+				}
+			},
 		},
 		(app) =>
 			app
@@ -63,14 +68,10 @@ export const problemApp = new Elysia({
 							params.id,
 							params.problem,
 						);
-						if (!problem) return status(404, "Problem not found");
-						return problem;
+						return problem!;
 					},
 					{
-						response: {
-							200: ProblemModel.select,
-							404: t.Literal("Problem not found"),
-						},
+						response: ProblemModel.select,
 						detail: {
 							summary: "Get problem",
 							description: "Get details of a specific problem in a contest",
@@ -150,9 +151,9 @@ export const problemApp = new Elysia({
 					"/boilerplate/:language",
 					async ({ params }) => {
 						if (!(params.language in boilerplate)) {
-							return { "@": "good luck" };
+							return "good luck";
 						}
-						return { "@": boilerplate[params.language] };
+						return boilerplate[params.language];
 					},
 					{
 						detail: {

@@ -62,6 +62,11 @@ export const contestApp = new Elysia({
 		"/:id",
 		{
 			params: t.Object({ id: APIParams.contest }),
+			beforeHandle: async ({ params }) => {
+				if (!(await ContestService.isExists(params.id))) {
+					return status(404, "Contest not found");
+				}
+			},
 		},
 		(app) =>
 			app
@@ -113,6 +118,7 @@ export const contestApp = new Elysia({
 								{
 									response: t.Object({
 										registrations: t.Number(),
+										submitters: t.Number(),
 										submissions: t.Number(),
 									}),
 									detail: {
@@ -139,25 +145,43 @@ export const contestApp = new Elysia({
 					"/",
 					async ({ params }) => {
 						const contest = await ContestService.getContest(params.id);
-						if (!contest) return status(404, "Contest not found");
-						return contest;
+						return contest!;
 					},
 					{
-						response: {
-							200: ContestModel.select,
-							404: t.Literal("Contest not found"),
-						},
+						response: ContestModel.select,
 						detail: {
 							summary: "Get contest",
 							description: "Get details of a specific contest",
 						},
 					},
 				)
-				.get("/submission", async ({ auth, params }) => {
-					return SubmissionService.getSubmissions({
-						contest: params.id,
-						user: auth.user.id,
-					});
-				})
+				.get(
+					"/leaderboard",
+					async ({ params }) => {
+						return ContestService.leaderboard(params.id);
+					},
+					{
+						detail: {
+							summary: "Get leaderboard",
+							description: "Get the leaderboard for a specific contest",
+						},
+					},
+				)
+				.get(
+					"/submission",
+					async ({ auth, params }) => {
+						return SubmissionService.getSubmissions({
+							contest: params.id,
+							user: auth.user.id,
+						});
+					},
+					{
+						detail: {
+							summary: "Get submissions for contest",
+							description:
+								"Get all submissions made by the current user for a specific contest",
+						},
+					},
+				)
 				.use(problemApp),
 	);

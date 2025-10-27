@@ -1,4 +1,4 @@
-import { relations, type SQL, sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
 	check,
@@ -17,9 +17,19 @@ import { nanoid } from "nanoid";
 import type { contestSettingsSchema } from "@/api/contest/model";
 import { user } from "./auth";
 
-export const operatorSchema = pgSchema("operator");
+export const localjudgeSchema = pgSchema("localjudge");
 
-export const contest = operatorSchema.table(
+const timestamps = {
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	updatedAt: timestamp("updated_at", { withTimezone: true })
+		.notNull()
+		.defaultNow()
+		.$onUpdateFn(() => new Date()),
+};
+
+export const contest = localjudgeSchema.table(
 	"contest",
 	{
 		id: text("id")
@@ -31,6 +41,7 @@ export const contest = operatorSchema.table(
 		settings: jsonb("settings")
 			.$type<typeof contestSettingsSchema.static>()
 			.notNull(),
+		...timestamps,
 	},
 	(table) => [check("time_check", sql`${table.startTime} < ${table.endTime}`)],
 );
@@ -38,6 +49,7 @@ export const contest = operatorSchema.table(
 export const contestRelations = relations(contest, ({ many }) => ({
 	problems: many(problem),
 	registrations: many(registration),
+	submissions: many(submission),
 }));
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -49,7 +61,7 @@ export const userRelations = relations(user, ({ many }) => ({
  * Each row in this table indicates that a user has registered for a specific contest.
  * The composite primary key ensures that a user cannot register for the same contest more than once.
  */
-export const registration = operatorSchema.table(
+export const registration = localjudgeSchema.table(
 	"registration",
 	{
 		userId: text("user_id")
@@ -64,6 +76,7 @@ export const registration = operatorSchema.table(
 				onDelete: "cascade",
 				onUpdate: "cascade",
 			}),
+		createdAt: timestamps.createdAt,
 	},
 	(t) => [primaryKey({ columns: [t.userId, t.contestId] })],
 );
@@ -79,7 +92,7 @@ export const registrationRelations = relations(registration, ({ one }) => ({
 	}),
 }));
 
-export const problem = operatorSchema.table(
+export const problem = localjudgeSchema.table(
 	"problem",
 	{
 		contestId: text("contest_id")
@@ -112,7 +125,7 @@ export const problemRelations = relations(problem, ({ one, many }) => ({
 /**
  * Represents a test case for a problem in a contest.
  */
-export const testcase = operatorSchema.table(
+export const testcase = localjudgeSchema.table(
 	"testcase",
 	{
 		contestId: text("contest_id").notNull(),
@@ -144,7 +157,7 @@ export const testcaseRelations = relations(testcase, ({ one, many }) => ({
 /**
  * Represents a submission made by a user for a problem in a contest.
  */
-export const submission = operatorSchema.table(
+export const submission = localjudgeSchema.table(
 	"submission",
 	{
 		id: uuid("id").primaryKey().defaultRandom(),
@@ -156,11 +169,9 @@ export const submission = operatorSchema.table(
 			}),
 		contestId: text("contest_id").notNull(),
 		problemNumber: smallint("problem_number").notNull(),
-		content: jsonb("content").$type<Record<string, string>>().notNull(),
+		content: text("content").notNull(),
 		language: varchar("language", { length: 24 }).notNull(),
-		createdAt: timestamp("created_at", { withTimezone: true })
-			.notNull()
-			.defaultNow(),
+		createdAt: timestamps.createdAt,
 	},
 	(t) => [
 		foreignKey({
@@ -177,6 +188,10 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 		fields: [submission.contestId, submission.problemNumber],
 		references: [problem.contestId, problem.number],
 	}),
+	contest: one(contest, {
+		fields: [submission.contestId],
+		references: [contest.id],
+	}),
 	user: one(user, {
 		fields: [submission.userId],
 		references: [user.id],
@@ -184,7 +199,7 @@ export const submissionRelations = relations(submission, ({ one, many }) => ({
 	results: many(result),
 }));
 
-export const statusEnum = operatorSchema.enum("status", [
+export const statusEnum = localjudgeSchema.enum("status", [
 	"CA",
 	"WA",
 	"RE",
@@ -195,7 +210,7 @@ export const statusEnum = operatorSchema.enum("status", [
 /**
  * Represents the result of a submission for a specific test case.
  */
-export const result = operatorSchema.table(
+export const result = localjudgeSchema.table(
 	"result",
 	{
 		submissionId: uuid("submission_id")
@@ -210,6 +225,7 @@ export const result = operatorSchema.table(
 		memory: integer("memory").notNull(),
 		stdout: text("stdout").notNull(),
 		message: text("message").notNull(),
+		createdAt: timestamps.createdAt,
 	},
 	(t) => [
 		primaryKey({

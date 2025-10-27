@@ -5,6 +5,7 @@ import {
 	LucideTrash,
 	LucideView,
 } from "lucide-react";
+import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
 import { ContestCard } from "@/components/contest-card";
@@ -79,6 +80,7 @@ function RouteComponent() {
 										await rejectError(
 											localjudge.contest({ id: contest.id }).delete(),
 										);
+										toast.success("Contest deleted successfully");
 										await router.invalidate({
 											filter: (r) => r.id === Route.id,
 										});

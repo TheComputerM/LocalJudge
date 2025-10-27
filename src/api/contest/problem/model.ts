@@ -14,7 +14,7 @@ const timeLimit = t.Number({
 
 const memoryLimit = t.Number({
 	title: "Memory Limit",
-	description: "Memory limit for execution for each testcase (in MB)",
+	description: "Memory limit for execution for each testcase (in KB)",
 	default: 256,
 });
 
