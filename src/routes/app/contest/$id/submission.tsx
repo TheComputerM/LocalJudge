@@ -73,7 +73,7 @@ function RouteComponent() {
 				<TableHeader>
 					<TableRow>
 						<TableHead>Problem</TableHead>
-						<TableHead>Stat1us</TableHead>
+						<TableHead>Status</TableHead>
 						<TableHead>Language</TableHead>
 						<TableHead>When</TableHead>
 						<TableHead aria-label="Link" />

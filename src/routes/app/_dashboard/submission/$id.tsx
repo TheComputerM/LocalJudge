@@ -149,10 +149,10 @@ function Details() {
 	});
 	return (
 		<Table className="table-fixed">
-			<TableBody>
+			<TableBody className="[&_th]:h-12 [&_td:nth-child(2)]:border-r">
 				<TableRow>
 					<TableHead>User</TableHead>
-					<TableCell className="border-r">{submission.user.name}</TableCell>
+					<TableCell>{submission.user.name}</TableCell>
 					<TableHead>Status</TableHead>
 					<TableCell>
 						<SubmissionStatusPill id={submission.id} />
@@ -160,13 +160,13 @@ function Details() {
 				</TableRow>
 				<TableRow>
 					<TableHead>Contest</TableHead>
-					<TableCell className="border-r">{submission.contest.name}</TableCell>
+					<TableCell>{submission.contest.name}</TableCell>
 					<TableHead>Language</TableHead>
 					<TableCell>{submission.language}</TableCell>
 				</TableRow>
 				<TableRow>
 					<TableHead>Problem</TableHead>
-					<TableCell className="border-r">{submission.problem.title}</TableCell>
+					<TableCell>{submission.problem.title}</TableCell>
 					<TableHead>Time</TableHead>
 					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
 				</TableRow>
