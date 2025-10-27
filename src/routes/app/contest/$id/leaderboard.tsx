@@ -67,15 +67,14 @@ function RouteComponent() {
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead colSpan={3} />
+						<TableHead colSpan={2} className="border-r" />
 						<TableHead colSpan={data.problemCount} className="text-center">
 							Problems
 						</TableHead>
 					</TableRow>
 					<TableRow>
-						<TableHead className="w-[100px]">Rank</TableHead>
-						<TableHead>Name</TableHead>
-						<TableHead className="border-r">Email</TableHead>
+						<TableHead>Rank</TableHead>
+						<TableHead className="border-r">User</TableHead>
 						{Array.from({ length: data.problemCount }, (_, i) => (
 							<TableHead key={i} className="text-center">
 								<Button variant="link" asChild>
@@ -95,8 +94,13 @@ function RouteComponent() {
 					{data.leaderboard.map((user, i) => (
 						<TableRow key={user.id}>
 							<TableCell>{i + 1}</TableCell>
-							<TableCell>{user.name}</TableCell>
-							<TableCell className="border-r">{user.email}</TableCell>
+							<TableCell className="border-r">
+								<span className="font-medium">{user.name}</span>
+								<div className="text-sm text-muted-foreground">
+									{user.email}
+								</div>
+							</TableCell>
+
 							{extend(data.problemCount, user.submissions).map((s, i) => (
 								<TableCell key={i}>
 									{s && (
