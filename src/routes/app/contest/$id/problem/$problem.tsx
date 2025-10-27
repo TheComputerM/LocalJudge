@@ -71,14 +71,21 @@ function SubmitCode() {
 			return;
 		}
 
-		toast.info("Submission in progress...");
-
+		const toastId = toast.info("Submission in progress...");
+		let passed = 0;
+		let failed = 0;
 		for await (const chunk of data) {
 			if (chunk.data.status === "CA") {
-				toast.success(`Testcase ${chunk.data.testcase}: Correct Answer`);
+				passed += 1;
 			} else {
-				toast.error(`Testcase ${chunk.data.testcase}: failed`);
+				failed += 1;
 			}
+			toast[failed === 0 ? "success" : "error"](
+				`${passed} / ${passed + failed} testcases`,
+				{
+					id: toastId,
+				},
+			);
 		}
 	}
 
