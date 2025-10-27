@@ -69,7 +69,7 @@ function TestcaseContent(props: {
 		);
 	}
 
-	if (error) {
+	if (error && error?.status !== 403) {
 		return (
 			<div className="text-red-500 col-span-2">
 				Failed to load testcases: {JSON.stringify(error)}
@@ -109,6 +109,7 @@ function Results() {
 							<Pill>
 								<PillIndicator
 									variant={result.status === "CA" ? "success" : "error"}
+									pulse={result.status !== "CA"}
 								/>
 								{result.status}
 							</Pill>
