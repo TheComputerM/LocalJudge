@@ -80,13 +80,16 @@ function SubmitCode() {
 			} else {
 				failed += 1;
 			}
-			toast[failed === 0 ? "success" : "error"](
-				`${passed} / ${passed + failed} testcases`,
-				{
-					id: toastId,
-				},
-			);
+			toast.loading(`${passed} / ${passed + failed} testcases`, {
+				id: toastId,
+			});
 		}
+		toast[failed === 0 ? "success" : "error"](
+			`${passed} / ${passed + failed} testcases`,
+			{
+				id: toastId,
+			},
+		);
 	}
 
 	return (
