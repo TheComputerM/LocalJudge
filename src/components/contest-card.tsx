@@ -56,7 +56,7 @@ function ContestStatusBadge(props: { startTime: Date; endTime: Date }) {
 
 	return (
 		<Pill>
-			<PillIndicator pulse variant={status} />
+			<PillIndicator pulse={status === "info"} variant={status} />
 			{message}
 		</Pill>
 	);
