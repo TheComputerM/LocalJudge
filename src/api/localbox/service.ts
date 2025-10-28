@@ -3,8 +3,8 @@ import { Value } from "@sinclair/typebox/value";
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
+import { NotificationManager } from "./notification";
 import { LocalboxSchema } from "./schema";
-import { submissionWatcher } from "./watcher";
 
 const worker = new Worker(new URL("./worker.ts", import.meta.url));
 
@@ -87,10 +87,21 @@ worker.onmessage = async (event) => {
 	}
 
 	await db.insert(table.result).values(record);
-	submissionWatcher.trigger({ id, testcase, status: record.status });
+
+	LocalboxService.notifier.notify(id, {
+		testcase: testcase,
+		status: record.status,
+	});
 };
 
 export namespace LocalboxService {
+	export type SubmissionNotification = {
+		testcase: number;
+		status: string;
+	};
+
+	export const notifier = new NotificationManager<SubmissionNotification>();
+
 	export async function submit(
 		user: string,
 		contest: string,
@@ -117,6 +128,8 @@ export namespace LocalboxService {
 			})
 			.returning({ id: table.submission.id });
 
+		notifier.create(id, testcases.length);
+
 		for (const testcase of testcases) {
 			worker.postMessage({
 				id,
@@ -131,6 +144,4 @@ export namespace LocalboxService {
 
 		return id;
 	}
-
-	export const watcher = submissionWatcher;
 }

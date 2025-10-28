@@ -80,7 +80,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<body>
 				<ThemeProvider theme={theme}>
 					{children}
-					<Toaster position="top-center" />
+					<Toaster position="top-right" />
 				</ThemeProvider>
 				<Scripts />
 			</body>

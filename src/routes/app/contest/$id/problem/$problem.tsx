@@ -58,9 +58,12 @@ export const Route = createFileRoute("/app/contest/$id/problem/$problem")({
 function SubmitCode() {
 	const { id, problem } = Route.useParams();
 	const store = useSolutionStore();
+	const testcasesCount = Route.useLoaderData({
+		select: (data) => data.testcases.length,
+	});
 
 	async function handleSubmit() {
-		const { data, error } = await localjudge
+		const { data: results, error } = await localjudge
 			.contest({ id })
 			.problem({ problem })
 			.submit({ language: store.selected.state.language })
@@ -74,13 +77,13 @@ function SubmitCode() {
 		const toastId = toast.info("Submission in progress...");
 		let passed = 0;
 		let failed = 0;
-		for await (const chunk of data) {
-			if (chunk.data.status === "CA") {
+		for await (const { data } of results) {
+			if (data.status === "CA") {
 				passed += 1;
 			} else {
 				failed += 1;
 			}
-			toast.loading(`${passed} / ${passed + failed} testcases`, {
+			toast.loading(`${passed} / ${passed + failed} testcases till now`, {
 				id: toastId,
 			});
 		}

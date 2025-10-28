@@ -132,10 +132,12 @@ export const problemApp = new Elysia({
 							params.language,
 							body,
 						);
-						for await (const value of LocalboxService.watcher) {
-							if (value.id === submissionId) {
-								yield sse({ data: value });
-							}
+						const watcher = LocalboxService.notifier.get(submissionId);
+						if (!watcher) {
+							return;
+						}
+						for await (const value of watcher) {
+							yield sse({ data: value });
 						}
 					},
 					{
