@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
-import { SubmissionStatusPill } from "@/components/submission-status-pill";
+import { SubmissionStatusBadge } from "@/components/submission-status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -41,7 +41,7 @@ function Submissions() {
 						</Link>
 					</TableCell>
 					<TableCell>
-						<SubmissionStatusPill id={submission.id} />
+						<SubmissionStatusBadge id={submission.id} />
 					</TableCell>
 					<TableCell>{submission.language}</TableCell>
 					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>

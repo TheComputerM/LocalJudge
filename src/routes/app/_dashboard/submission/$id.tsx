@@ -5,7 +5,7 @@ import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
 import { Pill, PillIndicator } from "@/components/kibo-ui/pill";
-import { SubmissionStatusPill } from "@/components/submission-status-pill";
+import { SubmissionStatusBadge } from "@/components/submission-status-badge";
 import { useTheme } from "@/components/theme-provider";
 import {
 	Accordion,
@@ -156,7 +156,7 @@ function Details() {
 					<TableCell>{submission.user.name}</TableCell>
 					<TableHead>Status</TableHead>
 					<TableCell>
-						<SubmissionStatusPill id={submission.id} />
+						<SubmissionStatusBadge id={submission.id} />
 					</TableCell>
 				</TableRow>
 				<TableRow>
