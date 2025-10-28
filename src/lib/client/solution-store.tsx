@@ -76,7 +76,7 @@ type StoreAPI = ReturnType<typeof createSolutionStore>;
 
 const SolutionStoreContext = createContext<StoreAPI | null>(null);
 
-const Route = getRouteApi("/app/contest/$id/problem/$problem");
+const Route = getRouteApi("/_authenticated/contest/$id/problem/$problem");
 
 export const SolutionStoreProvider = (props: { children: React.ReactNode }) => {
 	const ref = useRef<StoreAPI | null>(null);
@@ -86,7 +86,7 @@ export const SolutionStoreProvider = (props: { children: React.ReactNode }) => {
 		select: ({ problem }) => Number.parseInt(problem),
 	});
 	const language = useLoaderData({
-		from: "/app/contest/$id",
+		from: "/_authenticated/contest/$id",
 		select: (data) => data.settings.languages[0],
 	});
 

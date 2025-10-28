@@ -9,9 +9,16 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
 import { reactStartCookies } from "better-auth/react-start";
+import { type SocialProviders } from "better-auth/social-providers";
 import { db } from "@/db";
 import * as authSchema from "@/db/schema/auth";
 import env from "@/lib/env";
+
+const providersFile = Bun.file("./providers.json");
+let socialProviders: SocialProviders = {};
+if (await providersFile.exists()) {
+	socialProviders = await providersFile.json();
+}
 
 export const auth = betterAuth({
 	appName: "LocalJudge",
@@ -25,5 +32,6 @@ export const auth = betterAuth({
 		schema: authSchema,
 		provider: "pg",
 	}),
+	socialProviders,
 	plugins: [admin(), reactStartCookies()],
 });

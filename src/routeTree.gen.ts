@@ -10,47 +10,41 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AppDashboardRouteImport } from './routes/app/_dashboard'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
-import { Route as AdminParticipantRouteImport } from './routes/admin/participant'
-import { Route as AdminLanguagesRouteImport } from './routes/admin/languages'
-import { Route as AdminConfigurationRouteImport } from './routes/admin/configuration'
-import { Route as AppDashboardIndexRouteImport } from './routes/app/_dashboard/index'
-import { Route as AdminContestIndexRouteImport } from './routes/admin/contest/index'
-import { Route as AppContestIdRouteImport } from './routes/app/contest/$id'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AdminContestNewRouteImport } from './routes/admin/contest/new'
-import { Route as AdminContestIdRouteImport } from './routes/admin/contest/$id'
-import { Route as AppContestIdIndexRouteImport } from './routes/app/contest/$id/index'
-import { Route as AdminContestIdIndexRouteImport } from './routes/admin/contest/$id/index'
-import { Route as AppContestIdSubmissionRouteImport } from './routes/app/contest/$id/submission'
-import { Route as AppContestIdProblemRouteImport } from './routes/app/contest/$id/problem'
-import { Route as AppContestIdLeaderboardRouteImport } from './routes/app/contest/$id/leaderboard'
-import { Route as AppDashboardSubmissionIdRouteImport } from './routes/app/_dashboard/submission/$id'
-import { Route as AdminContestIdSettingsRouteImport } from './routes/admin/contest/$id/settings'
-import { Route as AppContestIdProblemIndexRouteImport } from './routes/app/contest/$id/problem/index'
-import { Route as AdminContestIdProblemIndexRouteImport } from './routes/admin/contest/$id/problem/index'
-import { Route as AppContestIdProblemProblemRouteImport } from './routes/app/contest/$id/problem/$problem'
-import { Route as AdminContestIdProblemNewRouteImport } from './routes/admin/contest/$id/problem/new'
-import { Route as AdminContestIdProblemProblemRouteImport } from './routes/admin/contest/$id/problem/$problem'
+import { Route as AuthenticatedContestIdRouteImport } from './routes/_authenticated/contest/$id'
+import { Route as AuthenticatedAdminParticipantRouteImport } from './routes/_authenticated/admin/participant'
+import { Route as AuthenticatedAdminLanguagesRouteImport } from './routes/_authenticated/admin/languages'
+import { Route as AuthenticatedAdminConfigurationRouteImport } from './routes/_authenticated/admin/configuration'
+import { Route as AuthenticatedContestIdIndexRouteImport } from './routes/_authenticated/contest/$id/index'
+import { Route as AuthenticatedAdminContestIndexRouteImport } from './routes/_authenticated/admin/contest/index'
+import { Route as AuthenticatedContestIdSubmissionRouteImport } from './routes/_authenticated/contest/$id/submission'
+import { Route as AuthenticatedContestIdProblemRouteImport } from './routes/_authenticated/contest/$id/problem'
+import { Route as AuthenticatedContestIdLeaderboardRouteImport } from './routes/_authenticated/contest/$id/leaderboard'
+import { Route as AuthenticatedAppSubmissionIdRouteImport } from './routes/_authenticated/app/submission/$id'
+import { Route as AuthenticatedAdminContestNewRouteImport } from './routes/_authenticated/admin/contest/new'
+import { Route as AuthenticatedAdminContestIdRouteImport } from './routes/_authenticated/admin/contest/$id'
+import { Route as AuthenticatedContestIdProblemIndexRouteImport } from './routes/_authenticated/contest/$id/problem/index'
+import { Route as AuthenticatedAdminContestIdIndexRouteImport } from './routes/_authenticated/admin/contest/$id/index'
+import { Route as AuthenticatedContestIdProblemProblemRouteImport } from './routes/_authenticated/contest/$id/problem/$problem'
+import { Route as AuthenticatedAdminContestIdSettingsRouteImport } from './routes/_authenticated/admin/contest/$id/settings'
+import { Route as AuthenticatedAdminContestIdProblemIndexRouteImport } from './routes/_authenticated/admin/contest/$id/problem/index'
+import { Route as AuthenticatedAdminContestIdProblemNewRouteImport } from './routes/_authenticated/admin/contest/$id/problem/new'
+import { Route as AuthenticatedAdminContestIdProblemProblemRouteImport } from './routes/_authenticated/admin/contest/$id/problem/$problem'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -58,306 +52,323 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/_dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminParticipantRoute = AdminParticipantRouteImport.update({
-  id: '/participant',
-  path: '/participant',
-  getParentRoute: () => AdminRoute,
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AdminLanguagesRoute = AdminLanguagesRouteImport.update({
-  id: '/languages',
-  path: '/languages',
-  getParentRoute: () => AdminRoute,
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AdminConfigurationRoute = AdminConfigurationRouteImport.update({
-  id: '/configuration',
-  path: '/configuration',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
+const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppDashboardRoute,
+  getParentRoute: () => AuthenticatedAppRoute,
 } as any)
-const AdminContestIndexRoute = AdminContestIndexRouteImport.update({
-  id: '/contest/',
-  path: '/contest/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AppContestIdRoute = AppContestIdRouteImport.update({
-  id: '/contest/$id',
-  path: '/contest/$id',
-  getParentRoute: () => AppRoute,
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminContestNewRoute = AdminContestNewRouteImport.update({
-  id: '/contest/new',
-  path: '/contest/new',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminContestIdRoute = AdminContestIdRouteImport.update({
+const AuthenticatedContestIdRoute = AuthenticatedContestIdRouteImport.update({
   id: '/contest/$id',
   path: '/contest/$id',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AppContestIdIndexRoute = AppContestIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppContestIdRoute,
-} as any)
-const AdminContestIdIndexRoute = AdminContestIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminContestIdRoute,
-} as any)
-const AppContestIdSubmissionRoute = AppContestIdSubmissionRouteImport.update({
-  id: '/submission',
-  path: '/submission',
-  getParentRoute: () => AppContestIdRoute,
-} as any)
-const AppContestIdProblemRoute = AppContestIdProblemRouteImport.update({
-  id: '/problem',
-  path: '/problem',
-  getParentRoute: () => AppContestIdRoute,
-} as any)
-const AppContestIdLeaderboardRoute = AppContestIdLeaderboardRouteImport.update({
-  id: '/leaderboard',
-  path: '/leaderboard',
-  getParentRoute: () => AppContestIdRoute,
-} as any)
-const AppDashboardSubmissionIdRoute =
-  AppDashboardSubmissionIdRouteImport.update({
-    id: '/submission/$id',
-    path: '/submission/$id',
-    getParentRoute: () => AppDashboardRoute,
+const AuthenticatedAdminParticipantRoute =
+  AuthenticatedAdminParticipantRouteImport.update({
+    id: '/participant',
+    path: '/participant',
+    getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AdminContestIdSettingsRoute = AdminContestIdSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminContestIdRoute,
-} as any)
-const AppContestIdProblemIndexRoute =
-  AppContestIdProblemIndexRouteImport.update({
+const AuthenticatedAdminLanguagesRoute =
+  AuthenticatedAdminLanguagesRouteImport.update({
+    id: '/languages',
+    path: '/languages',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminConfigurationRoute =
+  AuthenticatedAdminConfigurationRouteImport.update({
+    id: '/configuration',
+    path: '/configuration',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedContestIdIndexRoute =
+  AuthenticatedContestIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppContestIdProblemRoute,
+    getParentRoute: () => AuthenticatedContestIdRoute,
   } as any)
-const AdminContestIdProblemIndexRoute =
-  AdminContestIdProblemIndexRouteImport.update({
-    id: '/problem/',
-    path: '/problem/',
-    getParentRoute: () => AdminContestIdRoute,
+const AuthenticatedAdminContestIndexRoute =
+  AuthenticatedAdminContestIndexRouteImport.update({
+    id: '/contest/',
+    path: '/contest/',
+    getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AppContestIdProblemProblemRoute =
-  AppContestIdProblemProblemRouteImport.update({
+const AuthenticatedContestIdSubmissionRoute =
+  AuthenticatedContestIdSubmissionRouteImport.update({
+    id: '/submission',
+    path: '/submission',
+    getParentRoute: () => AuthenticatedContestIdRoute,
+  } as any)
+const AuthenticatedContestIdProblemRoute =
+  AuthenticatedContestIdProblemRouteImport.update({
+    id: '/problem',
+    path: '/problem',
+    getParentRoute: () => AuthenticatedContestIdRoute,
+  } as any)
+const AuthenticatedContestIdLeaderboardRoute =
+  AuthenticatedContestIdLeaderboardRouteImport.update({
+    id: '/leaderboard',
+    path: '/leaderboard',
+    getParentRoute: () => AuthenticatedContestIdRoute,
+  } as any)
+const AuthenticatedAppSubmissionIdRoute =
+  AuthenticatedAppSubmissionIdRouteImport.update({
+    id: '/submission/$id',
+    path: '/submission/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAdminContestNewRoute =
+  AuthenticatedAdminContestNewRouteImport.update({
+    id: '/contest/new',
+    path: '/contest/new',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminContestIdRoute =
+  AuthenticatedAdminContestIdRouteImport.update({
+    id: '/contest/$id',
+    path: '/contest/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedContestIdProblemIndexRoute =
+  AuthenticatedContestIdProblemIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedContestIdProblemRoute,
+  } as any)
+const AuthenticatedAdminContestIdIndexRoute =
+  AuthenticatedAdminContestIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAdminContestIdRoute,
+  } as any)
+const AuthenticatedContestIdProblemProblemRoute =
+  AuthenticatedContestIdProblemProblemRouteImport.update({
     id: '/$problem',
     path: '/$problem',
-    getParentRoute: () => AppContestIdProblemRoute,
+    getParentRoute: () => AuthenticatedContestIdProblemRoute,
   } as any)
-const AdminContestIdProblemNewRoute =
-  AdminContestIdProblemNewRouteImport.update({
+const AuthenticatedAdminContestIdSettingsRoute =
+  AuthenticatedAdminContestIdSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminContestIdRoute,
+  } as any)
+const AuthenticatedAdminContestIdProblemIndexRoute =
+  AuthenticatedAdminContestIdProblemIndexRouteImport.update({
+    id: '/problem/',
+    path: '/problem/',
+    getParentRoute: () => AuthenticatedAdminContestIdRoute,
+  } as any)
+const AuthenticatedAdminContestIdProblemNewRoute =
+  AuthenticatedAdminContestIdProblemNewRouteImport.update({
     id: '/problem/new',
     path: '/problem/new',
-    getParentRoute: () => AdminContestIdRoute,
+    getParentRoute: () => AuthenticatedAdminContestIdRoute,
   } as any)
-const AdminContestIdProblemProblemRoute =
-  AdminContestIdProblemProblemRouteImport.update({
+const AuthenticatedAdminContestIdProblemProblemRoute =
+  AuthenticatedAdminContestIdProblemProblemRouteImport.update({
     id: '/problem/$problem',
     path: '/problem/$problem',
-    getParentRoute: () => AdminContestIdRoute,
+    getParentRoute: () => AuthenticatedAdminContestIdRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/app': typeof AppDashboardRouteWithChildren
   '/login': typeof LoginRoute
-  '/admin/configuration': typeof AdminConfigurationRoute
-  '/admin/languages': typeof AdminLanguagesRoute
-  '/admin/participant': typeof AdminParticipantRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/app': typeof AuthenticatedAppRouteWithChildren
   '/api/$': typeof ApiSplatRoute
-  '/admin/': typeof AdminIndexRoute
-  '/admin/contest/$id': typeof AdminContestIdRouteWithChildren
-  '/admin/contest/new': typeof AdminContestNewRoute
+  '/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
+  '/admin/languages': typeof AuthenticatedAdminLanguagesRoute
+  '/admin/participant': typeof AuthenticatedAdminParticipantRoute
+  '/contest/$id': typeof AuthenticatedContestIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/app/contest/$id': typeof AppContestIdRouteWithChildren
-  '/admin/contest': typeof AdminContestIndexRoute
-  '/app/': typeof AppDashboardIndexRoute
-  '/admin/contest/$id/settings': typeof AdminContestIdSettingsRoute
-  '/app/submission/$id': typeof AppDashboardSubmissionIdRoute
-  '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
-  '/app/contest/$id/problem': typeof AppContestIdProblemRouteWithChildren
-  '/app/contest/$id/submission': typeof AppContestIdSubmissionRoute
-  '/admin/contest/$id/': typeof AdminContestIdIndexRoute
-  '/app/contest/$id/': typeof AppContestIdIndexRoute
-  '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
-  '/admin/contest/$id/problem/new': typeof AdminContestIdProblemNewRoute
-  '/app/contest/$id/problem/$problem': typeof AppContestIdProblemProblemRoute
-  '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
-  '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/app/': typeof AuthenticatedAppIndexRoute
+  '/admin/contest/$id': typeof AuthenticatedAdminContestIdRouteWithChildren
+  '/admin/contest/new': typeof AuthenticatedAdminContestNewRoute
+  '/app/submission/$id': typeof AuthenticatedAppSubmissionIdRoute
+  '/contest/$id/leaderboard': typeof AuthenticatedContestIdLeaderboardRoute
+  '/contest/$id/problem': typeof AuthenticatedContestIdProblemRouteWithChildren
+  '/contest/$id/submission': typeof AuthenticatedContestIdSubmissionRoute
+  '/admin/contest': typeof AuthenticatedAdminContestIndexRoute
+  '/contest/$id/': typeof AuthenticatedContestIdIndexRoute
+  '/admin/contest/$id/settings': typeof AuthenticatedAdminContestIdSettingsRoute
+  '/contest/$id/problem/$problem': typeof AuthenticatedContestIdProblemProblemRoute
+  '/admin/contest/$id/': typeof AuthenticatedAdminContestIdIndexRoute
+  '/contest/$id/problem/': typeof AuthenticatedContestIdProblemIndexRoute
+  '/admin/contest/$id/problem/$problem': typeof AuthenticatedAdminContestIdProblemProblemRoute
+  '/admin/contest/$id/problem/new': typeof AuthenticatedAdminContestIdProblemNewRoute
+  '/admin/contest/$id/problem': typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppDashboardIndexRoute
   '/login': typeof LoginRoute
-  '/admin/configuration': typeof AdminConfigurationRoute
-  '/admin/languages': typeof AdminLanguagesRoute
-  '/admin/participant': typeof AdminParticipantRoute
   '/api/$': typeof ApiSplatRoute
-  '/admin': typeof AdminIndexRoute
-  '/admin/contest/new': typeof AdminContestNewRoute
+  '/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
+  '/admin/languages': typeof AuthenticatedAdminLanguagesRoute
+  '/admin/participant': typeof AuthenticatedAdminParticipantRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/admin/contest': typeof AdminContestIndexRoute
-  '/admin/contest/$id/settings': typeof AdminContestIdSettingsRoute
-  '/app/submission/$id': typeof AppDashboardSubmissionIdRoute
-  '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
-  '/app/contest/$id/submission': typeof AppContestIdSubmissionRoute
-  '/admin/contest/$id': typeof AdminContestIdIndexRoute
-  '/app/contest/$id': typeof AppContestIdIndexRoute
-  '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
-  '/admin/contest/$id/problem/new': typeof AdminContestIdProblemNewRoute
-  '/app/contest/$id/problem/$problem': typeof AppContestIdProblemProblemRoute
-  '/admin/contest/$id/problem': typeof AdminContestIdProblemIndexRoute
-  '/app/contest/$id/problem': typeof AppContestIdProblemIndexRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/app': typeof AuthenticatedAppIndexRoute
+  '/admin/contest/new': typeof AuthenticatedAdminContestNewRoute
+  '/app/submission/$id': typeof AuthenticatedAppSubmissionIdRoute
+  '/contest/$id/leaderboard': typeof AuthenticatedContestIdLeaderboardRoute
+  '/contest/$id/submission': typeof AuthenticatedContestIdSubmissionRoute
+  '/admin/contest': typeof AuthenticatedAdminContestIndexRoute
+  '/contest/$id': typeof AuthenticatedContestIdIndexRoute
+  '/admin/contest/$id/settings': typeof AuthenticatedAdminContestIdSettingsRoute
+  '/contest/$id/problem/$problem': typeof AuthenticatedContestIdProblemProblemRoute
+  '/admin/contest/$id': typeof AuthenticatedAdminContestIdIndexRoute
+  '/contest/$id/problem': typeof AuthenticatedContestIdProblemIndexRoute
+  '/admin/contest/$id/problem/$problem': typeof AuthenticatedAdminContestIdProblemProblemRoute
+  '/admin/contest/$id/problem/new': typeof AuthenticatedAdminContestIdProblemNewRoute
+  '/admin/contest/$id/problem': typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/app': typeof AppRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/admin/configuration': typeof AdminConfigurationRoute
-  '/admin/languages': typeof AdminLanguagesRoute
-  '/admin/participant': typeof AdminParticipantRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/api/$': typeof ApiSplatRoute
-  '/app/_dashboard': typeof AppDashboardRouteWithChildren
-  '/admin/': typeof AdminIndexRoute
-  '/admin/contest/$id': typeof AdminContestIdRouteWithChildren
-  '/admin/contest/new': typeof AdminContestNewRoute
+  '/_authenticated/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
+  '/_authenticated/admin/languages': typeof AuthenticatedAdminLanguagesRoute
+  '/_authenticated/admin/participant': typeof AuthenticatedAdminParticipantRoute
+  '/_authenticated/contest/$id': typeof AuthenticatedContestIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/app/contest/$id': typeof AppContestIdRouteWithChildren
-  '/admin/contest/': typeof AdminContestIndexRoute
-  '/app/_dashboard/': typeof AppDashboardIndexRoute
-  '/admin/contest/$id/settings': typeof AdminContestIdSettingsRoute
-  '/app/_dashboard/submission/$id': typeof AppDashboardSubmissionIdRoute
-  '/app/contest/$id/leaderboard': typeof AppContestIdLeaderboardRoute
-  '/app/contest/$id/problem': typeof AppContestIdProblemRouteWithChildren
-  '/app/contest/$id/submission': typeof AppContestIdSubmissionRoute
-  '/admin/contest/$id/': typeof AdminContestIdIndexRoute
-  '/app/contest/$id/': typeof AppContestIdIndexRoute
-  '/admin/contest/$id/problem/$problem': typeof AdminContestIdProblemProblemRoute
-  '/admin/contest/$id/problem/new': typeof AdminContestIdProblemNewRoute
-  '/app/contest/$id/problem/$problem': typeof AppContestIdProblemProblemRoute
-  '/admin/contest/$id/problem/': typeof AdminContestIdProblemIndexRoute
-  '/app/contest/$id/problem/': typeof AppContestIdProblemIndexRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/admin/contest/$id': typeof AuthenticatedAdminContestIdRouteWithChildren
+  '/_authenticated/admin/contest/new': typeof AuthenticatedAdminContestNewRoute
+  '/_authenticated/app/submission/$id': typeof AuthenticatedAppSubmissionIdRoute
+  '/_authenticated/contest/$id/leaderboard': typeof AuthenticatedContestIdLeaderboardRoute
+  '/_authenticated/contest/$id/problem': typeof AuthenticatedContestIdProblemRouteWithChildren
+  '/_authenticated/contest/$id/submission': typeof AuthenticatedContestIdSubmissionRoute
+  '/_authenticated/admin/contest/': typeof AuthenticatedAdminContestIndexRoute
+  '/_authenticated/contest/$id/': typeof AuthenticatedContestIdIndexRoute
+  '/_authenticated/admin/contest/$id/settings': typeof AuthenticatedAdminContestIdSettingsRoute
+  '/_authenticated/contest/$id/problem/$problem': typeof AuthenticatedContestIdProblemProblemRoute
+  '/_authenticated/admin/contest/$id/': typeof AuthenticatedAdminContestIdIndexRoute
+  '/_authenticated/contest/$id/problem/': typeof AuthenticatedContestIdProblemIndexRoute
+  '/_authenticated/admin/contest/$id/problem/$problem': typeof AuthenticatedAdminContestIdProblemProblemRoute
+  '/_authenticated/admin/contest/$id/problem/new': typeof AuthenticatedAdminContestIdProblemNewRoute
+  '/_authenticated/admin/contest/$id/problem/': typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
     | '/admin'
     | '/app'
-    | '/login'
+    | '/api/$'
     | '/admin/configuration'
     | '/admin/languages'
     | '/admin/participant'
-    | '/api/$'
+    | '/contest/$id'
+    | '/api/auth/$'
     | '/admin/'
+    | '/app/'
     | '/admin/contest/$id'
     | '/admin/contest/new'
-    | '/api/auth/$'
-    | '/app/contest/$id'
-    | '/admin/contest'
-    | '/app/'
-    | '/admin/contest/$id/settings'
     | '/app/submission/$id'
-    | '/app/contest/$id/leaderboard'
-    | '/app/contest/$id/problem'
-    | '/app/contest/$id/submission'
+    | '/contest/$id/leaderboard'
+    | '/contest/$id/problem'
+    | '/contest/$id/submission'
+    | '/admin/contest'
+    | '/contest/$id/'
+    | '/admin/contest/$id/settings'
+    | '/contest/$id/problem/$problem'
     | '/admin/contest/$id/'
-    | '/app/contest/$id/'
+    | '/contest/$id/problem/'
     | '/admin/contest/$id/problem/$problem'
     | '/admin/contest/$id/problem/new'
-    | '/app/contest/$id/problem/$problem'
     | '/admin/contest/$id/problem'
-    | '/app/contest/$id/problem/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/app'
     | '/login'
+    | '/api/$'
     | '/admin/configuration'
     | '/admin/languages'
     | '/admin/participant'
-    | '/api/$'
-    | '/admin'
-    | '/admin/contest/new'
     | '/api/auth/$'
-    | '/admin/contest'
-    | '/admin/contest/$id/settings'
+    | '/admin'
+    | '/app'
+    | '/admin/contest/new'
     | '/app/submission/$id'
-    | '/app/contest/$id/leaderboard'
-    | '/app/contest/$id/submission'
+    | '/contest/$id/leaderboard'
+    | '/contest/$id/submission'
+    | '/admin/contest'
+    | '/contest/$id'
+    | '/admin/contest/$id/settings'
+    | '/contest/$id/problem/$problem'
     | '/admin/contest/$id'
-    | '/app/contest/$id'
+    | '/contest/$id/problem'
     | '/admin/contest/$id/problem/$problem'
     | '/admin/contest/$id/problem/new'
-    | '/app/contest/$id/problem/$problem'
     | '/admin/contest/$id/problem'
-    | '/app/contest/$id/problem'
   id:
     | '__root__'
     | '/'
-    | '/admin'
-    | '/app'
+    | '/_authenticated'
     | '/login'
-    | '/admin/configuration'
-    | '/admin/languages'
-    | '/admin/participant'
+    | '/_authenticated/admin'
+    | '/_authenticated/app'
     | '/api/$'
-    | '/app/_dashboard'
-    | '/admin/'
-    | '/admin/contest/$id'
-    | '/admin/contest/new'
+    | '/_authenticated/admin/configuration'
+    | '/_authenticated/admin/languages'
+    | '/_authenticated/admin/participant'
+    | '/_authenticated/contest/$id'
     | '/api/auth/$'
-    | '/app/contest/$id'
-    | '/admin/contest/'
-    | '/app/_dashboard/'
-    | '/admin/contest/$id/settings'
-    | '/app/_dashboard/submission/$id'
-    | '/app/contest/$id/leaderboard'
-    | '/app/contest/$id/problem'
-    | '/app/contest/$id/submission'
-    | '/admin/contest/$id/'
-    | '/app/contest/$id/'
-    | '/admin/contest/$id/problem/$problem'
-    | '/admin/contest/$id/problem/new'
-    | '/app/contest/$id/problem/$problem'
-    | '/admin/contest/$id/problem/'
-    | '/app/contest/$id/problem/'
+    | '/_authenticated/admin/'
+    | '/_authenticated/app/'
+    | '/_authenticated/admin/contest/$id'
+    | '/_authenticated/admin/contest/new'
+    | '/_authenticated/app/submission/$id'
+    | '/_authenticated/contest/$id/leaderboard'
+    | '/_authenticated/contest/$id/problem'
+    | '/_authenticated/contest/$id/submission'
+    | '/_authenticated/admin/contest/'
+    | '/_authenticated/contest/$id/'
+    | '/_authenticated/admin/contest/$id/settings'
+    | '/_authenticated/contest/$id/problem/$problem'
+    | '/_authenticated/admin/contest/$id/'
+    | '/_authenticated/contest/$id/problem/'
+    | '/_authenticated/admin/contest/$id/problem/$problem'
+    | '/_authenticated/admin/contest/$id/problem/new'
+    | '/_authenticated/admin/contest/$id/problem/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
-  AppRoute: typeof AppRouteWithChildren
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   ApiSplatRoute: typeof ApiSplatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -372,18 +383,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -393,20 +397,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/app/_dashboard': {
-      id: '/app/_dashboard'
-      path: ''
-      fullPath: '/app'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/api/$': {
       id: '/api/$'
       path: '/api/$'
@@ -414,47 +404,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/participant': {
-      id: '/admin/participant'
-      path: '/participant'
-      fullPath: '/admin/participant'
-      preLoaderRoute: typeof AdminParticipantRouteImport
-      parentRoute: typeof AdminRoute
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/admin/languages': {
-      id: '/admin/languages'
-      path: '/languages'
-      fullPath: '/admin/languages'
-      preLoaderRoute: typeof AdminLanguagesRouteImport
-      parentRoute: typeof AdminRoute
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/admin/configuration': {
-      id: '/admin/configuration'
-      path: '/configuration'
-      fullPath: '/admin/configuration'
-      preLoaderRoute: typeof AdminConfigurationRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/app/_dashboard/': {
-      id: '/app/_dashboard/'
+    '/_authenticated/app/': {
+      id: '/_authenticated/app/'
       path: '/'
       fullPath: '/app/'
-      preLoaderRoute: typeof AppDashboardIndexRouteImport
-      parentRoute: typeof AppDashboardRoute
+      preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/admin/contest/': {
-      id: '/admin/contest/'
-      path: '/contest'
-      fullPath: '/admin/contest'
-      preLoaderRoute: typeof AdminContestIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/app/contest/$id': {
-      id: '/app/contest/$id'
-      path: '/contest/$id'
-      fullPath: '/app/contest/$id'
-      preLoaderRoute: typeof AppContestIdRouteImport
-      parentRoute: typeof AppRoute
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -463,210 +439,266 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/contest/new': {
-      id: '/admin/contest/new'
-      path: '/contest/new'
-      fullPath: '/admin/contest/new'
-      preLoaderRoute: typeof AdminContestNewRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/contest/$id': {
-      id: '/admin/contest/$id'
+    '/_authenticated/contest/$id': {
+      id: '/_authenticated/contest/$id'
       path: '/contest/$id'
-      fullPath: '/admin/contest/$id'
-      preLoaderRoute: typeof AdminContestIdRouteImport
-      parentRoute: typeof AdminRoute
+      fullPath: '/contest/$id'
+      preLoaderRoute: typeof AuthenticatedContestIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/app/contest/$id/': {
-      id: '/app/contest/$id/'
+    '/_authenticated/admin/participant': {
+      id: '/_authenticated/admin/participant'
+      path: '/participant'
+      fullPath: '/admin/participant'
+      preLoaderRoute: typeof AuthenticatedAdminParticipantRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/languages': {
+      id: '/_authenticated/admin/languages'
+      path: '/languages'
+      fullPath: '/admin/languages'
+      preLoaderRoute: typeof AuthenticatedAdminLanguagesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/configuration': {
+      id: '/_authenticated/admin/configuration'
+      path: '/configuration'
+      fullPath: '/admin/configuration'
+      preLoaderRoute: typeof AuthenticatedAdminConfigurationRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/contest/$id/': {
+      id: '/_authenticated/contest/$id/'
       path: '/'
-      fullPath: '/app/contest/$id/'
-      preLoaderRoute: typeof AppContestIdIndexRouteImport
-      parentRoute: typeof AppContestIdRoute
+      fullPath: '/contest/$id/'
+      preLoaderRoute: typeof AuthenticatedContestIdIndexRouteImport
+      parentRoute: typeof AuthenticatedContestIdRoute
     }
-    '/admin/contest/$id/': {
-      id: '/admin/contest/$id/'
-      path: '/'
-      fullPath: '/admin/contest/$id/'
-      preLoaderRoute: typeof AdminContestIdIndexRouteImport
-      parentRoute: typeof AdminContestIdRoute
+    '/_authenticated/admin/contest/': {
+      id: '/_authenticated/admin/contest/'
+      path: '/contest'
+      fullPath: '/admin/contest'
+      preLoaderRoute: typeof AuthenticatedAdminContestIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/app/contest/$id/submission': {
-      id: '/app/contest/$id/submission'
+    '/_authenticated/contest/$id/submission': {
+      id: '/_authenticated/contest/$id/submission'
       path: '/submission'
-      fullPath: '/app/contest/$id/submission'
-      preLoaderRoute: typeof AppContestIdSubmissionRouteImport
-      parentRoute: typeof AppContestIdRoute
+      fullPath: '/contest/$id/submission'
+      preLoaderRoute: typeof AuthenticatedContestIdSubmissionRouteImport
+      parentRoute: typeof AuthenticatedContestIdRoute
     }
-    '/app/contest/$id/problem': {
-      id: '/app/contest/$id/problem'
+    '/_authenticated/contest/$id/problem': {
+      id: '/_authenticated/contest/$id/problem'
       path: '/problem'
-      fullPath: '/app/contest/$id/problem'
-      preLoaderRoute: typeof AppContestIdProblemRouteImport
-      parentRoute: typeof AppContestIdRoute
+      fullPath: '/contest/$id/problem'
+      preLoaderRoute: typeof AuthenticatedContestIdProblemRouteImport
+      parentRoute: typeof AuthenticatedContestIdRoute
     }
-    '/app/contest/$id/leaderboard': {
-      id: '/app/contest/$id/leaderboard'
+    '/_authenticated/contest/$id/leaderboard': {
+      id: '/_authenticated/contest/$id/leaderboard'
       path: '/leaderboard'
-      fullPath: '/app/contest/$id/leaderboard'
-      preLoaderRoute: typeof AppContestIdLeaderboardRouteImport
-      parentRoute: typeof AppContestIdRoute
+      fullPath: '/contest/$id/leaderboard'
+      preLoaderRoute: typeof AuthenticatedContestIdLeaderboardRouteImport
+      parentRoute: typeof AuthenticatedContestIdRoute
     }
-    '/app/_dashboard/submission/$id': {
-      id: '/app/_dashboard/submission/$id'
+    '/_authenticated/app/submission/$id': {
+      id: '/_authenticated/app/submission/$id'
       path: '/submission/$id'
       fullPath: '/app/submission/$id'
-      preLoaderRoute: typeof AppDashboardSubmissionIdRouteImport
-      parentRoute: typeof AppDashboardRoute
+      preLoaderRoute: typeof AuthenticatedAppSubmissionIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/admin/contest/$id/settings': {
-      id: '/admin/contest/$id/settings'
+    '/_authenticated/admin/contest/new': {
+      id: '/_authenticated/admin/contest/new'
+      path: '/contest/new'
+      fullPath: '/admin/contest/new'
+      preLoaderRoute: typeof AuthenticatedAdminContestNewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/contest/$id': {
+      id: '/_authenticated/admin/contest/$id'
+      path: '/contest/$id'
+      fullPath: '/admin/contest/$id'
+      preLoaderRoute: typeof AuthenticatedAdminContestIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/contest/$id/problem/': {
+      id: '/_authenticated/contest/$id/problem/'
+      path: '/'
+      fullPath: '/contest/$id/problem/'
+      preLoaderRoute: typeof AuthenticatedContestIdProblemIndexRouteImport
+      parentRoute: typeof AuthenticatedContestIdProblemRoute
+    }
+    '/_authenticated/admin/contest/$id/': {
+      id: '/_authenticated/admin/contest/$id/'
+      path: '/'
+      fullPath: '/admin/contest/$id/'
+      preLoaderRoute: typeof AuthenticatedAdminContestIdIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminContestIdRoute
+    }
+    '/_authenticated/contest/$id/problem/$problem': {
+      id: '/_authenticated/contest/$id/problem/$problem'
+      path: '/$problem'
+      fullPath: '/contest/$id/problem/$problem'
+      preLoaderRoute: typeof AuthenticatedContestIdProblemProblemRouteImport
+      parentRoute: typeof AuthenticatedContestIdProblemRoute
+    }
+    '/_authenticated/admin/contest/$id/settings': {
+      id: '/_authenticated/admin/contest/$id/settings'
       path: '/settings'
       fullPath: '/admin/contest/$id/settings'
-      preLoaderRoute: typeof AdminContestIdSettingsRouteImport
-      parentRoute: typeof AdminContestIdRoute
+      preLoaderRoute: typeof AuthenticatedAdminContestIdSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminContestIdRoute
     }
-    '/app/contest/$id/problem/': {
-      id: '/app/contest/$id/problem/'
-      path: '/'
-      fullPath: '/app/contest/$id/problem/'
-      preLoaderRoute: typeof AppContestIdProblemIndexRouteImport
-      parentRoute: typeof AppContestIdProblemRoute
-    }
-    '/admin/contest/$id/problem/': {
-      id: '/admin/contest/$id/problem/'
+    '/_authenticated/admin/contest/$id/problem/': {
+      id: '/_authenticated/admin/contest/$id/problem/'
       path: '/problem'
       fullPath: '/admin/contest/$id/problem'
-      preLoaderRoute: typeof AdminContestIdProblemIndexRouteImport
-      parentRoute: typeof AdminContestIdRoute
+      preLoaderRoute: typeof AuthenticatedAdminContestIdProblemIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminContestIdRoute
     }
-    '/app/contest/$id/problem/$problem': {
-      id: '/app/contest/$id/problem/$problem'
-      path: '/$problem'
-      fullPath: '/app/contest/$id/problem/$problem'
-      preLoaderRoute: typeof AppContestIdProblemProblemRouteImport
-      parentRoute: typeof AppContestIdProblemRoute
-    }
-    '/admin/contest/$id/problem/new': {
-      id: '/admin/contest/$id/problem/new'
+    '/_authenticated/admin/contest/$id/problem/new': {
+      id: '/_authenticated/admin/contest/$id/problem/new'
       path: '/problem/new'
       fullPath: '/admin/contest/$id/problem/new'
-      preLoaderRoute: typeof AdminContestIdProblemNewRouteImport
-      parentRoute: typeof AdminContestIdRoute
+      preLoaderRoute: typeof AuthenticatedAdminContestIdProblemNewRouteImport
+      parentRoute: typeof AuthenticatedAdminContestIdRoute
     }
-    '/admin/contest/$id/problem/$problem': {
-      id: '/admin/contest/$id/problem/$problem'
+    '/_authenticated/admin/contest/$id/problem/$problem': {
+      id: '/_authenticated/admin/contest/$id/problem/$problem'
       path: '/problem/$problem'
       fullPath: '/admin/contest/$id/problem/$problem'
-      preLoaderRoute: typeof AdminContestIdProblemProblemRouteImport
-      parentRoute: typeof AdminContestIdRoute
+      preLoaderRoute: typeof AuthenticatedAdminContestIdProblemProblemRouteImport
+      parentRoute: typeof AuthenticatedAdminContestIdRoute
     }
   }
 }
 
-interface AdminContestIdRouteChildren {
-  AdminContestIdSettingsRoute: typeof AdminContestIdSettingsRoute
-  AdminContestIdIndexRoute: typeof AdminContestIdIndexRoute
-  AdminContestIdProblemProblemRoute: typeof AdminContestIdProblemProblemRoute
-  AdminContestIdProblemNewRoute: typeof AdminContestIdProblemNewRoute
-  AdminContestIdProblemIndexRoute: typeof AdminContestIdProblemIndexRoute
+interface AuthenticatedAdminContestIdRouteChildren {
+  AuthenticatedAdminContestIdSettingsRoute: typeof AuthenticatedAdminContestIdSettingsRoute
+  AuthenticatedAdminContestIdIndexRoute: typeof AuthenticatedAdminContestIdIndexRoute
+  AuthenticatedAdminContestIdProblemProblemRoute: typeof AuthenticatedAdminContestIdProblemProblemRoute
+  AuthenticatedAdminContestIdProblemNewRoute: typeof AuthenticatedAdminContestIdProblemNewRoute
+  AuthenticatedAdminContestIdProblemIndexRoute: typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 
-const AdminContestIdRouteChildren: AdminContestIdRouteChildren = {
-  AdminContestIdSettingsRoute: AdminContestIdSettingsRoute,
-  AdminContestIdIndexRoute: AdminContestIdIndexRoute,
-  AdminContestIdProblemProblemRoute: AdminContestIdProblemProblemRoute,
-  AdminContestIdProblemNewRoute: AdminContestIdProblemNewRoute,
-  AdminContestIdProblemIndexRoute: AdminContestIdProblemIndexRoute,
+const AuthenticatedAdminContestIdRouteChildren: AuthenticatedAdminContestIdRouteChildren =
+  {
+    AuthenticatedAdminContestIdSettingsRoute:
+      AuthenticatedAdminContestIdSettingsRoute,
+    AuthenticatedAdminContestIdIndexRoute:
+      AuthenticatedAdminContestIdIndexRoute,
+    AuthenticatedAdminContestIdProblemProblemRoute:
+      AuthenticatedAdminContestIdProblemProblemRoute,
+    AuthenticatedAdminContestIdProblemNewRoute:
+      AuthenticatedAdminContestIdProblemNewRoute,
+    AuthenticatedAdminContestIdProblemIndexRoute:
+      AuthenticatedAdminContestIdProblemIndexRoute,
+  }
+
+const AuthenticatedAdminContestIdRouteWithChildren =
+  AuthenticatedAdminContestIdRoute._addFileChildren(
+    AuthenticatedAdminContestIdRouteChildren,
+  )
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminConfigurationRoute: typeof AuthenticatedAdminConfigurationRoute
+  AuthenticatedAdminLanguagesRoute: typeof AuthenticatedAdminLanguagesRoute
+  AuthenticatedAdminParticipantRoute: typeof AuthenticatedAdminParticipantRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminContestIdRoute: typeof AuthenticatedAdminContestIdRouteWithChildren
+  AuthenticatedAdminContestNewRoute: typeof AuthenticatedAdminContestNewRoute
+  AuthenticatedAdminContestIndexRoute: typeof AuthenticatedAdminContestIndexRoute
 }
 
-const AdminContestIdRouteWithChildren = AdminContestIdRoute._addFileChildren(
-  AdminContestIdRouteChildren,
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminConfigurationRoute: AuthenticatedAdminConfigurationRoute,
+  AuthenticatedAdminLanguagesRoute: AuthenticatedAdminLanguagesRoute,
+  AuthenticatedAdminParticipantRoute: AuthenticatedAdminParticipantRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminContestIdRoute:
+    AuthenticatedAdminContestIdRouteWithChildren,
+  AuthenticatedAdminContestNewRoute: AuthenticatedAdminContestNewRoute,
+  AuthenticatedAdminContestIndexRoute: AuthenticatedAdminContestIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppSubmissionIdRoute: typeof AuthenticatedAppSubmissionIdRoute
+}
+
+const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppSubmissionIdRoute: AuthenticatedAppSubmissionIdRoute,
+}
+
+const AuthenticatedAppRouteWithChildren =
+  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
+
+interface AuthenticatedContestIdProblemRouteChildren {
+  AuthenticatedContestIdProblemProblemRoute: typeof AuthenticatedContestIdProblemProblemRoute
+  AuthenticatedContestIdProblemIndexRoute: typeof AuthenticatedContestIdProblemIndexRoute
+}
+
+const AuthenticatedContestIdProblemRouteChildren: AuthenticatedContestIdProblemRouteChildren =
+  {
+    AuthenticatedContestIdProblemProblemRoute:
+      AuthenticatedContestIdProblemProblemRoute,
+    AuthenticatedContestIdProblemIndexRoute:
+      AuthenticatedContestIdProblemIndexRoute,
+  }
+
+const AuthenticatedContestIdProblemRouteWithChildren =
+  AuthenticatedContestIdProblemRoute._addFileChildren(
+    AuthenticatedContestIdProblemRouteChildren,
+  )
+
+interface AuthenticatedContestIdRouteChildren {
+  AuthenticatedContestIdLeaderboardRoute: typeof AuthenticatedContestIdLeaderboardRoute
+  AuthenticatedContestIdProblemRoute: typeof AuthenticatedContestIdProblemRouteWithChildren
+  AuthenticatedContestIdSubmissionRoute: typeof AuthenticatedContestIdSubmissionRoute
+  AuthenticatedContestIdIndexRoute: typeof AuthenticatedContestIdIndexRoute
+}
+
+const AuthenticatedContestIdRouteChildren: AuthenticatedContestIdRouteChildren =
+  {
+    AuthenticatedContestIdLeaderboardRoute:
+      AuthenticatedContestIdLeaderboardRoute,
+    AuthenticatedContestIdProblemRoute:
+      AuthenticatedContestIdProblemRouteWithChildren,
+    AuthenticatedContestIdSubmissionRoute:
+      AuthenticatedContestIdSubmissionRoute,
+    AuthenticatedContestIdIndexRoute: AuthenticatedContestIdIndexRoute,
+  }
+
+const AuthenticatedContestIdRouteWithChildren =
+  AuthenticatedContestIdRoute._addFileChildren(
+    AuthenticatedContestIdRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+  AuthenticatedContestIdRoute: typeof AuthenticatedContestIdRouteWithChildren
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+  AuthenticatedContestIdRoute: AuthenticatedContestIdRouteWithChildren,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
 )
-
-interface AdminRouteChildren {
-  AdminConfigurationRoute: typeof AdminConfigurationRoute
-  AdminLanguagesRoute: typeof AdminLanguagesRoute
-  AdminParticipantRoute: typeof AdminParticipantRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminContestIdRoute: typeof AdminContestIdRouteWithChildren
-  AdminContestNewRoute: typeof AdminContestNewRoute
-  AdminContestIndexRoute: typeof AdminContestIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminConfigurationRoute: AdminConfigurationRoute,
-  AdminLanguagesRoute: AdminLanguagesRoute,
-  AdminParticipantRoute: AdminParticipantRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminContestIdRoute: AdminContestIdRouteWithChildren,
-  AdminContestNewRoute: AdminContestNewRoute,
-  AdminContestIndexRoute: AdminContestIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface AppDashboardRouteChildren {
-  AppDashboardIndexRoute: typeof AppDashboardIndexRoute
-  AppDashboardSubmissionIdRoute: typeof AppDashboardSubmissionIdRoute
-}
-
-const AppDashboardRouteChildren: AppDashboardRouteChildren = {
-  AppDashboardIndexRoute: AppDashboardIndexRoute,
-  AppDashboardSubmissionIdRoute: AppDashboardSubmissionIdRoute,
-}
-
-const AppDashboardRouteWithChildren = AppDashboardRoute._addFileChildren(
-  AppDashboardRouteChildren,
-)
-
-interface AppContestIdProblemRouteChildren {
-  AppContestIdProblemProblemRoute: typeof AppContestIdProblemProblemRoute
-  AppContestIdProblemIndexRoute: typeof AppContestIdProblemIndexRoute
-}
-
-const AppContestIdProblemRouteChildren: AppContestIdProblemRouteChildren = {
-  AppContestIdProblemProblemRoute: AppContestIdProblemProblemRoute,
-  AppContestIdProblemIndexRoute: AppContestIdProblemIndexRoute,
-}
-
-const AppContestIdProblemRouteWithChildren =
-  AppContestIdProblemRoute._addFileChildren(AppContestIdProblemRouteChildren)
-
-interface AppContestIdRouteChildren {
-  AppContestIdLeaderboardRoute: typeof AppContestIdLeaderboardRoute
-  AppContestIdProblemRoute: typeof AppContestIdProblemRouteWithChildren
-  AppContestIdSubmissionRoute: typeof AppContestIdSubmissionRoute
-  AppContestIdIndexRoute: typeof AppContestIdIndexRoute
-}
-
-const AppContestIdRouteChildren: AppContestIdRouteChildren = {
-  AppContestIdLeaderboardRoute: AppContestIdLeaderboardRoute,
-  AppContestIdProblemRoute: AppContestIdProblemRouteWithChildren,
-  AppContestIdSubmissionRoute: AppContestIdSubmissionRoute,
-  AppContestIdIndexRoute: AppContestIdIndexRoute,
-}
-
-const AppContestIdRouteWithChildren = AppContestIdRoute._addFileChildren(
-  AppContestIdRouteChildren,
-)
-
-interface AppRouteChildren {
-  AppDashboardRoute: typeof AppDashboardRouteWithChildren
-  AppContestIdRoute: typeof AppContestIdRouteWithChildren
-}
-
-const AppRouteChildren: AppRouteChildren = {
-  AppDashboardRoute: AppDashboardRouteWithChildren,
-  AppContestIdRoute: AppContestIdRouteWithChildren,
-}
-
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
-  AppRoute: AppRouteWithChildren,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   ApiSplatRoute: ApiSplatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
