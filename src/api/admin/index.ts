@@ -3,6 +3,8 @@ import { betterAuthPlugin } from "@/api/better-auth";
 import { ContestModel } from "@/api/contest/model";
 import { ContestService } from "../contest/service";
 import { APIParams } from "../models/params";
+import { SubmissionService } from "../submission/service";
+import { AdminModel } from "./model";
 import { AdminService } from "./service";
 
 export const adminApp = new Elysia({
@@ -84,4 +86,17 @@ export const adminApp = new Elysia({
 				},
 			},
 		),
+	)
+	.get(
+		"/submission",
+		async ({ query }) => {
+			return SubmissionService.getSubmissions(
+				{},
+				query.pageSize,
+				(query.page! - 1) * query.pageSize!,
+			);
+		},
+		{
+			query: AdminModel.ListQuery,
+		},
 	);
