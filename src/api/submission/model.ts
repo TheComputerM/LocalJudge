@@ -26,6 +26,7 @@ export namespace SubmissionModel {
 	export const status = t.Object({
 		total: t.Number(),
 		passed: t.Number(),
+		state: t.UnionEnum(["pending", "running", "done"]),
 	});
 
 	export namespace Result {

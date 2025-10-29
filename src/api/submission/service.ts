@@ -50,6 +50,32 @@ export namespace SubmissionService {
 			WHERE ${table.result.submissionId} = ${id}
 		) t)`,
 		);
+		const submission = await db.query.submission.findFirst({
+			columns: {
+				contestId: true,
+				problemNumber: true,
+			},
+			where: eq(table.submission.id, id),
+		});
+		if (!submission) {
+			throw new Error("Submission not found");
+		}
+
+		const totalTestcases = await db.$count(
+			table.testcase,
+			and(
+				eq(table.testcase.contestId, submission.contestId),
+				eq(table.testcase.problemNumber, submission.problemNumber),
+			),
+		);
+
+		value["state"] =
+			value.passed < totalTestcases
+				? value.passed === 0
+					? "pending"
+					: "running"
+				: "done";
+
 		return value;
 	}
 
@@ -68,6 +94,8 @@ export namespace SubmissionService {
 			problem: number;
 			user: string;
 		}>,
+		limit?: number,
+		offset?: number,
 	): Promise<typeof SubmissionModel.groupSelect.static> {
 		const submissions = await db.query.submission.findMany({
 			columns: {
@@ -99,6 +127,8 @@ export namespace SubmissionService {
 				},
 			},
 			orderBy: desc(table.submission.createdAt),
+			limit,
+			offset,
 		});
 
 		return submissions;
