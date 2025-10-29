@@ -8,6 +8,7 @@ import {
 import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
+import { StatsGrid } from "@/components/stats-grid";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -133,32 +134,12 @@ function RouteComponent() {
 	const overview = Route.useLoaderData({ select: ({ overview }) => overview });
 	return (
 		<div>
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				<Card>
-					<CardHeader className="px-6">
-						<CardDescription>Participants</CardDescription>
-						<CardTitle className="text-2xl font-semibold tabular-nums">
-							{overview.registrations}
-						</CardTitle>
-					</CardHeader>
-				</Card>
-				<Card>
-					<CardHeader className="px-6">
-						<CardDescription>Submitters</CardDescription>
-						<CardTitle className="text-2xl font-semibold tabular-nums">
-							{overview.submitters}
-						</CardTitle>
-					</CardHeader>
-				</Card>
-				<Card>
-					<CardHeader className="px-6">
-						<CardDescription>Submissions</CardDescription>
-						<CardTitle className="text-2xl font-semibold tabular-nums">
-							{overview.submissions}
-						</CardTitle>
-					</CardHeader>
-				</Card>
-			</div>
+			<StatsGrid
+				data={Object.entries(overview).map(([name, value]) => ({
+					name: name.charAt(0).toUpperCase() + name.slice(1),
+					value: value.toString(),
+				}))}
+			/>
 			<Separator className="my-6" />
 			<ItemGroup>
 				<InspectContest />
