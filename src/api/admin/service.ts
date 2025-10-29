@@ -1,4 +1,4 @@
-import { asc, desc, eq } from "drizzle-orm";
+import { asc, desc, eq, inArray } from "drizzle-orm";
 import { ParticipantModel } from "@/api/models/participant";
 import { db } from "@/db";
 import * as table from "@/db/schema";
@@ -31,6 +31,35 @@ export namespace AdminService {
 		return db.query.user.findMany({
 			where: eq(table.user.role, "user"),
 			orderBy: desc(table.user.createdAt),
+		});
+	}
+
+	export async function getResults(contestId: string) {
+		return db.query.user.findMany({
+			columns: {
+				image: false,
+				role: false,
+				emailVerified: false,
+			},
+			where: inArray(
+				table.user.id,
+				db
+					.select({ data: table.registration.userId })
+					.from(table.registration)
+					.where(eq(table.registration.contestId, contestId)),
+			),
+			with: {
+				submissions: {
+					columns: {
+						content: false,
+					},
+					where: eq(table.submission.contestId, contestId),
+					with: {
+						results: true,
+					},
+					orderBy: desc(table.submission.createdAt),
+				},
+			},
 		});
 	}
 }

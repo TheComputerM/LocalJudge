@@ -85,18 +85,21 @@ function DownloadSubmissions() {
 }
 
 function DownloadResults() {
+	const id = Route.useParams({ select: ({ id }) => id });
 	return (
 		<Item>
 			<ItemContent>
 				<ItemTitle>Download Results</ItemTitle>
 				<ItemDescription>
-					Download a csv file containing the results of all the submissions made
-					by the participants of this contest.
+					Download a JSON file containing the results of all the submissions
+					made by the participants of this contest.
 				</ItemDescription>
 			</ItemContent>
 			<ItemActions>
-				<Button>
-					Download <LucideFileBadge />
+				<Button asChild>
+					<a href={`/api/admin/contest/${id}/results`} download>
+						Download <LucideFileBadge />
+					</a>
 				</Button>
 			</ItemActions>
 		</Item>

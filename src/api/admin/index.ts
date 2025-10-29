@@ -2,6 +2,7 @@ import Elysia, { status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { ContestModel } from "@/api/contest/model";
 import { ContestService } from "../contest/service";
+import { APIParams } from "../models/params";
 import { AdminService } from "./service";
 
 export const adminApp = new Elysia({
@@ -41,6 +42,7 @@ export const adminApp = new Elysia({
 			.group(
 				"/:id",
 				{
+					params: t.Object({ id: APIParams.contest }),
 					beforeHandle: async ({ params }) => {
 						if (!(await ContestService.isExists(params.id))) {
 							return status(404, "Contest not found");
@@ -50,8 +52,15 @@ export const adminApp = new Elysia({
 				(app) =>
 					app.get(
 						"/results",
-						async () => {
-							// TODO: Implement contest results retrieval
+						async ({ params, set }) => {
+							const [output, contestName] = await Promise.all([
+								AdminService.getResults(params.id),
+								ContestService.getContest(params.id).then((c) => c!.name),
+							]);
+							set.headers["Content-Type"] = "application/json";
+							set.headers["Content-Disposition"] =
+								`attachment; filename="${contestName} results.json"`;
+							return JSON.stringify(output, null, 2);
 						},
 						{
 							detail: {
