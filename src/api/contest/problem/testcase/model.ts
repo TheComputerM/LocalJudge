@@ -11,8 +11,15 @@ const _insertSchema = createInsertSchema(testcase);
 const _updateSchema = createUpdateSchema(testcase);
 
 export namespace TestcaseModel {
-	export const select = t.Omit(_selectSchema, ["contestId", "problemNumber"]);
-	export const groupSelect = t.Array(t.Omit(select, ["input", "output"]));
+	export const select = t.Omit(_selectSchema, [
+		"contestId",
+		"problemNumber",
+		"number",
+		"hidden",
+	]);
+	export const groupSelect = t.Array(
+		t.Omit(_selectSchema, ["contestId", "problemNumber", "input", "output"]),
+	);
 
 	export const upsert = t.Omit(_insertSchema, ["contestId", "problemNumber"]);
 	export const insert = t.Omit(upsert, ["number"]);

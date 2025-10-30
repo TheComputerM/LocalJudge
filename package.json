@@ -38,6 +38,7 @@
 		"@sinclair/typemap": "^0.10.1",
 		"@tanstack/react-form": "^1.23.8",
 		"@tanstack/react-pacer": "^0.16.4",
+		"@tanstack/react-query": "^5.90.5",
 		"@tanstack/react-router": "^1.133.36",
 		"@tanstack/react-router-devtools": "^1.133.36",
 		"@tanstack/react-start": "^1.133.37",
@@ -62,7 +63,6 @@
 		"react-markdown": "^10.1.0",
 		"react-resizable-panels": "^3.0.6",
 		"sonner": "^2.0.7",
-		"swr": "^2.3.6",
 		"tailwind-merge": "^3.3.1",
 		"tailwindcss": "^4.1.16"
 	},

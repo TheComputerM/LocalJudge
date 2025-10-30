@@ -1,11 +1,11 @@
 import Editor from "@monaco-editor/react";
 import { useThrottledCallback } from "@tanstack/react-pacer/throttler";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { LucideCloudUpload } from "lucide-react";
 import Markdown from "react-markdown";
 import { toast } from "sonner";
-import useSWR from "swr";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
@@ -136,16 +136,15 @@ function LanguageSelect() {
 
 function TestcaseContent({ number }: { number: number }) {
 	const { id, problem } = Route.useParams();
-	const { data, error, isLoading } = useSWR(
-		[
-			"/api/contest/:id/problem/:problem/testcase/:testcase" as const,
+	const { data, error, isLoading } = useQuery({
+		queryKey: [
+			"/api/contest/:id/problem/:problem/testcase/:testcase",
 			{ id, problem: Number.parseInt(problem), testcase: number },
-		],
-		([url, params]) => rejectError($localjudge(url, { method: "GET", params })),
-		{
-			revalidateIfStale: false,
-		},
-	);
+		] as const,
+		queryFn: async ({ queryKey: [url, params] }) =>
+			rejectError($localjudge(url, { method: "GET", params })),
+		staleTime: Number.POSITIVE_INFINITY,
+	});
 
 	if (isLoading) return <Skeleton className="h-64" />;
 	if (error || !data) return <div>Error: {JSON.stringify(error)}</div>;

@@ -1,8 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Fragment, useState } from "react";
 import { SiFacebook, SiGithub, SiGoogle } from "react-icons/si";
-import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -25,7 +25,10 @@ const getProvidersFn = createServerFn({ method: "GET" }).handler(async () => {
 function SocialLogin() {
 	const router = useRouter();
 	const getProviders = useServerFn(getProvidersFn);
-	const { data, isLoading, error } = useSWR("social-providers", getProviders);
+	const { data, isLoading, error } = useQuery({
+		queryKey: ["auth", "social-providers"],
+		queryFn: getProviders,
+	});
 	const icons: Record<string, React.ReactElement> = {
 		google: <SiGoogle />,
 		github: <SiGithub />,

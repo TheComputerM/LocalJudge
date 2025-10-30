@@ -46,6 +46,7 @@ export namespace TestcaseService {
 			columns: {
 				contestId: false,
 				problemNumber: false,
+				number: false,
 			},
 			where: and(
 				eq(table.testcase.contestId, contestId),

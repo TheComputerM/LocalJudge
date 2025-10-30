@@ -10,10 +10,13 @@ type ReponseWithError = { data: any; error: null } | { data: null; error: any };
  * A wrapper for promises that return error as a value, to make them
  * reject the error
  *
- * can also be used with SWR
+ * can also be used with TanStack Query
  *
  * ```ts
- * const { data, error } = useSWR("key", () => rejectError(localjudge.something.get()));
+ * const { data, error } = useQuery({
+ *   queryKey: ["key"],
+ *   queryFn: () => rejectError(localjudge.something.get())
+ * });
  * ```
  */
 export const rejectError = <T extends ReponseWithError>(

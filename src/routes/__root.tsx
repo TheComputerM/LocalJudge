@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 import jetbrainsMonoFontCss from "@fontsource-variable/jetbrains-mono?url";
 import outfitFontCss from "@fontsource-variable/outfit?url";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	createRootRoute,
 	HeadContent,
@@ -13,6 +14,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { getThemeFn } from "@/lib/server/theme";
 import appCss from "@/styles/app.css?url";
+
+const queryClient = new QueryClient();
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -67,10 +70,12 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body>
-				<ThemeProvider theme={theme}>
-					{children}
-					<Toaster position="top-right" />
-				</ThemeProvider>
+				<QueryClientProvider client={queryClient}>
+					<ThemeProvider theme={theme}>
+						{children}
+						<Toaster position="top-right" />
+					</ThemeProvider>
+				</QueryClientProvider>
 				<Scripts />
 			</body>
 		</html>

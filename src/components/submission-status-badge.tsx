@@ -1,5 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
 import { LucideCheckCircle, LucideXCircle } from "lucide-react";
-import useSWR from "swr";
 import { $localjudge } from "@/api/fetch";
 import { rejectError } from "@/lib/utils";
 import { Badge } from "./ui/badge";
@@ -10,21 +10,21 @@ import { Spinner } from "./ui/spinner";
  * for a submission.
  */
 export function SubmissionStatusBadge(props: { id: string }) {
-	const { data, isLoading } = useSWR(
-		[
-			"/api/submission/:submission/status" as const,
+	const { data, isLoading } = useQuery({
+		queryKey: [
+			"/api/submission/:submission/status",
 			{
 				submission: props.id,
 			},
-		],
-		([url, params]) =>
+		] as const,
+		queryFn: async ({ queryKey: [url, params] }) =>
 			rejectError(
 				$localjudge(url, {
 					method: "GET",
 					params,
 				}),
 			),
-	);
+	});
 
 	return (
 		<Badge variant="secondary" className="gap-2 rounded">

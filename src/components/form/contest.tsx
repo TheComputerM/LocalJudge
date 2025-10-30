@@ -1,10 +1,10 @@
 import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
 import { formOptions } from "@tanstack/react-form";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useBlocker } from "@tanstack/react-router";
 import { addHours, addMinutes } from "date-fns";
 import { LucideSave } from "lucide-react";
-import useSWR from "swr";
 import { ContestModel } from "@/api/contest/model";
 import { $localjudge } from "@/api/fetch";
 import { withForm } from "@/components/form/primitives";
@@ -35,19 +35,16 @@ export const ContestFormOptions = formOptions({
 export const ContestForm = withForm({
 	...ContestFormOptions,
 	render: function Render({ form }) {
-		const { data: languages } = useSWR(
-			"/api/localbox/engine",
-			(url) =>
+		const { data: languages } = useSuspenseQuery({
+			queryKey: ["/api/localbox/engine"] as const,
+			queryFn: async ({ queryKey: [url] }) =>
 				rejectError($localjudge(url, {})).then((data) =>
 					Object.entries(data)
 						.filter(([, { installed }]) => installed)
 						.map(([language]) => language),
 				),
-			{
-				suspense: true,
-				fallbackData: [],
-			},
-		);
+			initialData: [],
+		});
 
 		useBlocker({
 			shouldBlockFn: () => {

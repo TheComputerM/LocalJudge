@@ -1,6 +1,7 @@
 import { Editor } from "@monaco-editor/react";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import useSWR from "swr";
+import { Fragment } from "react";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
@@ -42,34 +43,43 @@ function TestcaseContent(props: {
 	problemNumber: number;
 	testcaseNumber: number;
 }) {
-	const { data, error, isLoading } = useSWR(
-		[
+	const { data, error, isLoading } = useQuery({
+		queryKey: [
 			"/api/contest/:id/problem/:problem/testcase/:testcase" as const,
 			{
 				id: props.contestId,
 				problem: props.problemNumber,
 				testcase: props.testcaseNumber,
 			},
-		],
-		async ([url, params]) =>
-			await rejectError(
-				$localjudge(url, {
-					method: "GET",
-					params,
-				}),
-			),
-	);
+		] as const,
+		queryFn: async ({ queryKey: [url, params] }) => {
+			const { data, error } = await $localjudge(url, {
+				method: "GET",
+				params,
+			});
+			if (error) {
+				if (error.status === 403) {
+					return {
+						input: "HIDDEN",
+						output: "HIDDEN",
+					};
+				}
+				throw error;
+			}
+			return data;
+		},
+	});
 
 	if (isLoading) {
 		return (
-			<>
+			<Fragment>
 				<Skeleton className="h-24" />
 				<Skeleton className="h-24" />
-			</>
+			</Fragment>
 		);
 	}
 
-	if (error && error?.status !== 403) {
+	if (error) {
 		return (
 			<div className="text-red-500 col-span-2">
 				Failed to load testcases: {JSON.stringify(error)}
@@ -78,14 +88,10 @@ function TestcaseContent(props: {
 	}
 
 	return (
-		<>
-			<BufferTextBlock label="Input">
-				{data?.input ?? <i>Hidden</i>}
-			</BufferTextBlock>
-			<BufferTextBlock label="Expected Output">
-				{data?.output ?? <i>Hidden</i>}
-			</BufferTextBlock>
-		</>
+		<Fragment>
+			<BufferTextBlock label="Input">{data?.input}</BufferTextBlock>
+			<BufferTextBlock label="Expected Output">{data?.output}</BufferTextBlock>
+		</Fragment>
 	);
 }
 
