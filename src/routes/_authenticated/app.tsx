@@ -7,7 +7,7 @@ import {
 import { lightFormat } from "date-fns";
 import { LucideGavel } from "lucide-react";
 import { UserProfile } from "@/components/auth/user-profile";
-import { ThemeToggle } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/providers/theme";
 import { Separator } from "@/components/ui/separator";
 import { useTime } from "@/hooks/use-time";
 

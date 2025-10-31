@@ -3,6 +3,7 @@ import { LucideDownload, LucideLoader2, LucideTrash } from "lucide-react";
 import { Suspense, use, useState } from "react";
 import { localjudge } from "@/api/client";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
 	Table,
 	TableBody,
@@ -93,7 +94,7 @@ function RouteComponent() {
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
 				Engines
 			</h1>
-			<Suspense fallback="Loading...">
+			<Suspense fallback={<Spinner className="mx-auto" />}>
 				<EngineList />
 			</Suspense>
 		</div>

@@ -1,27 +1,33 @@
 import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+	ClientOnly,
+	createFileRoute,
+	Link,
+	useRouter,
+} from "@tanstack/react-router";
 import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import type { UserWithRole } from "better-auth/plugins";
 import { parse as csvParse } from "csv/browser/esm/sync";
 import {
+	LucideCopy,
 	LucideEdit,
 	LucideFileUp,
+	LucideMoreHorizontal,
 	LucidePlus,
 	LucideTrash,
 } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { localjudge } from "@/api/client";
 import { ParticipantModel } from "@/api/models/participant";
-import { ConfirmActionDialog } from "@/components/confirm-action";
 import { useAppForm } from "@/components/form/primitives";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
 	Dialog,
 	DialogClose,
@@ -32,9 +38,17 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import {
 	Table,
 	TableBody,
@@ -46,11 +60,7 @@ import {
 import { authClient } from "@/lib/auth/client";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/admin/participant")({
-	loader: async () => {
-		const participants = await rejectError(localjudge.admin.participant.get());
-		return { participants };
-	},
+export const Route = createFileRoute("/_authenticated/admin/participant/")({
 	component: RouteComponent,
 });
 
@@ -165,7 +175,9 @@ function ImportParticipantsDialog() {
 				errorCount++;
 			}
 		}
-		toast.info(`Imported ${records.length - errorCount} participants`);
+		toast.info(
+			`Imported ${records.length - errorCount} out of ${records.length} entries`,
+		);
 		await router.invalidate({ filter: (r) => r.id === Route.id });
 	}
 
@@ -199,54 +211,76 @@ function ImportParticipantsDialog() {
 }
 
 function ParticipantsTable() {
-	const users = Route.useLoaderData({
-		select: ({ participants }) => participants,
+	const { data } = useSuspenseQuery({
+		queryKey: ["auth", "participants"],
+		queryFn: async () =>
+			rejectError(
+				authClient.admin.listUsers({
+					query: {
+						limit: 10,
+						offset: 0,
+						sortBy: "createdAt",
+						sortDirection: "desc",
+					},
+				}),
+			),
 	});
-	const columns: ColumnDef<(typeof users)[number]>[] = [
-		{
-			accessorKey: "name",
-			header: "Name",
-		},
-		{
-			accessorKey: "email",
-			header: "Email",
-		},
-		{
-			accessorKey: "createdAt",
-			header: "Created At",
-			cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
-		},
-		{
-			header: "Actions",
-			cell: ({ row }) => {
-				const router = useRouter();
-				return (
-					<ButtonGroup>
-						<ConfirmActionDialog
-							onConfirm={async () => {
-								await rejectError(
-									authClient.admin.removeUser({
-										userId: row.original.id,
-									}),
-								);
-								toast.success("User deleted successfully");
-								await router.invalidate({ filter: (r) => r.id === Route.id });
-							}}
-						>
-							<Button variant="destructive" size="icon">
-								<LucideTrash />
-							</Button>
-						</ConfirmActionDialog>
-						<Button size="icon">
-							<LucideEdit />
-						</Button>
-					</ButtonGroup>
-				);
+
+	const columns: ColumnDef<UserWithRole>[] = useMemo(
+		() => [
+			{
+				header: "Name",
+				accessorKey: "name",
 			},
-		},
-	];
+			{
+				header: "Email",
+				accessorKey: "email",
+			},
+			{
+				header: "Onboarded on",
+				accessorKey: "createdAt",
+				cell: ({ row }) =>
+					row.getValue<UserWithRole["createdAt"]>("createdAt").toLocaleString(),
+			},
+			{
+				id: "actions",
+				cell: ({ row }) => {
+					const userId = row.original.id;
+					return (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" className="h-8 w-8 p-0">
+									<span className="sr-only">Open menu</span>
+									<LucideMoreHorizontal />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<DropdownMenuItem>
+									<LucideCopy /> Copy ID
+								</DropdownMenuItem>
+								<DropdownMenuItem asChild>
+									<Link to="/admin/participant/$user" params={{ user: userId }}>
+										<LucideEdit />
+										Edit
+									</Link>
+								</DropdownMenuItem>
+								<DropdownMenuSeparator />
+
+								<DropdownMenuItem variant="destructive">
+									<LucideTrash />
+									Delete
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					);
+				},
+			},
+		],
+		[],
+	);
+
 	const table = useReactTable({
-		data: users,
+		data: data.users,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 	});
@@ -312,7 +346,11 @@ function RouteComponent() {
 				</div>
 			</div>
 			<Separator className="my-6" />
-			<ParticipantsTable />
+			<Suspense fallback={<Spinner className="mx-auto" />}>
+				<ClientOnly>
+					<ParticipantsTable />
+				</ClientOnly>
+			</Suspense>
 		</>
 	);
 }

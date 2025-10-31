@@ -6,8 +6,8 @@ import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
 import { Pill, PillIndicator } from "@/components/kibo-ui/pill";
+import { useTheme } from "@/components/providers/theme";
 import { SubmissionStatusBadge } from "@/components/submission-status-badge";
-import { useTheme } from "@/components/theme-provider";
 import {
 	Accordion,
 	AccordionContent,

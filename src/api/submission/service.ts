@@ -36,19 +36,20 @@ export namespace SubmissionService {
 		return count > 0;
 	}
 
-	export async function getStatus(
-		id: string,
-	): Promise<typeof SubmissionModel.status.static> {
-		const [{ value }] = await db.execute(
+	export async function getStatus(id: string) {
+		const [{ value }] = await db.execute<
+			//@ts-ignore: Type inference issue with drizzle-orm
+			Record<string, { total: number; passed: number }>[]
+		>(
 			sql`
-		(SELECT row_to_json(t) as value
+		SELECT row_to_json(t) as value
 		FROM (
-			SELECT 
-				COUNT(*) AS total, 
-				COUNT(*) FILTER (WHERE ${table.result.status} = 'CA') AS passed 
-			FROM ${table.result} 
+			SELECT
+				COUNT(*) AS total,
+				COUNT(*) FILTER (WHERE ${table.result.status} = 'CA') AS passed
+			FROM ${table.result}
 			WHERE ${table.result.submissionId} = ${id}
-		) t)`,
+		) t`,
 		);
 		const submission = await db.query.submission.findFirst({
 			columns: {
@@ -69,14 +70,17 @@ export namespace SubmissionService {
 			),
 		);
 
-		value["state"] =
-			value.passed < totalTestcases
-				? value.passed === 0
-					? "pending"
-					: "running"
-				: "done";
+		const output: typeof SubmissionModel.status.static = {
+			...value,
+			state:
+				value.total < totalTestcases
+					? value.total === 0
+						? "pending"
+						: "processing"
+					: "done",
+		};
 
-		return value;
+		return output;
 	}
 
 	export async function getResults(id: string) {

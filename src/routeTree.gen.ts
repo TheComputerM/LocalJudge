@@ -19,15 +19,16 @@ import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthenticatedContestIdRouteImport } from './routes/_authenticated/contest/$id'
-import { Route as AuthenticatedAdminParticipantRouteImport } from './routes/_authenticated/admin/participant'
 import { Route as AuthenticatedAdminLanguagesRouteImport } from './routes/_authenticated/admin/languages'
 import { Route as AuthenticatedAdminConfigurationRouteImport } from './routes/_authenticated/admin/configuration'
 import { Route as AuthenticatedContestIdIndexRouteImport } from './routes/_authenticated/contest/$id/index'
+import { Route as AuthenticatedAdminParticipantIndexRouteImport } from './routes/_authenticated/admin/participant/index'
 import { Route as AuthenticatedAdminContestIndexRouteImport } from './routes/_authenticated/admin/contest/index'
 import { Route as AuthenticatedContestIdSubmissionRouteImport } from './routes/_authenticated/contest/$id/submission'
 import { Route as AuthenticatedContestIdProblemRouteImport } from './routes/_authenticated/contest/$id/problem'
 import { Route as AuthenticatedContestIdLeaderboardRouteImport } from './routes/_authenticated/contest/$id/leaderboard'
 import { Route as AuthenticatedAppSubmissionIdRouteImport } from './routes/_authenticated/app/submission/$id'
+import { Route as AuthenticatedAdminParticipantUserRouteImport } from './routes/_authenticated/admin/participant/$user'
 import { Route as AuthenticatedAdminContestNewRouteImport } from './routes/_authenticated/admin/contest/new'
 import { Route as AuthenticatedAdminContestIdRouteImport } from './routes/_authenticated/admin/contest/$id'
 import { Route as AuthenticatedContestIdProblemIndexRouteImport } from './routes/_authenticated/contest/$id/problem/index'
@@ -87,12 +88,6 @@ const AuthenticatedContestIdRoute = AuthenticatedContestIdRouteImport.update({
   path: '/contest/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAdminParticipantRoute =
-  AuthenticatedAdminParticipantRouteImport.update({
-    id: '/participant',
-    path: '/participant',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 const AuthenticatedAdminLanguagesRoute =
   AuthenticatedAdminLanguagesRouteImport.update({
     id: '/languages',
@@ -110,6 +105,12 @@ const AuthenticatedContestIdIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedContestIdRoute,
+  } as any)
+const AuthenticatedAdminParticipantIndexRoute =
+  AuthenticatedAdminParticipantIndexRouteImport.update({
+    id: '/participant/',
+    path: '/participant/',
+    getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminContestIndexRoute =
   AuthenticatedAdminContestIndexRouteImport.update({
@@ -140,6 +141,12 @@ const AuthenticatedAppSubmissionIdRoute =
     id: '/submission/$id',
     path: '/submission/$id',
     getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAdminParticipantUserRoute =
+  AuthenticatedAdminParticipantUserRouteImport.update({
+    id: '/participant/$user',
+    path: '/participant/$user',
+    getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminContestNewRoute =
   AuthenticatedAdminContestNewRouteImport.update({
@@ -204,18 +211,19 @@ export interface FileRoutesByFullPath {
   '/api/$': typeof ApiSplatRoute
   '/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
   '/admin/languages': typeof AuthenticatedAdminLanguagesRoute
-  '/admin/participant': typeof AuthenticatedAdminParticipantRoute
   '/contest/$id': typeof AuthenticatedContestIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/admin/contest/$id': typeof AuthenticatedAdminContestIdRouteWithChildren
   '/admin/contest/new': typeof AuthenticatedAdminContestNewRoute
+  '/admin/participant/$user': typeof AuthenticatedAdminParticipantUserRoute
   '/app/submission/$id': typeof AuthenticatedAppSubmissionIdRoute
   '/contest/$id/leaderboard': typeof AuthenticatedContestIdLeaderboardRoute
   '/contest/$id/problem': typeof AuthenticatedContestIdProblemRouteWithChildren
   '/contest/$id/submission': typeof AuthenticatedContestIdSubmissionRoute
   '/admin/contest': typeof AuthenticatedAdminContestIndexRoute
+  '/admin/participant': typeof AuthenticatedAdminParticipantIndexRoute
   '/contest/$id/': typeof AuthenticatedContestIdIndexRoute
   '/admin/contest/$id/settings': typeof AuthenticatedAdminContestIdSettingsRoute
   '/contest/$id/problem/$problem': typeof AuthenticatedContestIdProblemProblemRoute
@@ -231,15 +239,16 @@ export interface FileRoutesByTo {
   '/api/$': typeof ApiSplatRoute
   '/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
   '/admin/languages': typeof AuthenticatedAdminLanguagesRoute
-  '/admin/participant': typeof AuthenticatedAdminParticipantRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/admin/contest/new': typeof AuthenticatedAdminContestNewRoute
+  '/admin/participant/$user': typeof AuthenticatedAdminParticipantUserRoute
   '/app/submission/$id': typeof AuthenticatedAppSubmissionIdRoute
   '/contest/$id/leaderboard': typeof AuthenticatedContestIdLeaderboardRoute
   '/contest/$id/submission': typeof AuthenticatedContestIdSubmissionRoute
   '/admin/contest': typeof AuthenticatedAdminContestIndexRoute
+  '/admin/participant': typeof AuthenticatedAdminParticipantIndexRoute
   '/contest/$id': typeof AuthenticatedContestIdIndexRoute
   '/admin/contest/$id/settings': typeof AuthenticatedAdminContestIdSettingsRoute
   '/contest/$id/problem/$problem': typeof AuthenticatedContestIdProblemProblemRoute
@@ -259,18 +268,19 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/_authenticated/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
   '/_authenticated/admin/languages': typeof AuthenticatedAdminLanguagesRoute
-  '/_authenticated/admin/participant': typeof AuthenticatedAdminParticipantRoute
   '/_authenticated/contest/$id': typeof AuthenticatedContestIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/admin/contest/$id': typeof AuthenticatedAdminContestIdRouteWithChildren
   '/_authenticated/admin/contest/new': typeof AuthenticatedAdminContestNewRoute
+  '/_authenticated/admin/participant/$user': typeof AuthenticatedAdminParticipantUserRoute
   '/_authenticated/app/submission/$id': typeof AuthenticatedAppSubmissionIdRoute
   '/_authenticated/contest/$id/leaderboard': typeof AuthenticatedContestIdLeaderboardRoute
   '/_authenticated/contest/$id/problem': typeof AuthenticatedContestIdProblemRouteWithChildren
   '/_authenticated/contest/$id/submission': typeof AuthenticatedContestIdSubmissionRoute
   '/_authenticated/admin/contest/': typeof AuthenticatedAdminContestIndexRoute
+  '/_authenticated/admin/participant/': typeof AuthenticatedAdminParticipantIndexRoute
   '/_authenticated/contest/$id/': typeof AuthenticatedContestIdIndexRoute
   '/_authenticated/admin/contest/$id/settings': typeof AuthenticatedAdminContestIdSettingsRoute
   '/_authenticated/contest/$id/problem/$problem': typeof AuthenticatedContestIdProblemProblemRoute
@@ -290,18 +300,19 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/admin/configuration'
     | '/admin/languages'
-    | '/admin/participant'
     | '/contest/$id'
     | '/api/auth/$'
     | '/admin/'
     | '/app/'
     | '/admin/contest/$id'
     | '/admin/contest/new'
+    | '/admin/participant/$user'
     | '/app/submission/$id'
     | '/contest/$id/leaderboard'
     | '/contest/$id/problem'
     | '/contest/$id/submission'
     | '/admin/contest'
+    | '/admin/participant'
     | '/contest/$id/'
     | '/admin/contest/$id/settings'
     | '/contest/$id/problem/$problem'
@@ -317,15 +328,16 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/admin/configuration'
     | '/admin/languages'
-    | '/admin/participant'
     | '/api/auth/$'
     | '/admin'
     | '/app'
     | '/admin/contest/new'
+    | '/admin/participant/$user'
     | '/app/submission/$id'
     | '/contest/$id/leaderboard'
     | '/contest/$id/submission'
     | '/admin/contest'
+    | '/admin/participant'
     | '/contest/$id'
     | '/admin/contest/$id/settings'
     | '/contest/$id/problem/$problem'
@@ -344,18 +356,19 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/_authenticated/admin/configuration'
     | '/_authenticated/admin/languages'
-    | '/_authenticated/admin/participant'
     | '/_authenticated/contest/$id'
     | '/api/auth/$'
     | '/_authenticated/admin/'
     | '/_authenticated/app/'
     | '/_authenticated/admin/contest/$id'
     | '/_authenticated/admin/contest/new'
+    | '/_authenticated/admin/participant/$user'
     | '/_authenticated/app/submission/$id'
     | '/_authenticated/contest/$id/leaderboard'
     | '/_authenticated/contest/$id/problem'
     | '/_authenticated/contest/$id/submission'
     | '/_authenticated/admin/contest/'
+    | '/_authenticated/admin/participant/'
     | '/_authenticated/contest/$id/'
     | '/_authenticated/admin/contest/$id/settings'
     | '/_authenticated/contest/$id/problem/$problem'
@@ -446,13 +459,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContestIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin/participant': {
-      id: '/_authenticated/admin/participant'
-      path: '/participant'
-      fullPath: '/admin/participant'
-      preLoaderRoute: typeof AuthenticatedAdminParticipantRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
     '/_authenticated/admin/languages': {
       id: '/_authenticated/admin/languages'
       path: '/languages'
@@ -473,6 +479,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/contest/$id/'
       preLoaderRoute: typeof AuthenticatedContestIdIndexRouteImport
       parentRoute: typeof AuthenticatedContestIdRoute
+    }
+    '/_authenticated/admin/participant/': {
+      id: '/_authenticated/admin/participant/'
+      path: '/participant'
+      fullPath: '/admin/participant'
+      preLoaderRoute: typeof AuthenticatedAdminParticipantIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/contest/': {
       id: '/_authenticated/admin/contest/'
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/submission/$id'
       preLoaderRoute: typeof AuthenticatedAppSubmissionIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/admin/participant/$user': {
+      id: '/_authenticated/admin/participant/$user'
+      path: '/participant/$user'
+      fullPath: '/admin/participant/$user'
+      preLoaderRoute: typeof AuthenticatedAdminParticipantUserRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/contest/new': {
       id: '/_authenticated/admin/contest/new'
@@ -605,22 +625,26 @@ const AuthenticatedAdminContestIdRouteWithChildren =
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminConfigurationRoute: typeof AuthenticatedAdminConfigurationRoute
   AuthenticatedAdminLanguagesRoute: typeof AuthenticatedAdminLanguagesRoute
-  AuthenticatedAdminParticipantRoute: typeof AuthenticatedAdminParticipantRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminContestIdRoute: typeof AuthenticatedAdminContestIdRouteWithChildren
   AuthenticatedAdminContestNewRoute: typeof AuthenticatedAdminContestNewRoute
+  AuthenticatedAdminParticipantUserRoute: typeof AuthenticatedAdminParticipantUserRoute
   AuthenticatedAdminContestIndexRoute: typeof AuthenticatedAdminContestIndexRoute
+  AuthenticatedAdminParticipantIndexRoute: typeof AuthenticatedAdminParticipantIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminConfigurationRoute: AuthenticatedAdminConfigurationRoute,
   AuthenticatedAdminLanguagesRoute: AuthenticatedAdminLanguagesRoute,
-  AuthenticatedAdminParticipantRoute: AuthenticatedAdminParticipantRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminContestIdRoute:
     AuthenticatedAdminContestIdRouteWithChildren,
   AuthenticatedAdminContestNewRoute: AuthenticatedAdminContestNewRoute,
+  AuthenticatedAdminParticipantUserRoute:
+    AuthenticatedAdminParticipantUserRoute,
   AuthenticatedAdminContestIndexRoute: AuthenticatedAdminContestIndexRoute,
+  AuthenticatedAdminParticipantIndexRoute:
+    AuthenticatedAdminParticipantIndexRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =

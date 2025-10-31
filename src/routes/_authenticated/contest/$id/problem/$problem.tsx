@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
-import { useTheme } from "@/components/theme-provider";
+import { useTheme } from "@/components/providers/theme";
 import { Button } from "@/components/ui/button";
 import {
 	ResizableHandle,

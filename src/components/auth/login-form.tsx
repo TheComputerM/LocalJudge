@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth/client";
+import { Separator } from "../ui/separator";
 
 const getProvidersFn = createServerFn({ method: "GET" }).handler(async () => {
 	return Object.keys(auth.options.socialProviders);
@@ -47,10 +48,10 @@ function SocialLogin() {
 
 	return (
 		<Fragment>
-			<div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-				<span className="bg-card text-muted-foreground relative z-10 px-2">
-					or continue with
-				</span>
+			<div className="flex gap-2 items-center">
+				<Separator />
+				<span className="text-muted-foreground text-sm">or continue with</span>
+				<Separator />
 			</div>
 			<div className="flex gap-3 flex-wrap">
 				{data.map((provider) => (
@@ -142,7 +143,7 @@ export function LoginForm() {
 							</div>
 						</div>
 					</CardContent>
-					<CardFooter className="flex-col gap-4 items-normal">
+					<CardFooter className="flex-col gap-4 items-stretch">
 						<Button type="submit" className="w-full" disabled={loading}>
 							Login
 						</Button>

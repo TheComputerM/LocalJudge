@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { localjudge } from "@/api/client";
+import { ThemeToggle } from "@/components/providers/theme";
 import { RefreshButton } from "@/components/refresh-button";
-import { ThemeToggle } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
 	NavigationMenu,

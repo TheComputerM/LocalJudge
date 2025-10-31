@@ -14,8 +14,8 @@ import {
 	LucideUsers,
 } from "lucide-react";
 import { UserProfile } from "@/components/auth/user-profile";
+import { ThemeToggle } from "@/components/providers/theme";
 import { RefreshButton } from "@/components/refresh-button";
-import { ThemeToggle } from "@/components/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import {
 	Sidebar,
