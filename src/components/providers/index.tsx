@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "../ui/sonner";
+import { ToastProvider } from "../ui/toast";
 import { ThemeProvider } from "./theme";
 
 const queryClient = new QueryClient();
@@ -8,8 +8,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 	return (
 		<ThemeProvider>
 			<QueryClientProvider client={queryClient}>
-				{children}
-				<Toaster position="top-right" />
+				<ToastProvider position="top-right">{children}</ToastProvider>
 			</QueryClientProvider>
 		</ThemeProvider>
 	);

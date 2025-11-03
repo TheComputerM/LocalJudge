@@ -1,6 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
 import { StatsGrid } from "@/components/stats-grid";
+import { SubmissionStatusBadge } from "@/components/submission-status-badge";
+import {
+	Frame,
+	FrameHeader,
+	FramePanel,
+	FrameTitle,
+} from "@/components/ui/frame";
 import {
 	Table,
 	TableBody,
@@ -42,45 +49,63 @@ function RecentSubmissions() {
 	});
 
 	return (
-		<Table>
-			<TableHeader>
-				<TableRow>
-					<TableHead>By</TableHead>
-					<TableHead>Contest</TableHead>
-					<TableHead>Problem</TableHead>
-					<TableHead>Language</TableHead>
-					<TableHead>Time</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				{data.map((submission) => (
-					<TableRow key={submission.id}>
-						<TableCell>{submission.user.name}</TableCell>
-						<TableCell>
-							<Link
-								to="/admin/contest/$id"
-								params={{ id: submission.contestId }}
-							>
-								{submission.contest.name}
-							</Link>
-						</TableCell>
-						<TableCell>
-							<Link
-								to="/admin/contest/$id/problem/$problem"
-								params={{
-									id: submission.contestId,
-									problem: submission.problemNumber.toString(),
-								}}
-							>
-								{submission.problem.title}
-							</Link>
-						</TableCell>
-						<TableCell>{submission.language}</TableCell>
-						<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+		<Frame>
+			<FrameHeader>
+				<FrameTitle>Recent Submissions</FrameTitle>
+			</FrameHeader>
+			<FramePanel>
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>User</TableHead>
+							<TableHead>Contest</TableHead>
+							<TableHead>Problem</TableHead>
+							<TableHead>Language</TableHead>
+							<TableHead>Status</TableHead>
+							<TableHead>Time</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{data.map((submission) => (
+							<TableRow key={submission.id}>
+								<TableCell>
+									<Link
+										to="/admin/participant/$user"
+										params={{ user: submission.userId }}
+									>
+										{submission.user.name}
+									</Link>
+								</TableCell>
+								<TableCell>
+									<Link
+										to="/admin/contest/$id"
+										params={{ id: submission.contestId }}
+									>
+										{submission.contest.name}
+									</Link>
+								</TableCell>
+								<TableCell>
+									<Link
+										to="/admin/contest/$id/problem/$problem"
+										params={{
+											id: submission.contestId,
+											problem: submission.problemNumber.toString(),
+										}}
+									>
+										{submission.problem.title}
+									</Link>
+								</TableCell>
+								<TableCell>{submission.language}</TableCell>
+								<TableCell>
+									<SubmissionStatusBadge id={submission.id} />
+								</TableCell>
+								<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</FramePanel>
+		</Frame>
 	);
 }
 
@@ -99,10 +124,6 @@ function RouteComponent() {
 					value: value.toString(),
 				}))}
 			/>
-			<br />
-			<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-				Recent Submissions
-			</h2>
 			<br />
 			<RecentSubmissions />
 		</div>

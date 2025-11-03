@@ -28,7 +28,7 @@ export function SubmissionStatusBadge(props: { id: string }) {
 
 	if (isLoading) {
 		return (
-			<Badge variant="secondary" className="rounded gap-2 animate-pulse">
+			<Badge variant="secondary" className="animate-pulse">
 				<Spinner className="size-3" /> ...
 			</Badge>
 		);
@@ -39,7 +39,7 @@ export function SubmissionStatusBadge(props: { id: string }) {
 	}
 
 	return (
-		<Badge variant="secondary" className="gap-2 rounded">
+		<Badge variant="secondary">
 			{data.state !== "done" ? (
 				<Spinner className="size-3 text-amber-600 dark:text-amber-400" />
 			) : data.passed === data.total ? (

@@ -10,21 +10,16 @@ import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { Button } from "@/components/ui/button";
 import {
-	FieldDescription,
-	FieldGroup,
-	FieldLegend,
-	FieldSeparator,
-	FieldSet,
-} from "@/components/ui/field";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ConfirmActionDialog } from "../confirm-action";
-import {
 	Empty,
 	EmptyDescription,
 	EmptyHeader,
 	EmptyMedia,
 	EmptyTitle,
-} from "../ui/empty";
+} from "@/components/ui/empty";
+import { FieldLegend, FieldSet } from "@/components/ui/field";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ConfirmActionDialog } from "../confirm-action";
 import { withForm } from "./primitives";
 
 export const ProblemFormOptions = {
@@ -41,40 +36,35 @@ export const ProblemForm = withForm({
 	...ProblemFormOptions,
 	render: function Render({ form }) {
 		return (
-			<FieldGroup>
-				<FieldSet>
-					<FieldLegend>Problem Details</FieldLegend>
-					<FieldDescription>
-						Provide details about the problem.
-					</FieldDescription>
-					<form.AppField name="problem.title">
-						{(field) => <field.TextField label="Title" />}
+			<FieldSet>
+				<FieldLegend>Problem Details</FieldLegend>
+				<form.AppField name="problem.title">
+					{(field) => <field.TextField label="Title" />}
+				</form.AppField>
+				<form.AppField name="problem.description">
+					{(field) => <field.Textarea label="Description" />}
+				</form.AppField>
+				<div className="grid grid-cols-2 gap-4">
+					<form.AppField name="problem.timeLimit">
+						{(field) => {
+							const { title, description } =
+								ProblemModel.insert.properties.timeLimit;
+							return (
+								<field.NumberField label={title} description={description} />
+							);
+						}}
 					</form.AppField>
-					<form.AppField name="problem.description">
-						{(field) => <field.Textarea label="Description" />}
+					<form.AppField name="problem.memoryLimit">
+						{(field) => {
+							const { title, description } =
+								ProblemModel.insert.properties.memoryLimit;
+							return (
+								<field.NumberField label={title} description={description} />
+							);
+						}}
 					</form.AppField>
-					<div className="grid grid-cols-2 gap-4">
-						<form.AppField name="problem.timeLimit">
-							{(field) => {
-								const { title, description } =
-									ProblemModel.insert.properties.timeLimit;
-								return (
-									<field.NumberField label={title} description={description} />
-								);
-							}}
-						</form.AppField>
-						<form.AppField name="problem.memoryLimit">
-							{(field) => {
-								const { title, description } =
-									ProblemModel.insert.properties.memoryLimit;
-								return (
-									<field.NumberField label={title} description={description} />
-								);
-							}}
-						</form.AppField>
-					</div>
-				</FieldSet>
-				<FieldSeparator />
+				</div>
+				<Separator />
 				<FieldSet>
 					<FieldLegend>Testcases</FieldLegend>
 					<form.AppField name="testcases" mode="array">
@@ -151,18 +141,21 @@ export const ProblemForm = withForm({
 												)}
 											</form.AppField>
 											<ConfirmActionDialog
-												onConfirm={() => field.removeValue(i)}
-											>
-												<Button
-													type="button"
-													variant="destructive"
-													size="sm"
-													className="justify-self-end"
-												>
-													Delete
-													<LucideTrash />
-												</Button>
-											</ConfirmActionDialog>
+												onConfirm={async () => {
+													field.removeValue(i);
+												}}
+												trigger={
+													<Button
+														type="button"
+														variant="destructive"
+														size="sm"
+														className="justify-self-end"
+													>
+														Delete
+														<LucideTrash />
+													</Button>
+												}
+											/>
 										</TabsContent>
 									))}
 								</div>
@@ -170,13 +163,13 @@ export const ProblemForm = withForm({
 						)}
 					</form.AppField>
 				</FieldSet>
-				<FieldSeparator />
+				<Separator />
 				<form.AppForm>
 					<form.SubmitButton>
 						Save <LucideSave />
 					</form.SubmitButton>
 				</form.AppForm>
-			</FieldGroup>
+			</FieldSet>
 		);
 	},
 });

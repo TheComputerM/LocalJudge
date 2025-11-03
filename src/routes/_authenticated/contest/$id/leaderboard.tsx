@@ -79,14 +79,17 @@ function RouteComponent() {
 						<TableHead className="border-r">User</TableHead>
 						{Array.from({ length: data.problemCount }, (_, i) => (
 							<TableHead key={i} className="text-center">
-								<Button variant="link" asChild>
-									<Link
-										from={Route.fullPath}
-										to="../problem/$problem"
-										params={{ problem: (i + 1).toString() }}
-									>
-										{i + 1}
-									</Link>
+								<Button
+									variant="link"
+									render={
+										<Link
+											from={Route.fullPath}
+											to="../problem/$problem"
+											params={{ problem: (i + 1).toString() }}
+										/>
+									}
+								>
+									{i + 1}
 								</Button>
 							</TableHead>
 						))}

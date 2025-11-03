@@ -46,14 +46,17 @@ function Submissions() {
 					<TableCell>{submission.language}</TableCell>
 					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
 					<TableCell>
-						<Button variant="link" asChild>
-							<Link
-								to="/app/submission/$id"
-								params={{ id: submission.id }}
-								target="_blank"
-							>
-								View
-							</Link>
+						<Button
+							variant="link"
+							render={
+								<Link
+									to="/app/submission/$id"
+									params={{ id: submission.id }}
+									target="_blank"
+								/>
+							}
+						>
+							View
 						</Button>
 					</TableCell>
 				</TableRow>

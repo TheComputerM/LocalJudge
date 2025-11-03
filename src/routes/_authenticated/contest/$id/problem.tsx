@@ -39,15 +39,17 @@ function AppSidebar() {
 						<SidebarMenu>
 							{problems.map((problem) => (
 								<SidebarMenuItem key={problem.number}>
-									<SidebarMenuButton asChild>
-										<Link
-											from={Route.fullPath}
-											activeProps={{ "data-active": "true" }}
-											to="./$problem"
-											params={{ problem: problem.number.toString() }}
-										>
-											{problem.title}
-										</Link>
+									<SidebarMenuButton
+										render={
+											<Link
+												from={Route.fullPath}
+												activeProps={{ "data-active": "true" }}
+												to="./$problem"
+												params={{ problem: problem.number.toString() }}
+											/>
+										}
+									>
+										{problem.title}
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}

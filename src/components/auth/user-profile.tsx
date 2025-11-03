@@ -2,15 +2,15 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { LucideLogOut, LucideShieldUser } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth/client";
+import {
+	Menu,
+	MenuItem,
+	MenuPopup,
+	MenuSeparator,
+	MenuTrigger,
+} from "../ui/menu";
 
 /**
  * A button component that signs the user out.
@@ -34,49 +34,49 @@ export function UserProfile() {
 	}
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					size="icon"
-					className="size-fit rounded-full cursor-pointer"
-					variant="ghost"
-				>
-					<Avatar>
-						<AvatarFallback>
-							{data.user.name
-								.split(" ")
-								.slice(0, 2)
-								.map((n) => n[0])
-								.join("")
-								.toUpperCase()}
-						</AvatarFallback>
-						<AvatarImage
-							src={data.user.image ?? undefined}
-							alt={data.user.name}
-						/>
-					</Avatar>
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
+		<Menu>
+			<MenuTrigger
+				render={
+					<Button
+						size="icon"
+						className="size-fit rounded-full cursor-pointer"
+						variant="ghost"
+					/>
+				}
+			>
+				<Avatar>
+					<AvatarFallback>
+						{data.user.name
+							.split(" ")
+							.slice(0, 2)
+							.map((n) => n[0])
+							.join("")
+							.toUpperCase()}
+					</AvatarFallback>
+					<AvatarImage
+						src={data.user.image ?? undefined}
+						alt={data.user.name}
+					/>
+				</Avatar>
+			</MenuTrigger>
+			<MenuPopup align="end">
 				<div className="flex flex-col p-2 gap-px">
 					<span className="text-sm font-medium">{data.user.name}</span>
 					<span className="text-xs text-muted-foreground">
 						{data.user.email}
 					</span>
 				</div>
-				<DropdownMenuSeparator />
+				<MenuSeparator />
 				{data.user.role?.includes("admin") && (
-					<DropdownMenuItem asChild>
-						<Link to="/admin">
-							<LucideShieldUser />
-							Admin
-						</Link>
-					</DropdownMenuItem>
+					<MenuItem render={<Link to="/admin" />}>
+						<LucideShieldUser />
+						Admin
+					</MenuItem>
 				)}
-				<DropdownMenuItem onClick={signOut}>
+				<MenuItem onClick={signOut}>
 					<LucideLogOut /> Sign Out
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+				</MenuItem>
+			</MenuPopup>
+		</Menu>
 	);
 }

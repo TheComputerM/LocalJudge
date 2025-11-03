@@ -87,20 +87,20 @@ function NavigationItems() {
 		<NavigationMenuItem key={link.to}>
 			<NavigationMenuLink
 				className="flex-row items-center gap-2 py-1.5 font-medium"
-				asChild
-			>
-				<Link
-					from={link.from}
-					to={link.to}
-					activeProps={{ "data-active": true }}
-				>
-					<link.icon
-						size={16}
-						className="text-foreground/80"
-						aria-hidden="true"
+				render={
+					<Link
+						from={link.from}
+						to={link.to}
+						activeProps={{ "data-active": true }}
 					/>
-					<span>{link.label}</span>
-				</Link>
+				}
+			>
+				<link.icon
+					size={16}
+					className="text-foreground/80"
+					aria-hidden="true"
+				/>
+				<span>{link.label}</span>
 			</NavigationMenuLink>
 		</NavigationMenuItem>
 	));
@@ -115,10 +115,12 @@ function Navbar() {
 				<span className="text-xs text-muted-foreground">by TheComputerM</span>
 			</span>
 			<Popover>
-				<PopoverTrigger asChild>
-					<Button className="md:hidden" size="icon" variant="outline">
-						<LucideMenu />
-					</Button>
+				<PopoverTrigger
+					render={
+						<Button className="md:hidden" size="icon" variant="outline" />
+					}
+				>
+					<LucideMenu />
 				</PopoverTrigger>
 				<PopoverContent className="w-36 p-1 md:hidden">
 					<NavigationMenu className="max-w-none *:w-full">
@@ -136,10 +138,7 @@ function Navbar() {
 			<div className="inline-flex items-center gap-2">
 				<RefreshButton />
 				<ThemeToggle />
-				<Separator
-					orientation="vertical"
-					className="data-[orientation=vertical]:h-4"
-				/>
+				<Separator orientation="vertical" />
 				<ClientOnly>
 					<RemainingTime />
 				</ClientOnly>

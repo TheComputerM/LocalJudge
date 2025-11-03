@@ -16,11 +16,9 @@ function Home() {
 					control.
 				</p>
 				<br />
-				<Button size="lg" asChild>
-					<Link to="/login">
-						Login
-						<LucideLogIn />
-					</Link>
+				<Button size="lg" render={<Link to="/login" />}>
+					Login
+					<LucideLogIn />
 				</Button>
 			</div>
 		</div>

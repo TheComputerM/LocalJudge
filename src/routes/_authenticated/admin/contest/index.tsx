@@ -5,7 +5,6 @@ import {
 	LucideTrash,
 	LucideView,
 } from "lucide-react";
-import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
 import { ContestCard } from "@/components/contest-card";
@@ -19,6 +18,7 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
+import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/contest/")({
@@ -36,10 +36,8 @@ export const Route = createFileRoute("/_authenticated/admin/contest/")({
 });
 
 const CreateContestButton = () => (
-	<Button asChild>
-		<Link to="/admin/contest/new">
-			<LucidePlus /> Create New
-		</Link>
+	<Button render={<Link to="/admin/contest/new" />}>
+		<LucidePlus /> Create New
 	</Button>
 );
 
@@ -80,21 +78,28 @@ function RouteComponent() {
 										await rejectError(
 											localjudge.contest({ id: contest.id }).delete(),
 										);
-										toast.success("Contest deleted successfully");
+										toastManager.add({
+											title: "Contest deleted",
+											type: "success",
+										});
 										await router.invalidate({
 											filter: (r) => r.id === Route.id,
 										});
 									}}
+									trigger={
+										<Button variant="destructive">
+											Delete <LucideTrash />
+										</Button>
+									}
+								/>
+								<Button
+									render={
+										<Link to="/admin/contest/$id" params={{ id: contest.id }} />
+									}
+									className="flex-1"
 								>
-									<Button variant="destructive">
-										Delete <LucideTrash />
-									</Button>
-								</ConfirmActionDialog>
-								<Button asChild className="flex-1">
-									<Link to="/admin/contest/$id" params={{ id: contest.id }}>
-										View Details
-										<LucideView />
-									</Link>
+									View Details
+									<LucideView />
 								</Button>
 							</div>
 						</ContestCard>

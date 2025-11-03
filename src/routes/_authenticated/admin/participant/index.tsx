@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
 	ClientOnly,
 	createFileRoute,
@@ -9,9 +9,11 @@ import {
 } from "@tanstack/react-router";
 import {
 	ColumnDef,
-	flexRender,
 	getCoreRowModel,
+	getFilteredRowModel,
+	PaginationState,
 	useReactTable,
+	VisibilityState,
 } from "@tanstack/react-table";
 import type { UserWithRole } from "better-auth/plugins";
 import { parse as csvParse } from "csv/browser/esm/sync";
@@ -24,9 +26,14 @@ import {
 	LucideTrash,
 } from "lucide-react";
 import { Suspense, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { ParticipantModel } from "@/api/models/participant";
+import {
+	DataTable,
+	DataTableColumnVisibility,
+	DataTablePagination,
+} from "@/components/data-table";
 import { useAppForm } from "@/components/form/primitives";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -38,25 +45,24 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { FieldSet } from "@/components/ui/field";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { FieldGroup } from "@/components/ui/field";
+	Frame,
+	FrameFooter,
+	FrameHeader,
+	FramePanel,
+} from "@/components/ui/frame";
 import { Input } from "@/components/ui/input";
+import {
+	Menu,
+	MenuItem,
+	MenuPopup,
+	MenuSeparator,
+	MenuTrigger,
+} from "@/components/ui/menu";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { toastManager } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth/client";
 import { rejectError } from "@/lib/utils";
 
@@ -80,8 +86,10 @@ function NewParticipantDialog() {
 				role: "user",
 			});
 			if (error) {
-				toast.error(`error creating user: ${error.status}`, {
+				toastManager.add({
+					title: "User create failed",
 					description: error.message,
+					type: "error",
 				});
 				return;
 			}
@@ -92,10 +100,8 @@ function NewParticipantDialog() {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button variant="outline">
-					New <LucidePlus />
-				</Button>
+			<DialogTrigger render={<Button variant="outline" />}>
+				New <LucidePlus />
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
@@ -112,7 +118,7 @@ function NewParticipantDialog() {
 						form.handleSubmit();
 					}}
 				>
-					<FieldGroup className="gap-4">
+					<FieldSet>
 						<form.AppField name="name">
 							{(field) => (
 								<field.TextField
@@ -137,10 +143,10 @@ function NewParticipantDialog() {
 						<form.AppField name="password">
 							{(field) => <field.TextField label="Password" type="password" />}
 						</form.AppField>
-					</FieldGroup>
+					</FieldSet>
 					<DialogFooter>
-						<DialogClose asChild>
-							<Button variant="outline">Close</Button>
+						<DialogClose render={<Button variant="outline" />}>
+							Close
 						</DialogClose>
 						<Button type="submit">Create</Button>
 					</DialogFooter>
@@ -155,7 +161,10 @@ function ImportParticipantsDialog() {
 	async function handleSubmit(formdata: FormData) {
 		const file = formdata.get("file") as File;
 		if (!file) {
-			toast.error("No file selected");
+			toastManager.add({
+				title: "No file selected",
+				type: "error",
+			});
 			return;
 		}
 		const records: { name: string; email: string; password: string }[] =
@@ -175,18 +184,18 @@ function ImportParticipantsDialog() {
 				errorCount++;
 			}
 		}
-		toast.info(
-			`Imported ${records.length - errorCount} out of ${records.length} entries`,
-		);
+		toastManager.add({
+			title: "Import completed",
+			description: `Imported ${records.length - errorCount} out of ${records.length} entries`,
+			type: errorCount === 0 ? "success" : "warning",
+		});
 		await router.invalidate({ filter: (r) => r.id === Route.id });
 	}
 
 	return (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button>
-					Import <LucideFileUp />
-				</Button>
+			<DialogTrigger render={<Button />}>
+				Import <LucideFileUp />
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
@@ -199,8 +208,8 @@ function ImportParticipantsDialog() {
 				<form className="contents" action={handleSubmit}>
 					<Input type="file" name="file" accept=".csv" />
 					<DialogFooter>
-						<DialogClose asChild>
-							<Button variant="outline">Close</Button>
+						<DialogClose render={<Button variant="outline" />}>
+							Close
 						</DialogClose>
 						<Button type="submit">Import</Button>
 					</DialogFooter>
@@ -211,14 +220,22 @@ function ImportParticipantsDialog() {
 }
 
 function ParticipantsTable() {
-	const { data } = useSuspenseQuery({
-		queryKey: ["auth", "participants"],
+	const [pagination, setPagination] = useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 15,
+	});
+
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+	const { data, error } = useQuery({
+		queryKey: ["auth", "users", pagination],
+		placeholderData: keepPreviousData,
 		queryFn: async () =>
 			rejectError(
 				authClient.admin.listUsers({
 					query: {
-						limit: 10,
-						offset: 0,
+						limit: pagination.pageSize,
+						offset: pagination.pageSize * pagination.pageIndex,
 						sortBy: "createdAt",
 						sortDirection: "desc",
 					},
@@ -237,41 +254,54 @@ function ParticipantsTable() {
 				accessorKey: "email",
 			},
 			{
+				header: "Role",
+				accessorKey: "role",
+				cell: ({ getValue }) => (
+					<Badge>{getValue<UserWithRole["role"]>()?.toLocaleUpperCase()}</Badge>
+				),
+			},
+			{
 				header: "Onboarded on",
 				accessorKey: "createdAt",
-				cell: ({ row }) =>
-					row.getValue<UserWithRole["createdAt"]>("createdAt").toLocaleString(),
+				cell: ({ getValue }) =>
+					getValue<UserWithRole["createdAt"]>().toLocaleString(),
 			},
 			{
 				id: "actions",
+				enableHiding: false,
 				cell: ({ row }) => {
 					const userId = row.original.id;
 					return (
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" className="h-8 w-8 p-0">
-									<span className="sr-only">Open menu</span>
-									<LucideMoreHorizontal />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuItem>
+						<Menu>
+							<MenuTrigger
+								render={<Button variant="ghost" className="h-8 w-8 p-0" />}
+							>
+								<span className="sr-only">Open menu</span>
+								<LucideMoreHorizontal />
+							</MenuTrigger>
+							<MenuPopup align="end">
+								<MenuItem>
 									<LucideCopy /> Copy ID
-								</DropdownMenuItem>
-								<DropdownMenuItem asChild>
-									<Link to="/admin/participant/$user" params={{ user: userId }}>
-										<LucideEdit />
-										Edit
-									</Link>
-								</DropdownMenuItem>
-								<DropdownMenuSeparator />
+								</MenuItem>
+								<MenuItem
+									render={
+										<Link
+											to="/admin/participant/$user"
+											params={{ user: userId }}
+										/>
+									}
+								>
+									<LucideEdit />
+									Edit
+								</MenuItem>
+								<MenuSeparator />
 
-								<DropdownMenuItem variant="destructive">
+								<MenuItem variant="destructive">
 									<LucideTrash />
 									Delete
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+								</MenuItem>
+							</MenuPopup>
+						</Menu>
 					);
 				},
 			},
@@ -280,55 +310,37 @@ function ParticipantsTable() {
 	);
 
 	const table = useReactTable({
-		data: data.users,
+		data: data?.users ?? [],
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		rowCount: data?.total,
+		onPaginationChange: setPagination,
+		manualPagination: true,
+		getFilteredRowModel: getFilteredRowModel(),
+		onColumnVisibilityChange: setColumnVisibility,
+		state: {
+			pagination,
+			columnVisibility,
+		},
 	});
+
+	if (!data) {
+		return null;
+	}
 
 	return (
 		<div>
-			<Table>
-				<TableHeader>
-					{table.getHeaderGroups().map((headerGroup) => (
-						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => {
-								return (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
-									</TableHead>
-								);
-							})}
-						</TableRow>
-					))}
-				</TableHeader>
-				<TableBody>
-					{table.getRowModel().rows.length ? (
-						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
-							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
-							</TableRow>
-						))
-					) : (
-						<TableRow>
-							<TableCell colSpan={columns.length} className="h-24 text-center">
-								No participants found.
-							</TableCell>
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
+			<div className="flex items-center justify-end mb-4">
+				<DataTableColumnVisibility table={table} />
+			</div>
+			<Frame>
+				<FramePanel>
+					<DataTable table={table} />
+				</FramePanel>
+				<FrameFooter>
+					<DataTablePagination table={table} />
+				</FrameFooter>
+			</Frame>
 		</div>
 	);
 }

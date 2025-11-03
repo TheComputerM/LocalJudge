@@ -5,7 +5,6 @@ import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { LucideCloudUpload } from "lucide-react";
 import Markdown from "react-markdown";
-import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
@@ -18,8 +17,8 @@ import {
 } from "@/components/ui/resizable";
 import {
 	Select,
-	SelectContent,
 	SelectItem,
+	SelectPopup,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -27,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toastManager } from "@/components/ui/toast";
 import {
 	SolutionStoreProvider,
 	useSolutionStore,
@@ -72,11 +72,18 @@ function SubmitCode() {
 			.post(store.content.state);
 
 		if (error) {
-			toast.error("Submission failed", { description: JSON.stringify(error) });
+			toastManager.add({
+				title: "Submission failed",
+				description: JSON.stringify(error),
+				type: "error",
+			});
 			return;
 		}
 
-		const toastId = toast.info("Submission in progress...");
+		const toastId = toastManager.add({
+			title: "Submission in progress...",
+			type: "info",
+		});
 		let passed = 0;
 		let failed = 0;
 		for await (const { data } of results) {
@@ -85,16 +92,15 @@ function SubmitCode() {
 			} else {
 				failed += 1;
 			}
-			toast.loading(`${passed} / ${passed + failed} testcases till now`, {
-				id: toastId,
+			toastManager.update(toastId, {
+				title: `${passed} / ${passed + failed} testcases till now`,
+				type: "loading",
 			});
 		}
-		toast[failed === 0 ? "success" : "error"](
-			`${passed} / ${passed + failed} testcases`,
-			{
-				id: toastId,
-			},
-		);
+		toastManager.update(toastId, {
+			title: `${passed} / ${passed + failed} testcases`,
+			type: failed === 0 ? "success" : "error",
+		});
 	}
 
 	return (
@@ -120,16 +126,16 @@ function LanguageSelect() {
 				selected.setState((prev) => ({ ...prev, language }))
 			}
 		>
-			<SelectTrigger>
-				<SelectValue placeholder="Language" />
+			<SelectTrigger className="min-w-auto w-min">
+				<SelectValue />
 			</SelectTrigger>
-			<SelectContent align="end">
+			<SelectPopup>
 				{languages.map((lang) => (
 					<SelectItem key={lang} value={lang}>
 						{lang}
 					</SelectItem>
 				))}
-			</SelectContent>
+			</SelectPopup>
 		</Select>
 	);
 }
@@ -153,7 +159,7 @@ function TestcaseContent({ number }: { number: number }) {
 		<>
 			<BufferTextBlock label="Input">{data.input}</BufferTextBlock>
 			<Separator className="my-4" />
-			<BufferTextBlock label="Expected Output">{data.input}</BufferTextBlock>
+			<BufferTextBlock label="Expected Output">{data.output}</BufferTextBlock>
 		</>
 	);
 }

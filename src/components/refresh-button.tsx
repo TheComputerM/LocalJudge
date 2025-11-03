@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { LucideRefreshCw } from "lucide-react";
 import { type ComponentProps, useState } from "react";
@@ -13,6 +14,7 @@ export function RefreshButton({
 }: ComponentProps<typeof Button>) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
+	const queryClient = useQueryClient();
 	return (
 		<Button
 			size="icon"
@@ -22,6 +24,7 @@ export function RefreshButton({
 			onClick={async () => {
 				setLoading(true);
 				await router.invalidate({ sync: true });
+				await queryClient.invalidateQueries();
 				setLoading(false);
 			}}
 		>

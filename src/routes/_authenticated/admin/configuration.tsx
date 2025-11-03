@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+	Frame,
+	FrameDescription,
+	FrameHeader,
+	FramePanel,
+	FrameTitle,
+} from "@/components/ui/frame";
 import { Separator } from "@/components/ui/separator";
 import {
 	Table,
@@ -54,15 +54,15 @@ function RouteComponent() {
 				Server Configuration
 			</h1>
 			<Separator />
-			<Card>
-				<CardHeader>
-					<CardTitle>Environment Variables</CardTitle>
-					<CardDescription>
+			<Frame>
+				<FrameHeader>
+					<FrameTitle>Environment Variables</FrameTitle>
+					<FrameDescription>
 						These are the values of the environment variables set for this
 						instance of LocalJudge.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
+					</FrameDescription>
+				</FrameHeader>
+				<FramePanel>
 					<Table>
 						<TableHeader>
 							<TableRow>
@@ -79,17 +79,17 @@ function RouteComponent() {
 							))}
 						</TableBody>
 					</Table>
-				</CardContent>
-			</Card>
-			<Card>
-				<CardHeader>
-					<CardTitle>Authentication Providers</CardTitle>
-					<CardDescription>
+				</FramePanel>
+			</Frame>
+			<Frame>
+				<FrameHeader>
+					<FrameTitle>Authentication Providers</FrameTitle>
+					<FrameDescription>
 						These are the active social authentication providers. You can
 						configure them through editing the providers.json file.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
+					</FrameDescription>
+				</FrameHeader>
+				<FramePanel>
 					<Table>
 						<TableHeader>
 							<TableRow>
@@ -114,8 +114,8 @@ function RouteComponent() {
 							))}
 						</TableBody>
 					</Table>
-				</CardContent>
-			</Card>
+				</FramePanel>
+			</Frame>
 		</div>
 	);
 }

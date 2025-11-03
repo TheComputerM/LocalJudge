@@ -41,14 +41,17 @@ function RouteComponent() {
 							<TableCell>{problem.timeLimit}ms</TableCell>
 							<TableCell>{problem.memoryLimit}KB</TableCell>
 							<TableCell>
-								<Button variant="link" asChild>
-									<Link
-										from={Route.fullPath}
-										to="./$problem"
-										params={{ problem: problem.number.toString() }}
-									>
-										View
-									</Link>
+								<Button
+									variant="link"
+									render={
+										<Link
+											from={Route.fullPath}
+											to="./$problem"
+											params={{ problem: problem.number.toString() }}
+										/>
+									}
+								>
+									View
 								</Button>
 							</TableCell>
 						</TableRow>

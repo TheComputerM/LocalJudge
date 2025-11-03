@@ -18,10 +18,12 @@ const CONFIG = {
 async function createUsers() {
 	console.info("Creating users...");
 	for (let i = 0; i < CONFIG.count.users; i++) {
+		const firstName = faker.person.firstName();
+		const lastName = faker.person.lastName();
 		await auth.api.createUser({
 			body: {
-				name: faker.person.fullName(),
-				email: faker.internet.email(),
+				name: faker.person.fullName({ firstName, lastName }),
+				email: faker.internet.email({ firstName, lastName }),
 				password: "pass123",
 				role: "user",
 			},

@@ -101,12 +101,13 @@ function DeleteUser({ id }: { id: string }) {
 						);
 						navigate({ to: "/admin/participant", replace: true });
 					}}
-				>
-					<Button variant="destructive">
-						<LucideTrash />
-						Delete User
-					</Button>
-				</ConfirmActionDialog>
+					trigger={
+						<Button variant="destructive">
+							<LucideTrash />
+							Delete User
+						</Button>
+					}
+				/>
 			</ItemActions>
 		</Item>
 	);

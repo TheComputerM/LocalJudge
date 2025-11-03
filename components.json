@@ -19,6 +19,8 @@
 		"hooks": "@/hooks"
 	},
 	"registries": {
-		"@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
+		"@kibo-ui": "https://www.kibo-ui.com/r/{name}.json",
+		"@coss": "https://coss.com/ui/r/{name}.json",
+		"@basecn": "https://basecn.dev/r/{name}.json"
 	}
 }

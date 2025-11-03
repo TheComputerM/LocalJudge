@@ -45,7 +45,7 @@ function TextField({ label, description, ...props }) {
 - `NumberField` - numeric input with step controls
 - `DateTimePicker` - date/time selection with calendar
 - `ToggleSwitch` - boolean toggle
-- `MultiselectField` - multi-select dropdown
+- `TagsInput` - tag input field for string arrays
 - `Textarea` - multi-line text input
 
 ### 3. Field Usage in Forms
@@ -165,4 +165,4 @@ const form = useAppForm({
 - **Custom fields need `useFieldContext()`** - Don't access field state from props
 - **FieldInfo shows errors** - Include `<FieldInfo field={field} />` after inputs to display validation messages
 - **DateTimePicker value is Date object** - Convert to/from ISO string as needed
-- **MultiselectField expects string[]** - Not comma-separated string
+- **TagsInput expects string[]** - Not comma-separated string

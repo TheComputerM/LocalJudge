@@ -1,8 +1,8 @@
+import { AlertDialog as AlertDialogPrimitive } from "@base-ui-components/react/alert-dialog";
 import { useState } from "react";
-import { toast } from "sonner";
 import {
 	AlertDialog,
-	AlertDialogCancel,
+	AlertDialogClose,
 	AlertDialogContent,
 	AlertDialogDescription,
 	AlertDialogFooter,
@@ -12,12 +12,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
+import { toastManager } from "./ui/toast";
 
 export function ConfirmActionDialog({
-	children,
+	trigger,
 	onConfirm,
 }: {
-	children: React.ReactNode;
+	trigger: AlertDialogPrimitive.Trigger.Props["render"];
 	onConfirm?: () => void;
 }) {
 	const [open, setOpen] = useState(false);
@@ -25,7 +26,7 @@ export function ConfirmActionDialog({
 
 	return (
 		<AlertDialog open={open} onOpenChange={setOpen}>
-			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+			<AlertDialogTrigger render={trigger} />
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -34,8 +35,11 @@ export function ConfirmActionDialog({
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogClose render={<Button variant="ghost" />}>
+						Cancel
+					</AlertDialogClose>
 					<Button
+						variant="destructive"
 						disabled={loading}
 						onClick={async () => {
 							setLoading(true);
@@ -44,8 +48,10 @@ export function ConfirmActionDialog({
 								setLoading(false);
 								setOpen(false);
 							} catch (e) {
-								toast.error("An error occurred.", {
+								toastManager.add({
+									title: "Uh oh! Something went wrong",
 									description: JSON.stringify(e),
+									type: "error",
 								});
 							}
 						}}

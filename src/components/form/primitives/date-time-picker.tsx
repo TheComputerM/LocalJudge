@@ -6,11 +6,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Field, FieldLabel } from "@/components/ui/field";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverPopup, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { FieldInfo } from "./field-info";
@@ -55,23 +51,25 @@ export function DateTimePicker(props: { label: string }) {
 					if (!open) field.handleBlur();
 				}}
 			>
-				<PopoverTrigger asChild>
-					<Button
-						variant="outline"
-						className={cn(
-							"w-full justify-start text-left font-normal",
-							!date && "text-muted-foreground",
-						)}
-					>
-						<LucideCalendar className="mr-2 h-4 w-4" />
-						{date ? (
-							lightFormat(date, "dd/MM/yyyy hh:mm a")
-						) : (
-							<span>DD/MM/YYYY hh:mm a/p</span>
-						)}
-					</Button>
+				<PopoverTrigger
+					render={
+						<Button
+							variant="outline"
+							className={cn(
+								"w-full justify-start text-left font-normal",
+								!date && "text-muted-foreground",
+							)}
+						/>
+					}
+				>
+					<LucideCalendar className="mr-2 h-4 w-4" />
+					{date ? (
+						lightFormat(date, "dd/MM/yyyy hh:mm a")
+					) : (
+						<span>DD/MM/YYYY hh:mm a/p</span>
+					)}
 				</PopoverTrigger>
-				<PopoverContent className="w-auto p-0">
+				<PopoverPopup className="w-auto p-0" side="bottom">
 					<div className="sm:flex">
 						<Calendar
 							mode="single"
@@ -122,7 +120,7 @@ export function DateTimePicker(props: { label: string }) {
 							</ScrollArea>
 						</div>
 					</div>
-				</PopoverContent>
+				</PopoverPopup>
 			</Popover>
 			<FieldInfo field={field} />
 		</Field>

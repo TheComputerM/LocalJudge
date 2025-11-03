@@ -42,11 +42,9 @@ function Navbar() {
 					<NavigationMenuItem key={link.to}>
 						<NavigationMenuLink
 							className="flex-row items-center gap-2 py-1.5 font-medium"
-							asChild
+							render={<Link {...link} activeProps={{ "data-active": true }} />}
 						>
-							<Link {...link} activeProps={{ "data-active": true }}>
-								<span>{link.label}</span>
-							</Link>
+							<span>{link.label}</span>
 						</NavigationMenuLink>
 					</NavigationMenuItem>
 				))}

@@ -5,17 +5,10 @@ import {
 	LucideFolderArchive,
 	LucideTrash,
 } from "lucide-react";
-import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
 import { StatsGrid } from "@/components/stats-grid";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import {
 	Item,
 	ItemActions,
@@ -26,6 +19,7 @@ import {
 	ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/contest/$id/")({
@@ -53,14 +47,18 @@ function DeleteContest() {
 				<ConfirmActionDialog
 					onConfirm={async () => {
 						await rejectError(localjudge.contest({ id }).delete());
-						toast.success("Contest deleted successfully");
+						toastManager.add({
+							title: "Contest deleted",
+							type: "success",
+						});
 						navigate({ to: "/admin/contest" });
 					}}
-				>
-					<Button variant="destructive">
-						Delete <LucideTrash />
-					</Button>
-				</ConfirmActionDialog>
+					trigger={
+						<Button variant="destructive">
+							Delete <LucideTrash />
+						</Button>
+					}
+				/>
 			</ItemActions>
 		</Item>
 	);
@@ -97,10 +95,10 @@ function DownloadResults() {
 				</ItemDescription>
 			</ItemContent>
 			<ItemActions>
-				<Button asChild>
-					<a href={`/api/admin/contest/${id}/results`} download>
-						Download <LucideFileBadge />
-					</a>
+				<Button
+					render={<a href={`/api/admin/contest/${id}/results`} download />}
+				>
+					Download <LucideFileBadge />
 				</Button>
 			</ItemActions>
 		</Item>
@@ -119,11 +117,11 @@ function InspectContest() {
 				</ItemDescription>
 			</ItemContent>
 			<ItemActions>
-				<Button asChild>
-					<Link to="/contest/$id" params={{ id }} target="_blank">
-						Inspect
-						<LucideEye />
-					</Link>
+				<Button
+					render={<Link to="/contest/$id" params={{ id }} target="_blank" />}
+				>
+					Inspect
+					<LucideEye />
 				</Button>
 			</ItemActions>
 		</Item>

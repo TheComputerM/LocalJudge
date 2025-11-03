@@ -60,8 +60,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
 				<HeadContent />
 			</head>
-			<body>
-				<Providers>{children}</Providers>
+			<body className="relative">
+				<div className="isolate">
+					<Providers>{children}</Providers>
+				</div>
 				<Scripts />
 			</body>
 		</html>

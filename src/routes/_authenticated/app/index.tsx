@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { LucideChartNoAxesGantt, LucideDoorOpen } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ContestCard } from "@/components/contest-card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/app/")({
@@ -40,9 +40,15 @@ function RegisterForm() {
 				e.stopPropagation();
 				const { error } = await localjudge.contest.register.post({ code });
 				if (error) {
-					toast.error("Failed to register for contest");
+					toastManager.add({
+						title: "Failed to register for contest",
+						type: "error",
+					});
 				} else {
-					toast.success("Registered successfully");
+					toastManager.add({
+						title: "Registered successfully",
+						type: "success",
+					});
 				}
 				await router.invalidate({
 					filter: (d) => d.fullPath === Route.fullPath,
@@ -84,11 +90,12 @@ function ContestList() {
 			{contests.length > 0 ? (
 				contests.map((contest) => (
 					<ContestCard key={contest.id} {...contest}>
-						<Button asChild className="w-full">
-							<Link to="/contest/$id" params={{ id: contest.id }}>
-								Enter
-								<LucideDoorOpen />
-							</Link>
+						<Button
+							render={<Link to="/contest/$id" params={{ id: contest.id }} />}
+							className="w-full"
+						>
+							Enter
+							<LucideDoorOpen />
 						</Button>
 					</ContestCard>
 				))

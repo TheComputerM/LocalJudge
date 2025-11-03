@@ -1,12 +1,12 @@
 import { Value } from "@sinclair/typebox/value";
 import { createFileRoute } from "@tanstack/react-router";
 import { t } from "elysia";
-import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
+import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute(
@@ -25,16 +25,16 @@ export const Route = createFileRoute(
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
 					.testcase.get(),
-			).then((data) =>
+			).then((testcases) =>
 				Promise.all(
-					data.map((tc) =>
+					testcases.map((testcase) =>
 						rejectError(
 							localjudge
 								.contest({ id: params.id })
 								.problem({ problem: params.problem })
-								.testcase({ testcase: tc.number })
+								.testcase({ testcase: testcase.number })
 								.get(),
-						),
+						).then((value) => ({ number: testcase.number, ...value })),
 					),
 				),
 			),
@@ -54,27 +54,34 @@ function RouteComponent() {
 			testcases: Value.Parse(t.Array(TestcaseModel.upsert), testcases),
 		},
 		onSubmit: async ({ value }) => {
-			const { error } = await localjudge
+			const { error: errorProblem } = await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.patch(value.problem);
-			if (error) {
-				toast.error("Failed to update problem", {
-					description: JSON.stringify(error),
+			if (errorProblem) {
+				toastManager.add({
+					title: "Failed to update problem",
+					description: JSON.stringify(errorProblem),
+					type: "error",
 				});
 				return;
 			}
-			const { error: error2 } = await localjudge
+			const { error: errorTestcases } = await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.testcase.put(value.testcases);
-			if (error2) {
-				toast.error("Failed to update testcases", {
-					description: JSON.stringify(error),
+			if (errorTestcases) {
+				toastManager.add({
+					title: "Failed to update testcases",
+					description: JSON.stringify(errorTestcases),
+					type: "error",
 				});
 				return;
 			}
-			toast.success("Problem and testcases updated successfully");
+			toastManager.add({
+				title: "Problem updated",
+				type: "success",
+			});
 		},
 	});
 

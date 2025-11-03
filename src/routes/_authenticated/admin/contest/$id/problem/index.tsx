@@ -6,11 +6,9 @@ import {
 	LucideEdit,
 	LucideTrash,
 } from "lucide-react";
-import { toast } from "sonner";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
 	Empty,
 	EmptyDescription,
@@ -18,6 +16,7 @@ import {
 	EmptyMedia,
 	EmptyTitle,
 } from "@/components/ui/empty";
+import { Group, GroupItem } from "@/components/ui/group";
 import {
 	Item,
 	ItemActions,
@@ -27,6 +26,7 @@ import {
 	ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute(
@@ -47,46 +47,47 @@ function ProblemCard(props: { number: number; title: string }) {
 	return (
 		<Item variant="muted">
 			<ItemMedia>
-				<ButtonGroup aria-label="Reorder">
-					<Button size="icon" variant="ghost" className="size-6">
+				<Group aria-label="Reorder">
+					<GroupItem
+						render={<Button size="icon" variant="ghost" className="size-6" />}
+					>
 						<LucideChevronUp />
-					</Button>
-					<Button size="icon" variant="ghost" className="size-6">
+					</GroupItem>
+					<GroupItem
+						render={<Button size="icon" variant="ghost" className="size-6" />}
+					>
 						<LucideChevronDown />
-					</Button>
-				</ButtonGroup>
+					</GroupItem>
+				</Group>
 			</ItemMedia>
 			<ItemContent>
 				<ItemTitle>{props.title}</ItemTitle>
 			</ItemContent>
 			<ItemActions>
-				<ButtonGroup>
-					<ConfirmActionDialog
-						onConfirm={async () => {
-							await rejectError(
-								localjudge
-									.contest({ id: contest })
-									.problem({ problem: props.number })
-									.delete(),
-							);
-							toast.success("Problem deleted successfully");
-							await router.invalidate();
-						}}
+				<Group>
+					<GroupItem
+						render={<Button size="icon-sm" aria-label="Delete Problem" />}
 					>
-						<Button variant="destructive" size="sm" aria-label="Delete Problem">
-							<LucideTrash />
-						</Button>
-					</ConfirmActionDialog>
-					<Button asChild size="sm" aria-label="Edit Problem">
-						<Link
-							from={Route.fullPath}
-							to="./$problem"
-							params={{ problem: props.number.toString() }}
-						>
-							<LucideEdit />
-						</Link>
-					</Button>
-				</ButtonGroup>
+						<LucideTrash />
+					</GroupItem>
+					<GroupItem
+						render={
+							<Button
+								render={
+									<Link
+										from={Route.fullPath}
+										to="./$problem"
+										params={{ problem: props.number.toString() }}
+									/>
+								}
+								size="sm"
+								aria-label="Edit Problem"
+							/>
+						}
+					>
+						<LucideEdit />
+					</GroupItem>
+				</Group>
 			</ItemActions>
 		</Item>
 	);
@@ -122,10 +123,11 @@ function RouteComponent() {
 				<EmptyProblems />
 			)}
 			<Separator className="my-6" />
-			<Button className="w-full" asChild>
-				<Link from={Route.fullPath} to="./new">
-					Add New Problem
-				</Link>
+			<Button
+				className="w-full"
+				render={<Link from={Route.fullPath} to="./new" />}
+			>
+				Add New Problem
 			</Button>
 		</>
 	);

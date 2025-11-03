@@ -12,6 +12,7 @@ import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
+	AccordionPanel,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
@@ -104,7 +105,7 @@ function Results() {
 	});
 
 	return (
-		<Accordion type="single" collapsible>
+		<Accordion>
 			{results.map((result) => (
 				<AccordionItem
 					key={result.testcaseNumber}
@@ -127,7 +128,7 @@ function Results() {
 							{result.message}
 						</span>
 					</AccordionTrigger>
-					<AccordionContent className="mt-2">
+					<AccordionPanel className="mt-2 text-foreground">
 						<div className="flex items-center justify-between">
 							<span>Time: {result.time}ms</span>
 							<span>Memory: {result.memory}KB</span>
@@ -143,7 +144,7 @@ function Results() {
 								{result.stdout}
 							</BufferTextBlock>
 						</div>
-					</AccordionContent>
+					</AccordionPanel>
 				</AccordionItem>
 			))}
 		</Accordion>

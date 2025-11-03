@@ -4,10 +4,12 @@ import * as table from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 console.info("Creating test user...");
+const firstName = faker.person.firstName();
+const lastName = faker.person.lastName();
 const { user } = await auth.api.createUser({
 	body: {
-		name: "Test User",
-		email: faker.internet.email(),
+		name: faker.person.fullName({ firstName, lastName }),
+		email: faker.internet.email({ firstName, lastName }),
 		password: "pass123",
 		role: "user",
 	},
