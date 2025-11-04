@@ -11,7 +11,6 @@ import { useTheme } from "@/components/providers/theme";
 import { SubmissionStatusBadge } from "@/components/submission-status-badge";
 import {
 	Accordion,
-	AccordionContent,
 	AccordionItem,
 	AccordionPanel,
 	AccordionTrigger,
