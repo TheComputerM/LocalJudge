@@ -8,7 +8,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 	return (
 		<ThemeProvider>
 			<QueryClientProvider client={queryClient}>
-				<ToastProvider position="top-right">{children}</ToastProvider>
+				<ToastProvider position="top-right" timeout={3000}>
+					{children}
+				</ToastProvider>
 			</QueryClientProvider>
 		</ThemeProvider>
 	);
