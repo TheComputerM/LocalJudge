@@ -73,20 +73,6 @@ export const adminApp = new Elysia({
 					),
 			),
 	)
-	.group("/participant", (app) =>
-		app.get(
-			"/",
-			async () => {
-				return AdminService.getParticipants();
-			},
-			{
-				detail: {
-					summary: "List participants",
-					description: "List all participants present in the system",
-				},
-			},
-		),
-	)
 	.get(
 		"/submission",
 		async ({ query }) => {

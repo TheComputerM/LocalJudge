@@ -27,13 +27,6 @@ export namespace AdminService {
 		});
 	}
 
-	export async function getParticipants() {
-		return db.query.user.findMany({
-			where: eq(table.user.role, "user"),
-			orderBy: desc(table.user.createdAt),
-		});
-	}
-
 	export async function getResults(contestId: string) {
 		return db.query.user.findMany({
 			columns: {

@@ -4,6 +4,7 @@ import { ContestModel } from "@/api/contest/model";
 import { ContestAdminService, ContestService } from "@/api/contest/service";
 import { SubmissionService } from "@/api/submission/service";
 import { APIParams } from "../models/params";
+import { SubmissionModel } from "../submission/model";
 import { problemApp } from "./problem";
 
 export const contestApp = new Elysia({
@@ -176,6 +177,7 @@ export const contestApp = new Elysia({
 						});
 					},
 					{
+						response: SubmissionModel.groupSelect,
 						detail: {
 							summary: "Get submissions for contest",
 							description:
