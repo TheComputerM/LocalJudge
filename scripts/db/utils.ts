@@ -1,13 +1,20 @@
+import { SQL } from "bun";
 import { and, eq, is, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/bun-sql";
 import { migrate } from "drizzle-orm/bun-sql/migrator";
 import { getTableConfig, PgTable } from "drizzle-orm/pg-core";
 import * as table from "@/db/schema";
-import { createBunSQLClient } from "@/db/utils";
 import { auth } from "@/lib/auth";
 import env from "@/lib/env";
 
-const client = createBunSQLClient({
+const client = new SQL({
+	hostname: env.POSTGRES_HOST,
+	port: env.POSTGRES_PORT,
+	database: env.POSTGRES_DB,
+	username: env.POSTGRES_USER,
+	password: env.POSTGRES_PASSWORD,
+	ssl: false,
+
 	max: 1,
 });
 

@@ -8,8 +8,7 @@ export default defineConfig({
 	schema: "./src/db/schema",
 	dialect: "postgresql",
 	dbCredentials: {
-		// TODO: change database settings based on container settings
-		host: "localhost",
+		host: env.POSTGRES_HOST,
 		port: env.POSTGRES_PORT,
 		database: env.POSTGRES_DB,
 		password: env.POSTGRES_PASSWORD,
