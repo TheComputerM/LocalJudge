@@ -1,6 +1,7 @@
 import { Editor } from "@monaco-editor/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { LucideCopy } from "lucide-react";
 import { Fragment } from "react";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
@@ -15,6 +16,8 @@ import {
 	AccordionPanel,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -46,7 +49,7 @@ function TestcaseContent(props: {
 }) {
 	const { data, error, isLoading } = useQuery({
 		queryKey: [
-			"/api/contest/:id/problem/:problem/testcase/:testcase" as const,
+			"/api/contest/:id/problem/:problem/testcase/:testcase",
 			{
 				id: props.contestId,
 				problem: props.problemNumber,
@@ -156,25 +159,40 @@ function Details() {
 		select: ({ submission }) => submission,
 	});
 	return (
-		<Table className="table-fixed">
-			<TableBody className="[&_th]:h-12 [&_td:nth-child(2)]:border-r">
+		<Table className="table">
+			<TableBody className="[&_th]:bg-muted/50 [&_th]:border-r">
+				<TableRow>
+					<TableHead>ID</TableHead>
+					<TableCell>
+						<Badge size="sm">
+							<LucideCopy />
+							{submission.id}
+						</Badge>
+					</TableCell>
+				</TableRow>
 				<TableRow>
 					<TableHead>User</TableHead>
 					<TableCell>{submission.user.name}</TableCell>
-					<TableHead>Status</TableHead>
-					<TableCell>
-						<SubmissionStatusBadge id={submission.id} />
-					</TableCell>
 				</TableRow>
 				<TableRow>
 					<TableHead>Contest</TableHead>
 					<TableCell>{submission.contest.name}</TableCell>
+				</TableRow>
+				<TableRow>
 					<TableHead>Language</TableHead>
 					<TableCell>{submission.language}</TableCell>
 				</TableRow>
 				<TableRow>
 					<TableHead>Problem</TableHead>
 					<TableCell>{submission.problem.title}</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableHead>Status</TableHead>
+					<TableCell>
+						<SubmissionStatusBadge id={submission.id} />
+					</TableCell>
+				</TableRow>
+				<TableRow>
 					<TableHead>Time</TableHead>
 					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
 				</TableRow>
@@ -189,20 +207,31 @@ function Source() {
 		select: ({ submission }) => submission,
 	});
 	return (
-		<Editor
-			height="350px"
-			theme={theme === "dark" ? "vs-dark" : "light"}
-			language={submission.language}
-			value={submission.content}
-			options={{
-				readOnly: true,
-				lineNumbers: "on",
-				fontFamily: "'JetBrains Mono Variable', monospace",
-				padding: {
-					top: 8,
-				},
-			}}
-		/>
+		<div>
+			<div className="flex items-center mb-1">
+				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+					Source
+				</h4>
+				<div className="grow" />
+				<Button size="icon" variant="ghost">
+					<LucideCopy />
+				</Button>
+			</div>
+			<Editor
+				height="280px"
+				theme={theme === "dark" ? "vs-dark" : "light"}
+				language={submission.language}
+				value={submission.content}
+				options={{
+					readOnly: true,
+					lineNumbers: "on",
+					fontFamily: "var(--font-mono), monospace",
+					minimap: {
+						enabled: false,
+					},
+				}}
+			/>
+		</div>
 	);
 }
 
@@ -213,12 +242,17 @@ function RouteComponent() {
 				Submission
 			</h2>
 			<br />
-			<Details />
-			<Separator className="my-6" />
-			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
-				Source
-			</h3>
-			<Source />
+			<div className="grid grid-cols-2 gap-3">
+				<div>
+					<h4 className="scroll-m-20 text-xl font-semibold tracking-tight mb-2">
+						Details
+					</h4>
+					<div className="border rounded">
+						<Details />
+					</div>
+				</div>
+				<Source />
+			</div>
 			<Separator className="my-6" />
 			<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
 				Results
