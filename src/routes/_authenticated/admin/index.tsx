@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { localjudge } from "@/api/client";
 import { StatsGrid } from "@/components/stats-grid";
 import { SubmissionStatusBadge } from "@/components/submission-status-badge";
+import { Button } from "@/components/ui/button";
 import {
 	Frame,
 	FrameHeader,
@@ -63,6 +64,7 @@ function RecentSubmissions() {
 							<TableHead>Language</TableHead>
 							<TableHead>Status</TableHead>
 							<TableHead>Time</TableHead>
+							<TableHead />
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -100,6 +102,19 @@ function RecentSubmissions() {
 									<SubmissionStatusBadge id={submission.id} />
 								</TableCell>
 								<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
+								<TableCell>
+									<Button
+										variant="link"
+										render={
+											<Link
+												to="/app/submission/$id"
+												params={{ id: submission.id }}
+											/>
+										}
+									>
+										View
+									</Button>
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
