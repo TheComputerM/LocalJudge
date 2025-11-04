@@ -5,6 +5,11 @@ import {
 	Outlet,
 } from "@tanstack/react-router";
 import {
+	LucideCircleQuestionMark,
+	LucideNotebook,
+	LucideSettings,
+} from "lucide-react";
+import {
 	NavigationMenu,
 	NavigationMenuItem,
 	NavigationMenuLink,
@@ -21,16 +26,19 @@ const links = linkOptions([
 		to: ".",
 		activeOptions: { exact: true },
 		label: "Overview",
+		icon: LucideNotebook,
 	},
 	{
 		from: Route.fullPath,
 		to: "./settings",
 		label: "Settings",
+		icon: LucideSettings,
 	},
 	{
 		from: Route.fullPath,
 		to: "./problem",
 		label: "Problems",
+		icon: LucideCircleQuestionMark,
 	},
 ]);
 
@@ -44,6 +52,7 @@ function Navbar() {
 							className="flex-row items-center gap-2 py-1.5 font-medium"
 							render={<Link {...link} activeProps={{ "data-active": true }} />}
 						>
+							<link.icon />
 							<span>{link.label}</span>
 						</NavigationMenuLink>
 					</NavigationMenuItem>
