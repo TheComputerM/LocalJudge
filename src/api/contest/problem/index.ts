@@ -152,10 +152,7 @@ export const problemApp = new Elysia({
 				.get(
 					"/boilerplate/:language",
 					async ({ params }) => {
-						if (!(params.language in boilerplate)) {
-							return "good luck";
-						}
-						return boilerplate[params.language];
+						return boilerplate[params.language] ?? "";
 					},
 					{
 						detail: {
