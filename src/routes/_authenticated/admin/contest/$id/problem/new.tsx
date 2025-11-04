@@ -6,6 +6,7 @@ import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { useAppForm } from "@/components/form/primitives";
 import { ProblemForm } from "@/components/form/problem";
+import { toastManager } from "@/components/ui/toast";
 
 export const Route = createFileRoute(
 	"/_authenticated/admin/contest/$id/problem/new",
@@ -21,20 +22,34 @@ function RouteComponent() {
 				ProblemModel.insert,
 				Value.Default(ProblemModel.insert, {}),
 			),
-			testcases: Value.Cast(t.Array(TestcaseModel.upsert), []),
+			testcases: Value.Cast(t.Array(TestcaseModel.insert), []),
 		},
 		onSubmit: async ({ value }) => {
-			const { data, error } = await localjudge
+			const { data, error: createProblem } = await localjudge
 				.contest({ id: contestId })
 				.problem.post(value.problem);
-			if (error) {
-				alert(JSON.stringify(error));
+			if (createProblem) {
+				toastManager.add({
+					title: "Problem create failed",
+					description: JSON.stringify(createProblem),
+					type: "error",
+				});
 				return;
 			}
-			await localjudge
-				.contest({ id: contestId })
-				.problem({ problem: data.number })
-				.testcase.put(value.testcases);
+			for (const testcase of value.testcases) {
+				const { error: createTestcase } = await localjudge
+					.contest({ id: contestId })
+					.problem({ problem: data.number })
+					.testcase.post(testcase);
+				if (createTestcase) {
+					toastManager.add({
+						title: "Testcases create failed",
+						description: JSON.stringify(createTestcase),
+						type: "error",
+					});
+					return;
+				}
+			}
 		},
 	});
 	return (

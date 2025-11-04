@@ -5,6 +5,7 @@ import { localjudge } from "@/api/client";
 import { ContestModel } from "@/api/contest/model";
 import { ContestForm, ContestFormOptions } from "@/components/form/contest";
 import { useAppForm } from "@/components/form/primitives";
+import { Spinner } from "@/components/ui/spinner";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute(
@@ -44,7 +45,7 @@ function RouteComponent() {
 				form.handleSubmit();
 			}}
 		>
-			<Suspense fallback={<div>Loading...</div>}>
+			<Suspense fallback={<Spinner className="mx-auto" />}>
 				<ContestForm form={form} />
 			</Suspense>
 		</form>

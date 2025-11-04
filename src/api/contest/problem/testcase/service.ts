@@ -93,37 +93,22 @@ export namespace TestcaseAdminService {
 		return data;
 	}
 
-	export async function upsert(
+	export async function update(
 		contestId: string,
 		problemNumber: number,
-		testcases: (typeof TestcaseModel.upsert.static)[],
+		testcaseNumber: number,
+		data: typeof TestcaseModel.update.static,
 	) {
-		const updateColumns = Object.keys(TestcaseModel.update.properties).reduce(
-			(acc, v) => {
-				acc[v] = sql.raw(`EXCLUDED.${v}`);
-				return acc;
-			},
-			{} as Record<string, SQL>,
-		);
-
-		return db
-			.insert(table.testcase)
-			.values(
-				testcases.map((tc) => ({
-					contestId,
-					problemNumber,
-					...tc,
-				})),
-			)
-			.onConflictDoUpdate({
-				target: [
-					table.testcase.contestId,
-					table.testcase.problemNumber,
-					table.testcase.number,
-				],
-				set: updateColumns,
-			})
-			.returning();
+		await db
+			.update(table.testcase)
+			.set(data)
+			.where(
+				and(
+					eq(table.testcase.contestId, contestId),
+					eq(table.testcase.problemNumber, problemNumber),
+					eq(table.testcase.number, testcaseNumber),
+				),
+			);
 	}
 
 	export async function remove(

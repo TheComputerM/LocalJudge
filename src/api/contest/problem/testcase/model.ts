@@ -21,8 +21,11 @@ export namespace TestcaseModel {
 		t.Omit(_selectSchema, ["contestId", "problemNumber", "input", "output"]),
 	);
 
-	export const upsert = t.Omit(_insertSchema, ["contestId", "problemNumber"]);
-	export const insert = t.Omit(upsert, ["number"]);
+	export const insert = t.Omit(_insertSchema, [
+		"contestId",
+		"problemNumber",
+		"number",
+	]);
 	export const update = t.Omit(_updateSchema, [
 		"contestId",
 		"problemNumber",

@@ -5,7 +5,7 @@ import { localjudge } from "@/api/client";
 import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { useAppForm } from "@/components/form/primitives";
-import { ProblemForm } from "@/components/form/problem";
+import { ProblemForm, ProblemFormOptions } from "@/components/form/problem";
 import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
@@ -49,35 +49,65 @@ function RouteComponent() {
 	const { id, problem: problemNumber } = Route.useParams();
 
 	const form = useAppForm({
+		...ProblemFormOptions,
 		defaultValues: {
 			problem: Value.Parse(ProblemModel.insert, problem),
-			testcases: Value.Parse(t.Array(TestcaseModel.upsert), testcases),
+			testcases: Value.Parse(t.Array(TestcaseModel.insert), testcases),
 		},
-		onSubmit: async ({ value }) => {
-			const { error: errorProblem } = await localjudge
+		onSubmit: async ({ value, meta }) => {
+			const { error: problemUpdate } = await localjudge
 				.contest({ id })
 				.problem({ problem: problemNumber })
 				.patch(value.problem);
-			if (errorProblem) {
+			if (problemUpdate) {
 				toastManager.add({
-					title: "Failed to update problem",
-					description: JSON.stringify(errorProblem),
+					title: "Problem update failed",
+					description: JSON.stringify(problemUpdate),
 					type: "error",
 				});
 				return;
 			}
-			const { error: errorTestcases } = await localjudge
-				.contest({ id })
-				.problem({ problem: problemNumber })
-				.testcase.put(value.testcases);
-			if (errorTestcases) {
+
+			// simulate adding and removing testcases
+			for (const operation of meta.testcasesDiff) {
+				switch (operation.op) {
+					case "+":
+						await localjudge
+							.contest({ id })
+							.problem({ problem: problemNumber })
+							.testcase.post(Value.Create(TestcaseModel.insert));
+						break;
+					case "-":
+						await localjudge
+							.contest({ id })
+							.problem({ problem: problemNumber })
+							.testcase({ testcase: operation.number })
+							.delete();
+						break;
+				}
+			}
+
+			// update testcases
+			const testcasesUpdate = await Promise.allSettled(
+				value.testcases.map((testcase, i) =>
+					rejectError(
+						localjudge
+							.contest({ id })
+							.problem({ problem: problemNumber })
+							.testcase({ testcase: i + 1 })
+							.patch(testcase),
+					),
+				),
+			);
+
+			if (testcasesUpdate.map(({ status }) => status).includes("rejected")) {
 				toastManager.add({
-					title: "Failed to update testcases",
-					description: JSON.stringify(errorTestcases),
+					title: "Testcases update failed",
 					type: "error",
 				});
 				return;
 			}
+
 			toastManager.add({
 				title: "Problem updated",
 				type: "success",

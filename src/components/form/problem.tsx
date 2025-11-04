@@ -1,40 +1,36 @@
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import {
-	LucideBugPlay,
-	LucidePlus,
-	LucideSave,
-	LucideTrash,
-} from "lucide-react";
+import { LucideSave } from "lucide-react";
+import { useState } from "react";
 import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
-import { Button } from "@/components/ui/button";
-import {
-	Empty,
-	EmptyDescription,
-	EmptyHeader,
-	EmptyMedia,
-	EmptyTitle,
-} from "@/components/ui/empty";
 import { FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ConfirmActionDialog } from "../confirm-action";
 import { withForm } from "./primitives";
+import {
+	TestcasesFieldGroup,
+	TestcasesFieldGroupOptions,
+} from "./testcases-group";
+
+type TestcaseDiff = { op: "+" } | { op: "-"; number: number };
 
 export const ProblemFormOptions = {
 	defaultValues: {
+		...TestcasesFieldGroupOptions.defaultValues,
 		problem: Value.Cast(
 			ProblemModel.insert,
 			Value.Default(ProblemModel.insert, Value.Create(ProblemModel.insert)),
 		),
-		testcases: Value.Create(Type.Array(TestcaseModel.upsert)),
+	},
+	onSubmitMeta: {
+		testcasesDiff: [] as TestcaseDiff[],
 	},
 };
 
 export const ProblemForm = withForm({
 	...ProblemFormOptions,
 	render: function Render({ form }) {
+		const [testcasesDiff, setTestcasesDiff] = useState<TestcaseDiff[]>([]);
 		return (
 			<FieldSet>
 				<FieldLegend>Problem Details</FieldLegend>
@@ -67,105 +63,22 @@ export const ProblemForm = withForm({
 				<Separator />
 				<FieldSet>
 					<FieldLegend>Testcases</FieldLegend>
-					<form.AppField name="testcases" mode="array">
-						{(field) => (
-							<Tabs
-								orientation="vertical"
-								className="w-full flex-row gap-4"
-								defaultValue="0"
-							>
-								<div className="flex flex-col items-center gap-3">
-									<TabsList className="flex-col h-auto">
-										{field.state.value.map((_, i) => (
-											<TabsTrigger
-												key={i}
-												value={i.toString()}
-												className="w-full"
-											>
-												Case {i + 1}
-											</TabsTrigger>
-										))}
-									</TabsList>
-									<Button
-										size="sm"
-										type="button"
-										onClick={() => {
-											field.pushValue({
-												number: field.state.value.length + 1,
-												input: "stdin",
-												output: "stdout",
-												hidden: false,
-											});
-										}}
-									>
-										Add
-										<LucidePlus />
-									</Button>
-								</div>
-								<div className="grow p-4 rounded-md border border-dashed">
-									{field.state.value.length === 0 && (
-										<Empty>
-											<EmptyHeader>
-												<EmptyMedia variant="icon">
-													<LucideBugPlay />
-												</EmptyMedia>
-												<EmptyTitle>No Testcases</EmptyTitle>
-												<EmptyDescription>
-													Testcases help evaluate the correctness of
-													submissions. Click The "Add" button to create your
-													first testcase.
-												</EmptyDescription>
-											</EmptyHeader>
-										</Empty>
-									)}
-									{field.state.value.map((_, i) => (
-										<TabsContent
-											key={i}
-											value={i.toString()}
-											className="grid gap-6"
-										>
-											<div className="grid grid-cols-2 gap-6">
-												<form.AppField name={`testcases[${i}].input`}>
-													{(field) => <field.Textarea label="Input" />}
-												</form.AppField>
-												<form.AppField name={`testcases[${i}].output`}>
-													{(field) => <field.Textarea label="Expected" />}
-												</form.AppField>
-											</div>
-											<form.AppField name={`testcases[${i}].hidden`}>
-												{(field) => (
-													<field.ToggleSwitch
-														label="Hidden"
-														description="Testcase will be hidden from the participants"
-													/>
-												)}
-											</form.AppField>
-											<ConfirmActionDialog
-												onConfirm={async () => {
-													field.removeValue(i);
-												}}
-												trigger={
-													<Button
-														type="button"
-														variant="destructive"
-														size="sm"
-														className="justify-self-end"
-													>
-														Delete
-														<LucideTrash />
-													</Button>
-												}
-											/>
-										</TabsContent>
-									))}
-								</div>
-							</Tabs>
-						)}
-					</form.AppField>
+					<TestcasesFieldGroup
+						form={form}
+						fields={{ testcases: "testcases" }}
+						onAdd={() => {
+							setTestcasesDiff((prev) => [...prev, { op: "+" }]);
+						}}
+						onDelete={(i) => {
+							setTestcasesDiff((prev) => [...prev, { op: "-", number: i + 1 }]);
+						}}
+					/>
 				</FieldSet>
 				<Separator />
 				<form.AppForm>
-					<form.SubmitButton>
+					<form.SubmitButton
+						onClick={() => form.handleSubmit({ testcasesDiff })}
+					>
 						Save <LucideSave />
 					</form.SubmitButton>
 				</form.AppForm>

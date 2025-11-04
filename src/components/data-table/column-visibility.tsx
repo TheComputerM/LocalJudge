@@ -1,5 +1,5 @@
 import { Table } from "@tanstack/react-table";
-import { LucideEyeOff } from "lucide-react";
+import { LucideSettings2 } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "../ui/button";
 import { Select, SelectItem, SelectPopup, SelectTrigger } from "../ui/select";
@@ -34,7 +34,7 @@ export default function DataTableColumnVisibility<TData>({
 				className="min-w-auto w-fit"
 				render={
 					<Button variant="outline">
-						<LucideEyeOff />
+						<LucideSettings2 />
 						Columns
 					</Button>
 				}

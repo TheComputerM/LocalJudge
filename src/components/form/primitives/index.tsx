@@ -8,7 +8,7 @@ import { TextField } from "./text-field";
 import { Textarea } from "./textarea";
 import { ToggleSwitch } from "./toggle-switch";
 
-export const { useAppForm, withForm } = createFormHook({
+export const { useAppForm, withForm, withFieldGroup } = createFormHook({
 	fieldContext,
 	formContext,
 	fieldComponents: {

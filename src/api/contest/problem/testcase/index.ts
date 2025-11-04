@@ -77,23 +77,6 @@ export const testcaseApp = new Elysia({
 								"Delete all testcases of a specific problem in a contest",
 						},
 					},
-				)
-				.put(
-					"/",
-					async ({ params, body }) => {
-						if (body.length === 0) {
-							return [];
-						}
-						return TestcaseAdminService.upsert(params.id, params.problem, body);
-					},
-					{
-						body: t.Array(TestcaseModel.upsert),
-						detail: {
-							summary: "Upsert testcases",
-							description:
-								"Insert or update testcases for a specific problem in a contest",
-						},
-					},
 				),
 	)
 	.group(
@@ -145,30 +128,50 @@ export const testcaseApp = new Elysia({
 						auth: "admin",
 					},
 					(app) =>
-						app.delete(
-							"/",
-							async ({ params }) => {
-								try {
-									await TestcaseAdminService.remove(
+						app
+							.delete(
+								"/",
+								async ({ params }) => {
+									try {
+										await TestcaseAdminService.remove(
+											params.id,
+											params.problem,
+											params.testcase,
+										);
+										return status(204);
+									} catch (error) {
+										return status(
+											500,
+											`Failed to delete testcase: ${JSON.stringify(error)}`,
+										);
+									}
+								},
+								{
+									detail: {
+										summary: "Delete testcase",
+										description:
+											"Delete a specific testcase for a problem in a contest",
+									},
+								},
+							)
+							.patch(
+								"/",
+								async ({ params, body }) => {
+									await TestcaseAdminService.update(
 										params.id,
 										params.problem,
 										params.testcase,
+										body,
 									);
 									return status(204);
-								} catch (error) {
-									return status(
-										500,
-										`Failed to delete testcase: ${JSON.stringify(error)}`,
-									);
-								}
-							},
-							{
-								detail: {
-									summary: "Delete testcase",
-									description:
-										"Delete a specific testcase for a problem in a contest",
 								},
-							},
-						),
+								{
+									body: TestcaseModel.update,
+									detail: {
+										summary: "Update testcase",
+										description: "",
+									},
+								},
+							),
 				),
 	);
