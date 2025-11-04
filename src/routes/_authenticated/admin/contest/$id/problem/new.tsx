@@ -5,7 +5,7 @@ import { localjudge } from "@/api/client";
 import { ProblemModel } from "@/api/contest/problem/model";
 import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { useAppForm } from "@/components/form/primitives";
-import { ProblemForm } from "@/components/form/problem";
+import { ProblemForm, ProblemFormOptions } from "@/components/form/problem";
 import { toastManager } from "@/components/ui/toast";
 
 export const Route = createFileRoute(
@@ -17,6 +17,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
 	const contestId = Route.useParams({ select: (data) => data.id });
 	const form = useAppForm({
+		...ProblemFormOptions,
 		defaultValues: {
 			problem: Value.Cast(
 				ProblemModel.insert,
