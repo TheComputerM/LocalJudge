@@ -1,5 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+	type ColumnDef,
+	getCoreRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
 import { localjudge } from "@/api/client";
+import DataTable from "@/components/data-table/table";
 import { StatsGrid } from "@/components/stats-grid";
 import { SubmissionStatusBadge } from "@/components/submission-status-badge";
 import { Button } from "@/components/ui/button";
@@ -9,14 +15,6 @@ import {
 	FramePanel,
 	FrameTitle,
 } from "@/components/ui/frame";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { rejectError } from "@/lib/utils";
 
 // TODO: refresh route data after 1s repeatedly
@@ -49,76 +47,85 @@ function RecentSubmissions() {
 		select: ({ submissions }) => submissions,
 	});
 
+	const columns: ColumnDef<(typeof data)[number]>[] = [
+		{
+			accessorKey: "user.name",
+			header: "User",
+			cell: ({ row, getValue }) => (
+				<Link
+					to="/admin/participant/$user"
+					params={{ user: row.original.userId }}
+				>
+					{getValue<string>()}
+				</Link>
+			),
+		},
+		{
+			accessorKey: "contest.name",
+			header: "Contest",
+			cell: ({ row, getValue }) => (
+				<Link to="/admin/contest/$id" params={{ id: row.original.contestId }}>
+					{getValue<string>()}
+				</Link>
+			),
+		},
+		{
+			accessorKey: "problem.title",
+			header: "Problem",
+			cell: ({ row, getValue }) => (
+				<Link
+					to="/admin/contest/$id/problem/$problem"
+					params={{
+						id: row.original.contestId,
+						problem: row.original.problemNumber.toString(),
+					}}
+				>
+					{getValue<string>()}
+				</Link>
+			),
+		},
+		{
+			accessorKey: "language",
+			header: "Language",
+		},
+		{
+			accessorKey: "id",
+			header: "Status",
+			cell: (info) => <SubmissionStatusBadge id={info.getValue() as string} />,
+		},
+		{
+			accessorKey: "createdAt",
+			header: "Time",
+			cell: ({ getValue }) => getValue<Date>().toLocaleString(),
+		},
+		{
+			id: "actions",
+			cell: ({ row }) => (
+				<Button
+					variant="link"
+					render={
+						<Link to="/app/submission/$id" params={{ id: row.original.id }} />
+					}
+				>
+					View
+				</Button>
+			),
+		},
+	];
+
+	const table = useReactTable({
+		data,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+	});
+
 	return (
 		<Frame>
 			<FrameHeader>
 				<FrameTitle>Recent Submissions</FrameTitle>
 			</FrameHeader>
 			<FramePanel>
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>User</TableHead>
-							<TableHead>Contest</TableHead>
-							<TableHead>Problem</TableHead>
-							<TableHead>Language</TableHead>
-							<TableHead>Status</TableHead>
-							<TableHead>Time</TableHead>
-							<TableHead />
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{data.map((submission) => (
-							<TableRow key={submission.id}>
-								<TableCell>
-									<Link
-										to="/admin/participant/$user"
-										params={{ user: submission.userId }}
-									>
-										{submission.user.name}
-									</Link>
-								</TableCell>
-								<TableCell>
-									<Link
-										to="/admin/contest/$id"
-										params={{ id: submission.contestId }}
-									>
-										{submission.contest.name}
-									</Link>
-								</TableCell>
-								<TableCell>
-									<Link
-										to="/admin/contest/$id/problem/$problem"
-										params={{
-											id: submission.contestId,
-											problem: submission.problemNumber.toString(),
-										}}
-									>
-										{submission.problem.title}
-									</Link>
-								</TableCell>
-								<TableCell>{submission.language}</TableCell>
-								<TableCell>
-									<SubmissionStatusBadge id={submission.id} />
-								</TableCell>
-								<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
-								<TableCell>
-									<Button
-										variant="link"
-										render={
-											<Link
-												to="/app/submission/$id"
-												params={{ id: submission.id }}
-											/>
-										}
-									>
-										View
-									</Button>
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
+				<DataTable table={table} />
 			</FramePanel>
 		</Frame>
 	);
