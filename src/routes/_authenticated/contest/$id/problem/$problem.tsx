@@ -202,7 +202,7 @@ function ProblemStatement() {
 	});
 
 	return (
-		<div className="typography">
+		<div className="prose prose-neutral dark:prose-invert">
 			<h1>{problem.title}</h1>
 			<Markdown>{problem.description}</Markdown>
 		</div>
