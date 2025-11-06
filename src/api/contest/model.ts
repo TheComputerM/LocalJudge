@@ -6,7 +6,7 @@ import {
 } from "@/api/models";
 import { contest } from "@/db/schema";
 
-export const contestSettingsSchema = t.Object({
+const contestSettingsSchema = t.Object({
 	leaderboard: t.Boolean({
 		default: true,
 		title: "Leaderboard",
@@ -54,4 +54,14 @@ export namespace ContestModel {
 	export const update = t.Omit(_updateSchema, ["id"]);
 
 	export const settings = contestSettingsSchema;
+
+	export const snapshot = t.Record(
+		t.String(),
+		t.Record(t.Number(), t.String()),
+	);
+
+	export const timeline = t.Object({
+		createdAt: t.Date(),
+		patch: snapshot,
+	});
 }

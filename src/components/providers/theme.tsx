@@ -2,7 +2,7 @@
 
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { ScriptOnce } from "@tanstack/react-router";
+import { ClientOnly, ScriptOnce } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { LucideMoon, LucideSun } from "lucide-react";
 import {
@@ -88,7 +88,9 @@ export function ThemeToggle({
 			onClick={toggle}
 			className={cn("rounded-full", className)}
 		>
-			{theme === "dark" ? <LucideSun /> : <LucideMoon />}
+			<ClientOnly>
+				{theme === "dark" ? <LucideSun /> : <LucideMoon />}
+			</ClientOnly>
 		</Button>
 	);
 }

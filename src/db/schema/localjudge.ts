@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+	bigserial,
 	boolean,
 	check,
 	foreignKey,
@@ -14,7 +15,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import type { contestSettingsSchema } from "@/api/contest/model";
+import { ContestModel } from "@/api/contest/model";
 import { user } from "./auth";
 
 export const localjudgeSchema = pgSchema("localjudge");
@@ -39,7 +40,7 @@ export const contest = localjudgeSchema.table(
 		startTime: timestamp("start_time", { withTimezone: true }).notNull(),
 		endTime: timestamp("end_time", { withTimezone: true }).notNull(),
 		settings: jsonb("settings")
-			.$type<typeof contestSettingsSchema.static>()
+			.$type<typeof ContestModel.settings.static>()
 			.notNull(),
 		...timestamps,
 	},
@@ -50,11 +51,15 @@ export const contestRelations = relations(contest, ({ many }) => ({
 	problems: many(problem),
 	registrations: many(registration),
 	submissions: many(submission),
+	snapshots: many(timeline),
+	latestSnapshot: many(snapshot),
 }));
 
 export const userRelations = relations(user, ({ many }) => ({
 	submissions: many(submission),
 	registrations: many(registration),
+	snapshots: many(timeline),
+	latestSnapshots: many(timeline),
 }));
 
 /**
@@ -207,9 +212,7 @@ export const statusEnum = localjudgeSchema.enum("status", [
 	"XX",
 ]);
 
-/**
- * Represents the result of a submission for a specific test case.
- */
+/** Represents the result of a submission for a specific test case. */
 export const result = localjudgeSchema.table(
 	"result",
 	{
@@ -238,5 +241,75 @@ export const resultRelations = relations(result, ({ one }) => ({
 	submission: one(submission, {
 		fields: [result.submissionId],
 		references: [submission.id],
+	}),
+}));
+
+/**
+ * Stores patches that make the history of how the user edited their content.
+ */
+export const timeline = localjudgeSchema.table("timeline", {
+	id: bigserial("id", { mode: "number" }).primaryKey(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, {
+			onDelete: "cascade",
+			onUpdate: "cascade",
+		}),
+	contestId: text("contest_id")
+		.notNull()
+		.references(() => contest.id, {
+			onDelete: "cascade",
+			onUpdate: "cascade",
+		}),
+	patch: jsonb("patch").$type<typeof ContestModel.snapshot.static>().notNull(),
+	createdAt: timestamps.createdAt,
+});
+
+export const timelineRelations = relations(timeline, ({ one }) => ({
+	user: one(user, {
+		fields: [timeline.userId],
+		references: [user.id],
+	}),
+	contest: one(contest, {
+		fields: [timeline.contestId],
+		references: [contest.id],
+	}),
+}));
+
+/**
+ * The most recent snapshots that the user synced with the server to generate
+ * the timeline.
+ */
+export const snapshot = localjudgeSchema.table(
+	"snapshot",
+	{
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
+		contestId: text("contest_id")
+			.notNull()
+			.references(() => contest.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			}),
+		content: jsonb("content")
+			.$type<typeof ContestModel.snapshot.static>()
+			.notNull(),
+		...timestamps,
+	},
+	(t) => [primaryKey({ columns: [t.userId, t.contestId] })],
+);
+
+export const snapshotRelations = relations(snapshot, ({ one }) => ({
+	user: one(user, {
+		fields: [snapshot.userId],
+		references: [user.id],
+	}),
+	contest: one(contest, {
+		fields: [snapshot.contestId],
+		references: [contest.id],
 	}),
 }));

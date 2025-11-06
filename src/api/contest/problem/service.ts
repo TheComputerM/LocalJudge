@@ -1,7 +1,11 @@
 import { and, asc, eq, gt, sql } from "drizzle-orm";
+import { get } from "es-toolkit/compat";
 import { db } from "@/db";
 import * as table from "@/db/schema";
+import boilerplateYAML from "./boilerplate.yaml?raw";
 import { ProblemModel } from "./model";
+
+const boilerplate = Bun.YAML.parse(boilerplateYAML) as Record<string, string>;
 
 export namespace ProblemService {
 	export async function isExists(contestId: string, problemNumber: number) {
@@ -66,6 +70,28 @@ export namespace ProblemService {
 				eq(table.submission.problemNumber, problemNumber),
 			),
 		});
+	}
+
+	export async function getSnapshot(
+		userId: string,
+		contestId: string,
+		problemNumber: number,
+		language: string,
+	) {
+		const latest = await db.query.snapshot.findFirst({
+			columns: {
+				content: true,
+			},
+			where: and(
+				eq(table.snapshot.contestId, contestId),
+				eq(table.snapshot.userId, userId),
+			),
+		});
+		return get(
+			latest,
+			["content", language, problemNumber],
+			boilerplate[language] ?? "",
+		);
 	}
 }
 

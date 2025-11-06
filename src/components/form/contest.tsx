@@ -67,15 +67,6 @@ export const ContestForm = withForm({
 						{(field) => <field.DateTimePicker label="End time" />}
 					</form.AppField>
 				</div>
-				<form.AppField name="settings.leaderboard">
-					{(field) => {
-						const { title, description } =
-							ContestModel.settings.properties.leaderboard;
-						return (
-							<field.ToggleSwitch label={title} description={description} />
-						);
-					}}
-				</form.AppField>
 				<form.AppField name="settings.languages">
 					{(field) => {
 						const { title, description } =
@@ -100,6 +91,15 @@ export const ContestForm = withForm({
 								description={description}
 								min={0}
 							/>
+						);
+					}}
+				</form.AppField>
+				<form.AppField name="settings.leaderboard">
+					{(field) => {
+						const { title, description } =
+							ContestModel.settings.properties.leaderboard;
+						return (
+							<field.ToggleSwitch label={title} description={description} />
 						);
 					}}
 				</form.AppField>

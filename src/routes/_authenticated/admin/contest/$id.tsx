@@ -8,15 +8,24 @@ import {
 	LucideCircleQuestionMark,
 	LucideNotebook,
 	LucideSettings,
+	LucideUsers,
 } from "lucide-react";
+import { localjudge } from "@/api/client";
 import {
 	NavigationMenu,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/contest/$id")({
+	beforeLoad: async ({ params }) => {
+		const contest = await rejectError(
+			localjudge.contest({ id: params.id }).get(),
+		);
+		return { contest };
+	},
 	component: RouteComponent,
 });
 
@@ -36,6 +45,12 @@ const links = linkOptions([
 	},
 	{
 		from: Route.fullPath,
+		to: "./settings",
+		label: "Participants",
+		icon: LucideUsers,
+	},
+	{
+		from: Route.fullPath,
 		to: "./problem",
 		label: "Problems",
 		icon: LucideCircleQuestionMark,
@@ -44,8 +59,8 @@ const links = linkOptions([
 
 function Navbar() {
 	return (
-		<NavigationMenu className="max-w-full pb-4 border-b">
-			<NavigationMenuList className="gap-2">
+		<NavigationMenu className="max-w-full p-2 mb-3 bg-sidebar rounded-md">
+			<NavigationMenuList className="gap-2 justify-start">
 				{links.map((link) => (
 					<NavigationMenuItem key={link.to}>
 						<NavigationMenuLink
@@ -66,7 +81,6 @@ function RouteComponent() {
 	return (
 		<>
 			<Navbar />
-			<br />
 			<Outlet />
 		</>
 	);

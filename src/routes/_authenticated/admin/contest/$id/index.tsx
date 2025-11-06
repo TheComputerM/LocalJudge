@@ -4,6 +4,7 @@ import {
 	LucideFileBadge,
 	LucideFolderArchive,
 	LucideTrash,
+	LucideTrophy,
 } from "lucide-react";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
@@ -25,7 +26,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/admin/contest/$id/")({
 	loader: async ({ params }) => {
 		const overview = await rejectError(
-			localjudge.contest({ id: params.id }).overview.get(),
+			localjudge.admin.contest({ id: params.id }).overview.get(),
 		);
 		return { overview };
 	},
@@ -128,6 +129,36 @@ function InspectContest() {
 	);
 }
 
+function ContestLeaderboard() {
+	const id = Route.useParams({ select: ({ id }) => id });
+	return (
+		<Item>
+			<ItemContent>
+				<ItemTitle>View Leaderboard</ItemTitle>
+				<ItemDescription>
+					View the top 20 participants of this contest on the leaderboard, it
+					doesn't matter if the leaderboard option was disabled for the
+					participants.
+				</ItemDescription>
+			</ItemContent>
+			<ItemActions>
+				<Button
+					render={
+						<Link
+							to="/contest/$id/leaderboard"
+							params={{ id }}
+							target="_blank"
+						/>
+					}
+				>
+					Leaderboard
+					<LucideTrophy />
+				</Button>
+			</ItemActions>
+		</Item>
+	);
+}
+
 function RouteComponent() {
 	const overview = Route.useLoaderData({ select: ({ overview }) => overview });
 	return (
@@ -142,6 +173,10 @@ function RouteComponent() {
 			<ItemGroup>
 				<InspectContest />
 				<ItemSeparator />
+				<ContestLeaderboard />
+			</ItemGroup>
+			<Separator className="my-6" />
+			<ItemGroup>
 				<DownloadSubmissions />
 				<ItemSeparator />
 				<DownloadResults />

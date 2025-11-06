@@ -1,6 +1,6 @@
+import { patchMake, patchToText } from "diff-match-patch-es";
 import {
 	and,
-	countDistinct,
 	desc,
 	eq,
 	getTableColumns,
@@ -9,6 +9,8 @@ import {
 	notExists,
 	sql,
 } from "drizzle-orm";
+import { toMerged } from "es-toolkit";
+import { get, setWith } from "es-toolkit/compat";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { ContestModel } from "./model";
@@ -64,7 +66,7 @@ export namespace ContestService {
 		return registrations;
 	}
 
-	export async function leaderboard(id: string) {
+	export async function leaderboard(contestId: string) {
 		const firstSubmissions = db
 			.selectDistinctOn([table.submission.problemNumber], {
 				id: table.submission.id,
@@ -75,7 +77,7 @@ export namespace ContestService {
 			.where(
 				and(
 					eq(table.submission.userId, sql.raw(`"user"."id"`)),
-					eq(table.submission.contestId, id),
+					eq(table.submission.contestId, contestId),
 					notExists(
 						db
 							.select({ value: sql`1` })
@@ -112,7 +114,7 @@ export namespace ContestService {
 					db
 						.select({ data: table.registration.userId })
 						.from(table.registration)
-						.where(eq(table.registration.contestId, id)),
+						.where(eq(table.registration.contestId, contestId)),
 				),
 			)
 			.as("leaderboard");
@@ -122,6 +124,59 @@ export namespace ContestService {
 			.from(leaderboard)
 			.orderBy(sql`JSONB_ARRAY_LENGTH("submissions") desc`)
 			.limit(20);
+	}
+
+	function calculatePatch(
+		current: typeof ContestModel.snapshot.static,
+		old: typeof ContestModel.snapshot.static,
+	) {
+		const output = {} as typeof ContestModel.snapshot.static;
+		for (const language in current) {
+			for (const problem in current[language]) {
+				const previous: string = get(old, [language, problem], "");
+				const patch = patchMake(previous, current[language][problem]);
+				if (patch.length > 0) {
+					setWith(output, [language, problem], patchToText(patch), Object);
+				}
+			}
+		}
+		return output;
+	}
+
+	/** Updates the snapshot and creates an entry on the timeline */
+	export async function snapshot(
+		contestId: string,
+		userId: string,
+		content: typeof ContestModel.snapshot.static,
+	) {
+		const latest = await db.query.snapshot.findFirst({
+			columns: {
+				content: true,
+			},
+			where: and(
+				eq(table.snapshot.contestId, contestId),
+				eq(table.snapshot.userId, userId),
+			),
+		});
+		const previous = latest
+			? latest.content
+			: ({} as typeof ContestModel.snapshot.static);
+
+		const patch = calculatePatch(content, previous);
+
+		// don't update if previous state is the same as the current one
+		if (Object.keys(patch).length === 0) return;
+
+		await db.insert(table.timeline).values({ contestId, userId, patch });
+		await db
+			.insert(table.snapshot)
+			.values({ contestId, userId, content: toMerged(previous, content) })
+			.onConflictDoUpdate({
+				target: [table.snapshot.contestId, table.snapshot.userId],
+				set: {
+					content: sql.raw(`excluded.${table.snapshot.content.name}`),
+				},
+			});
 	}
 }
 
@@ -139,24 +194,5 @@ export namespace ContestAdminService {
 
 	export async function remove(id: string) {
 		await db.delete(table.contest).where(eq(table.contest.id, id));
-	}
-
-	export async function overview(id: string) {
-		const [registrations, submitters, submissions] = await Promise.all([
-			db.$count(table.registration, eq(table.registration.contestId, id)),
-			db
-				.select({
-					data: countDistinct(table.submission.userId),
-				})
-				.from(table.submission)
-				.where(eq(table.submission.contestId, id)),
-			db.$count(table.submission, eq(table.submission.contestId, id)),
-		]);
-
-		return {
-			registrations,
-			submitters: submitters[0].data,
-			submissions,
-		};
 	}
 }

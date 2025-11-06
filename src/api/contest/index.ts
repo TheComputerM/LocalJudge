@@ -110,24 +110,6 @@ export const contestApp = new Elysia({
 										description: "Delete a specific contest by its ID",
 									},
 								},
-							)
-							.get(
-								"/overview",
-								async ({ params }) => {
-									return ContestAdminService.overview(params.id);
-								},
-								{
-									response: t.Object({
-										registrations: t.Number(),
-										submitters: t.Number(),
-										submissions: t.Number(),
-									}),
-									detail: {
-										summary: "Contest overview",
-										description:
-											"Get an overview of a specific contest including registrations and submissions count",
-									},
-								},
 							),
 				)
 				.onBeforeHandle(async ({ params, auth }) => {
@@ -182,6 +164,19 @@ export const contestApp = new Elysia({
 							summary: "Get submissions for contest",
 							description:
 								"Get all submissions made by the current user for a specific contest",
+						},
+					},
+				)
+				.post(
+					"/snapshot",
+					async ({ body, auth, params }) => {
+						await ContestService.snapshot(params.id, auth.user.id, body);
+					},
+					{
+						body: ContestModel.snapshot,
+						detail: {
+							summary: "Snapshot solution",
+							description: "Take a snapshot of the users solution",
 						},
 					},
 				)

@@ -1,15 +1,10 @@
-// needed because of elysia openai type analysis
-/// <reference types="vite/client" />
 import Elysia, { sse, status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { LocalboxService } from "@/api/localbox/service";
 import { APIParams } from "@/api/models/params";
-import boilerplateYAML from "./boilerplate.yaml?raw";
 import { ProblemModel } from "./model";
 import { ProblemAdminService, ProblemService } from "./service";
 import { testcaseApp } from "./testcase";
-
-const boilerplate = Bun.YAML.parse(boilerplateYAML) as Record<string, string>;
 
 export const problemApp = new Elysia({
 	prefix: "/problem",
@@ -150,13 +145,19 @@ export const problemApp = new Elysia({
 					},
 				)
 				.get(
-					"/boilerplate/:language",
-					async ({ params }) => {
-						return boilerplate[params.language] ?? "";
+					"/snapshot/:language",
+					async ({ params, auth }) => {
+						return ProblemService.getSnapshot(
+							auth.user.id,
+							params.id,
+							params.problem,
+							params.language,
+						);
 					},
 					{
+						response: t.String(),
 						detail: {
-							summary: "Get boilerplate code",
+							summary: "Get code from snapshot",
 							description: "Get boilerplate code for a specific language",
 						},
 					},

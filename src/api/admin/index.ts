@@ -44,7 +44,6 @@ export const adminApp = new Elysia({
 			.group(
 				"/:id",
 				{
-					params: t.Object({ id: APIParams.contest }),
 					beforeHandle: async ({ params }) => {
 						if (!(await ContestService.isExists(params.id))) {
 							return status(404, "Contest not found");
@@ -52,25 +51,54 @@ export const adminApp = new Elysia({
 					},
 				},
 				(app) =>
-					app.get(
-						"/results",
-						async ({ params, set }) => {
-							const [output, contestName] = await Promise.all([
-								AdminService.getResults(params.id),
-								ContestService.getContest(params.id).then((c) => c!.name),
-							]);
-							set.headers["Content-Type"] = "application/json";
-							set.headers["Content-Disposition"] =
-								`attachment; filename="${contestName} results.json"`;
-							return JSON.stringify(output, null, 2);
-						},
-						{
-							detail: {
-								summary: "Get contest results",
-								description: "Get the results for a specific contest",
+					app
+						.get(
+							"/overview",
+							async ({ params }) => {
+								return AdminService.contestOverview(params.id);
 							},
-						},
-					),
+							{
+								response: t.Object({
+									registrations: t.Number(),
+									submitters: t.Number(),
+									submissions: t.Number(),
+								}),
+								detail: {
+									summary: "Contest overview",
+									description:
+										"Get an overview of a specific contest including registrations and submissions count",
+								},
+							},
+						)
+						.get(
+							"/results",
+							async ({ params, set }) => {
+								const [output, contestName] = await Promise.all([
+									AdminService.getResults(params.id),
+									ContestService.getContest(params.id).then((c) => c!.name),
+								]);
+								set.headers["Content-Type"] = "application/json";
+								set.headers["Content-Disposition"] =
+									`attachment; filename="${contestName} results.json"`;
+								return JSON.stringify(output, null, 2);
+							},
+							{
+								detail: {
+									summary: "Get contest results",
+									description:
+										"Download the results in for a specific contest in JSON format.",
+								},
+							},
+						)
+						.get(
+							"/timeline/:user",
+							async ({ params }) => {
+								return AdminService.timeline(params.user, params.id);
+							},
+							{
+								response: t.Array(ContestModel.timeline),
+							},
+						),
 			),
 	)
 	.get(

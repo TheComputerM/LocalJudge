@@ -97,6 +97,15 @@ CREATE TABLE "localjudge"."result" (
 	CONSTRAINT "result_submission_id_testcase_number_pk" PRIMARY KEY("submission_id","testcase_number")
 );
 --> statement-breakpoint
+CREATE TABLE "localjudge"."snapshot" (
+	"user_id" text NOT NULL,
+	"contest_id" text NOT NULL,
+	"content" jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "snapshot_user_id_contest_id_pk" PRIMARY KEY("user_id","contest_id")
+);
+--> statement-breakpoint
 CREATE TABLE "localjudge"."submission" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text NOT NULL,
@@ -118,12 +127,24 @@ CREATE TABLE "localjudge"."testcase" (
 	CONSTRAINT "valid_number" CHECK ("localjudge"."testcase"."number" > 0)
 );
 --> statement-breakpoint
+CREATE TABLE "localjudge"."timeline" (
+	"id" bigserial PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"contest_id" text NOT NULL,
+	"patch" jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth"."session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "localjudge"."problem" ADD CONSTRAINT "problem_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "localjudge"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "localjudge"."registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "localjudge"."registration" ADD CONSTRAINT "registration_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "localjudge"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "localjudge"."result" ADD CONSTRAINT "result_submission_id_submission_id_fk" FOREIGN KEY ("submission_id") REFERENCES "localjudge"."submission"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."snapshot" ADD CONSTRAINT "snapshot_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."snapshot" ADD CONSTRAINT "snapshot_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "localjudge"."contest"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "localjudge"."submission" ADD CONSTRAINT "submission_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "localjudge"."submission" ADD CONSTRAINT "submission_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "localjudge"."problem"("contest_id","number") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-ALTER TABLE "localjudge"."testcase" ADD CONSTRAINT "testcase_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "localjudge"."problem"("contest_id","number") ON DELETE cascade ON UPDATE cascade;
+ALTER TABLE "localjudge"."testcase" ADD CONSTRAINT "testcase_contest_id_problem_number_problem_contest_id_number_fk" FOREIGN KEY ("contest_id","problem_number") REFERENCES "localjudge"."problem"("contest_id","number") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."timeline" ADD CONSTRAINT "timeline_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "localjudge"."timeline" ADD CONSTRAINT "timeline_contest_id_contest_id_fk" FOREIGN KEY ("contest_id") REFERENCES "localjudge"."contest"("id") ON DELETE cascade ON UPDATE cascade;

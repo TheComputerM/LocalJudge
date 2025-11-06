@@ -1,5 +1,5 @@
 {
-	"id": "4cc8f9a7-6674-49de-b833-5a6b99bf7545",
+	"id": "d04fd27a-ea07-411b-9e2d-03d35a03c09f",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -595,6 +595,77 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
+		"localjudge.snapshot": {
+			"name": "snapshot",
+			"schema": "localjudge",
+			"columns": {
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"contest_id": {
+					"name": "contest_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"content": {
+					"name": "content",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"snapshot_user_id_user_id_fk": {
+					"name": "snapshot_user_id_user_id_fk",
+					"tableFrom": "snapshot",
+					"tableTo": "user",
+					"schemaTo": "auth",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
+				},
+				"snapshot_contest_id_contest_id_fk": {
+					"name": "snapshot_contest_id_contest_id_fk",
+					"tableFrom": "snapshot",
+					"tableTo": "contest",
+					"schemaTo": "localjudge",
+					"columnsFrom": ["contest_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
+				}
+			},
+			"compositePrimaryKeys": {
+				"snapshot_user_id_contest_id_pk": {
+					"name": "snapshot_user_id_contest_id_pk",
+					"columns": ["user_id", "contest_id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
 		"localjudge.submission": {
 			"name": "submission",
 			"schema": "localjudge",
@@ -742,6 +813,71 @@
 					"value": "\"localjudge\".\"testcase\".\"number\" > 0"
 				}
 			},
+			"isRLSEnabled": false
+		},
+		"localjudge.timeline": {
+			"name": "timeline",
+			"schema": "localjudge",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "bigserial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"contest_id": {
+					"name": "contest_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"patch": {
+					"name": "patch",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"timeline_user_id_user_id_fk": {
+					"name": "timeline_user_id_user_id_fk",
+					"tableFrom": "timeline",
+					"tableTo": "user",
+					"schemaTo": "auth",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
+				},
+				"timeline_contest_id_contest_id_fk": {
+					"name": "timeline_contest_id_contest_id_fk",
+					"tableFrom": "timeline",
+					"tableTo": "contest",
+					"schemaTo": "localjudge",
+					"columnsFrom": ["contest_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "cascade"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
 			"isRLSEnabled": false
 		}
 	},

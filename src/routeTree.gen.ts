@@ -36,6 +36,7 @@ import { Route as AuthenticatedAdminContestIdIndexRouteImport } from './routes/_
 import { Route as AuthenticatedContestIdProblemProblemRouteImport } from './routes/_authenticated/contest/$id/problem/$problem'
 import { Route as AuthenticatedAdminContestIdSettingsRouteImport } from './routes/_authenticated/admin/contest/$id/settings'
 import { Route as AuthenticatedAdminContestIdProblemIndexRouteImport } from './routes/_authenticated/admin/contest/$id/problem/index'
+import { Route as AuthenticatedAdminContestIdTimelineUserRouteImport } from './routes/_authenticated/admin/contest/$id/timeline/$user'
 import { Route as AuthenticatedAdminContestIdProblemNewRouteImport } from './routes/_authenticated/admin/contest/$id/problem/new'
 import { Route as AuthenticatedAdminContestIdProblemProblemRouteImport } from './routes/_authenticated/admin/contest/$id/problem/$problem'
 
@@ -190,6 +191,12 @@ const AuthenticatedAdminContestIdProblemIndexRoute =
     path: '/problem/',
     getParentRoute: () => AuthenticatedAdminContestIdRoute,
   } as any)
+const AuthenticatedAdminContestIdTimelineUserRoute =
+  AuthenticatedAdminContestIdTimelineUserRouteImport.update({
+    id: '/timeline/$user',
+    path: '/timeline/$user',
+    getParentRoute: () => AuthenticatedAdminContestIdRoute,
+  } as any)
 const AuthenticatedAdminContestIdProblemNewRoute =
   AuthenticatedAdminContestIdProblemNewRouteImport.update({
     id: '/problem/new',
@@ -231,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/contest/$id/problem/': typeof AuthenticatedContestIdProblemIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AuthenticatedAdminContestIdProblemProblemRoute
   '/admin/contest/$id/problem/new': typeof AuthenticatedAdminContestIdProblemNewRoute
+  '/admin/contest/$id/timeline/$user': typeof AuthenticatedAdminContestIdTimelineUserRoute
   '/admin/contest/$id/problem': typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 export interface FileRoutesByTo {
@@ -256,6 +264,7 @@ export interface FileRoutesByTo {
   '/contest/$id/problem': typeof AuthenticatedContestIdProblemIndexRoute
   '/admin/contest/$id/problem/$problem': typeof AuthenticatedAdminContestIdProblemProblemRoute
   '/admin/contest/$id/problem/new': typeof AuthenticatedAdminContestIdProblemNewRoute
+  '/admin/contest/$id/timeline/$user': typeof AuthenticatedAdminContestIdTimelineUserRoute
   '/admin/contest/$id/problem': typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 export interface FileRoutesById {
@@ -288,6 +297,7 @@ export interface FileRoutesById {
   '/_authenticated/contest/$id/problem/': typeof AuthenticatedContestIdProblemIndexRoute
   '/_authenticated/admin/contest/$id/problem/$problem': typeof AuthenticatedAdminContestIdProblemProblemRoute
   '/_authenticated/admin/contest/$id/problem/new': typeof AuthenticatedAdminContestIdProblemNewRoute
+  '/_authenticated/admin/contest/$id/timeline/$user': typeof AuthenticatedAdminContestIdTimelineUserRoute
   '/_authenticated/admin/contest/$id/problem/': typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 export interface FileRouteTypes {
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/contest/$id/problem/'
     | '/admin/contest/$id/problem/$problem'
     | '/admin/contest/$id/problem/new'
+    | '/admin/contest/$id/timeline/$user'
     | '/admin/contest/$id/problem'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/contest/$id/problem'
     | '/admin/contest/$id/problem/$problem'
     | '/admin/contest/$id/problem/new'
+    | '/admin/contest/$id/timeline/$user'
     | '/admin/contest/$id/problem'
   id:
     | '__root__'
@@ -376,6 +388,7 @@ export interface FileRouteTypes {
     | '/_authenticated/contest/$id/problem/'
     | '/_authenticated/admin/contest/$id/problem/$problem'
     | '/_authenticated/admin/contest/$id/problem/new'
+    | '/_authenticated/admin/contest/$id/timeline/$user'
     | '/_authenticated/admin/contest/$id/problem/'
   fileRoutesById: FileRoutesById
 }
@@ -578,6 +591,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminContestIdProblemIndexRouteImport
       parentRoute: typeof AuthenticatedAdminContestIdRoute
     }
+    '/_authenticated/admin/contest/$id/timeline/$user': {
+      id: '/_authenticated/admin/contest/$id/timeline/$user'
+      path: '/timeline/$user'
+      fullPath: '/admin/contest/$id/timeline/$user'
+      preLoaderRoute: typeof AuthenticatedAdminContestIdTimelineUserRouteImport
+      parentRoute: typeof AuthenticatedAdminContestIdRoute
+    }
     '/_authenticated/admin/contest/$id/problem/new': {
       id: '/_authenticated/admin/contest/$id/problem/new'
       path: '/problem/new'
@@ -600,6 +620,7 @@ interface AuthenticatedAdminContestIdRouteChildren {
   AuthenticatedAdminContestIdIndexRoute: typeof AuthenticatedAdminContestIdIndexRoute
   AuthenticatedAdminContestIdProblemProblemRoute: typeof AuthenticatedAdminContestIdProblemProblemRoute
   AuthenticatedAdminContestIdProblemNewRoute: typeof AuthenticatedAdminContestIdProblemNewRoute
+  AuthenticatedAdminContestIdTimelineUserRoute: typeof AuthenticatedAdminContestIdTimelineUserRoute
   AuthenticatedAdminContestIdProblemIndexRoute: typeof AuthenticatedAdminContestIdProblemIndexRoute
 }
 
@@ -613,6 +634,8 @@ const AuthenticatedAdminContestIdRouteChildren: AuthenticatedAdminContestIdRoute
       AuthenticatedAdminContestIdProblemProblemRoute,
     AuthenticatedAdminContestIdProblemNewRoute:
       AuthenticatedAdminContestIdProblemNewRoute,
+    AuthenticatedAdminContestIdTimelineUserRoute:
+      AuthenticatedAdminContestIdTimelineUserRoute,
     AuthenticatedAdminContestIdProblemIndexRoute:
       AuthenticatedAdminContestIdProblemIndexRoute,
   }

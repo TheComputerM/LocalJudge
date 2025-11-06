@@ -206,18 +206,16 @@ function Source() {
 		select: ({ submission }) => submission,
 	});
 	return (
-		<div>
-			<div className="flex items-center mb-1">
+		<div className="flex flex-col gap-1 grow">
+			<div className="flex items-center justify-between">
 				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
 					Source
 				</h4>
-				<div className="grow" />
 				<Button size="icon" variant="ghost">
 					<LucideCopy />
 				</Button>
 			</div>
 			<Editor
-				height="280px"
 				theme={theme === "dark" ? "vs-dark" : "light"}
 				language={submission.language}
 				value={submission.content}
@@ -241,7 +239,7 @@ function RouteComponent() {
 				Submission
 			</h2>
 			<br />
-			<div className="grid grid-cols-2 gap-3">
+			<div className="flex gap-3">
 				<div>
 					<h4 className="scroll-m-20 text-xl font-semibold tracking-tight mb-2">
 						Details

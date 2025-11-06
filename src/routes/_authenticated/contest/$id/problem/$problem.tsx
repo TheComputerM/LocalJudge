@@ -25,8 +25,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsPanel, TabsTrigger } from "@/components/ui/tabs";
 import { toastManager } from "@/components/ui/toast";
+import { SolutionSnapshotter } from "@/lib/client/solution-snapshot";
 import {
 	SolutionStoreProvider,
 	useSolutionStore,
@@ -60,9 +61,6 @@ export const Route = createFileRoute(
 function SubmitCode() {
 	const { id, problem } = Route.useParams();
 	const store = useSolutionStore();
-	const testcasesCount = Route.useLoaderData({
-		select: (data) => data.testcases.length,
-	});
 
 	async function handleSubmit() {
 		const { data: results, error } = await localjudge
@@ -171,13 +169,13 @@ function TestcaseList() {
 		<Tabs
 			orientation="vertical"
 			className="w-full flex-row items-start mt-2"
-			defaultValue={testcases[0]?.number.toString()}
+			defaultValue={testcases[0]?.number}
 		>
 			<TabsList className="flex-col h-auto" aria-label="Testcases">
 				{testcases.map((tc) => (
 					<TabsTrigger
 						disabled={tc.hidden}
-						value={tc.number.toString()}
+						value={tc.number}
 						key={tc.number}
 						className="w-full"
 					>
@@ -187,9 +185,9 @@ function TestcaseList() {
 			</TabsList>
 			<div className="grow pl-4">
 				{testcases.map((tc) => (
-					<TabsContent key={tc.number} value={tc.number.toString()}>
+					<TabsPanel key={tc.number} value={tc.number}>
 						<TestcaseContent number={tc.number} />
-					</TabsContent>
+					</TabsPanel>
 				))}
 			</div>
 		</Tabs>
@@ -220,7 +218,7 @@ function CodeEditor() {
 	const value = useStore(store.content);
 
 	const throttledUpdate = useThrottledCallback(store.setContent, {
-		wait: 500,
+		wait: 1000,
 	});
 
 	return (
@@ -233,7 +231,7 @@ function CodeEditor() {
 			options={{
 				folding: false,
 				lineNumbers: "on",
-				fontFamily: "'JetBrains Mono Variable', monospace",
+				fontFamily: "var(--font-mono), monospace",
 				padding: {
 					top: 8,
 				},
@@ -254,7 +252,10 @@ function RouteComponent() {
 					Problems
 				</div>
 				<SubmitCode />
-				<LanguageSelect />
+				<div className="inline-flex items-center gap-2">
+					<SolutionSnapshotter />
+					<LanguageSelect />
+				</div>
 			</div>
 			<ResizablePanelGroup direction="horizontal" className="h-full">
 				<ResizablePanel className="py-2 px-4">
@@ -263,12 +264,12 @@ function RouteComponent() {
 							<TabsTrigger value="statement">Statement</TabsTrigger>
 							<TabsTrigger value="testcases">Testcases</TabsTrigger>
 						</TabsList>
-						<TabsContent value="statement">
+						<TabsPanel value="statement">
 							<ProblemStatement />
-						</TabsContent>
-						<TabsContent value="testcases">
+						</TabsPanel>
+						<TabsPanel value="testcases">
 							<TestcaseList />
-						</TabsContent>
+						</TabsPanel>
 					</Tabs>
 				</ResizablePanel>
 				<ResizableHandle />

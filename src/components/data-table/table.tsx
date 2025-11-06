@@ -49,7 +49,10 @@ export default function DataTable<TData>({
 					))
 				) : (
 					<TableRow>
-						<TableCell className="h-24 text-center">
+						<TableCell
+							className="h-24 text-center"
+							colSpan={table.getVisibleLeafColumns().length}
+						>
 							No entries found.
 						</TableCell>
 					</TableRow>

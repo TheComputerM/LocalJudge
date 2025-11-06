@@ -1,8 +1,6 @@
-import { asc, desc, eq, inArray } from "drizzle-orm";
-import { ParticipantModel } from "@/api/models/participant";
+import { and, asc, countDistinct, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
-import { auth } from "@/lib/auth";
 
 export namespace AdminService {
 	export async function getOverview() {
@@ -25,6 +23,25 @@ export namespace AdminService {
 		return db.query.contest.findMany({
 			orderBy: asc(table.contest.startTime),
 		});
+	}
+
+	export async function contestOverview(id: string) {
+		const [registrations, submitters, submissions] = await Promise.all([
+			db.$count(table.registration, eq(table.registration.contestId, id)),
+			db
+				.select({
+					data: countDistinct(table.submission.userId),
+				})
+				.from(table.submission)
+				.where(eq(table.submission.contestId, id)),
+			db.$count(table.submission, eq(table.submission.contestId, id)),
+		]);
+
+		return {
+			registrations,
+			submitters: submitters[0].data,
+			submissions,
+		};
 	}
 
 	export async function getResults(contestId: string) {
@@ -53,6 +70,20 @@ export namespace AdminService {
 					orderBy: desc(table.submission.createdAt),
 				},
 			},
+		});
+	}
+
+	export async function timeline(userId: string, contestId: string) {
+		return db.query.timeline.findMany({
+			columns: {
+				patch: true,
+				createdAt: true,
+			},
+			where: and(
+				eq(table.timeline.contestId, contestId),
+				eq(table.timeline.userId, userId),
+			),
+			orderBy: asc(table.timeline.createdAt),
 		});
 	}
 }
