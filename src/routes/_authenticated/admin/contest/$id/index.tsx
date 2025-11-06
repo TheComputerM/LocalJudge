@@ -8,8 +8,13 @@ import {
 } from "lucide-react";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
-import { StatsGrid } from "@/components/stats-grid";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Item,
 	ItemActions,
@@ -163,12 +168,18 @@ function RouteComponent() {
 	const overview = Route.useLoaderData({ select: ({ overview }) => overview });
 	return (
 		<div>
-			<StatsGrid
-				data={Object.entries(overview).map(([name, value]) => ({
-					name: name.charAt(0).toUpperCase() + name.slice(1),
-					value: value.toString(),
-				}))}
-			/>
+			<div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+				{Object.entries(overview).map(([name, value]) => (
+					<Card key={name}>
+						<CardHeader>
+							<CardDescription className="capitalize">{name}</CardDescription>
+							<CardTitle className="text-2xl font-semibold tabular-nums">
+								{value}
+							</CardTitle>
+						</CardHeader>
+					</Card>
+				))}
+			</div>
 			<Separator className="my-6" />
 			<ItemGroup>
 				<InspectContest />
