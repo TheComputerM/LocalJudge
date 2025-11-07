@@ -8,7 +8,7 @@ export function Navbar({ children }: { children: React.ReactNode }) {
 				<Button
 					render={
 						<a
-							href="https://github.com/TheComputerM/LocalJudge/stargazers"
+							href="https://github.com/TheComputerM/localjudge/stargazers"
 							target="_blank"
 						/>
 					}

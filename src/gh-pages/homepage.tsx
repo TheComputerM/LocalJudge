@@ -55,7 +55,7 @@ function Features() {
 						className="w-full"
 						render={
 							<a
-								href="https://github.com/TheComputerM/LocalJudge"
+								href="https://github.com/TheComputerM/localjudge"
 								target="_blank"
 							/>
 						}

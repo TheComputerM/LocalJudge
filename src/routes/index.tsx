@@ -40,7 +40,7 @@ function Hero() {
 						className="text-base shadow-none"
 						render={
 							<a
-								href="https://github.com/TheComputerM/LocalJudge"
+								href="https://github.com/TheComputerM/localjudge"
 								target="_blank"
 							/>
 						}
