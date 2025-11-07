@@ -10,7 +10,7 @@
 		"check": "biome check src",
 		"pages": "vite dev -c ./src/gh-pages/vite.config.ts",
 		"pages:build": "vite build -c ./src/gh-pages/vite.config.ts",
-		"pages:deploy": "gh-pages -d src/gh-pages/dist",
+		"pages:deploy": "bun pages:build && gh-pages -d src/gh-pages/dist",
 		"db:migrate": "bun run ./scripts/db/migrate.ts",
 		"db:reset": "bun run ./scripts/db/reset.ts",
 		"db:clean": "bun run ./scripts/db/clean.ts",
