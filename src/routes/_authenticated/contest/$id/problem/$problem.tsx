@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { LucideCloudUpload } from "lucide-react";
-import Markdown from "react-markdown";
+import { Fragment } from "react";
+import { Streamdown } from "streamdown";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
@@ -200,10 +201,12 @@ function ProblemStatement() {
 	});
 
 	return (
-		<div className="prose prose-neutral dark:prose-invert">
-			<h1>{problem.title}</h1>
-			<Markdown>{problem.description}</Markdown>
-		</div>
+		<Fragment>
+			<h3 className="scroll-m-20 text-xl md:text-3xl font-semibold tracking-tight">
+				{problem.title}
+			</h3>
+			<Streamdown>{problem.description}</Streamdown>
+		</Fragment>
 	);
 }
 

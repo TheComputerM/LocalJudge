@@ -17,7 +17,6 @@ export function SolutionSnapshotter() {
 	const solutions = useStore(store.solutions, (state) => state.solutions);
 	const debouncer = useAsyncDebouncer(
 		async (item: typeof solutions) => {
-			console.log(item);
 			await rejectError(
 				localjudge.contest({ id: contestId }).snapshot.post(item),
 			);

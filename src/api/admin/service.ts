@@ -25,6 +25,18 @@ export namespace AdminService {
 		});
 	}
 
+	export async function getParticipants(contestId: string) {
+		return db.query.user.findMany({
+			where: inArray(
+				table.user.id,
+				db
+					.select({ data: table.registration.userId })
+					.from(table.registration)
+					.where(eq(table.registration.contestId, contestId)),
+			),
+		});
+	}
+
 	export async function contestOverview(id: string) {
 		const [registrations, submitters, submissions] = await Promise.all([
 			db.$count(table.registration, eq(table.registration.contestId, id)),

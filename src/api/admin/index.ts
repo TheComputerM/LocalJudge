@@ -91,12 +91,29 @@ export const adminApp = new Elysia({
 							},
 						)
 						.get(
+							"/participant",
+							async ({ params }) => {
+								return AdminService.getParticipants(params.id);
+							},
+							{
+								detail: {
+									summary: "Get contest participants",
+									description: "Gwt all the participants of a contest.",
+								},
+							},
+						)
+						.get(
 							"/timeline/:user",
 							async ({ params }) => {
 								return AdminService.timeline(params.user, params.id);
 							},
 							{
 								response: t.Array(ContestModel.timeline),
+								detail: {
+									summary: "Get timeline for a user",
+									description:
+										"Get the edit history timeline for a specific user in a contest.",
+								},
 							},
 						),
 			),

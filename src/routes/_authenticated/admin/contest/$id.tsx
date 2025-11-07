@@ -45,7 +45,7 @@ const links = linkOptions([
 	},
 	{
 		from: Route.fullPath,
-		to: "./settings",
+		to: "./participant",
 		label: "Participants",
 		icon: LucideUsers,
 	},

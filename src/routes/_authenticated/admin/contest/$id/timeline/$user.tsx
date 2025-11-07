@@ -51,7 +51,7 @@ export const Route = createFileRoute(
 
 const historyStore = new Store({
 	selected: 0,
-	language: "cpp",
+	language: "",
 	problem: 1,
 	patchsets: [] as Record<string, Record<number, Patch[]>>[],
 });
