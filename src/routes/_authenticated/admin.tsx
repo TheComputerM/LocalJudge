@@ -10,6 +10,7 @@ import {
 	LucideCog,
 	LucideLayoutDashboard,
 	LucidePackage,
+	LucideSearchCode,
 	LucideTableProperties,
 	LucideUsers,
 } from "lucide-react";
@@ -51,7 +52,8 @@ const navLinks = linkOptions([
 		activeOptions: { exact: true },
 	},
 	{ to: "/admin/contest", label: "Contests", icon: LucideTableProperties },
-	{ to: "/admin/participant", label: "Participants", icon: LucideUsers },
+	{ to: "/admin/user", label: "Users", icon: LucideUsers },
+	{ to: "/admin/submissions", label: "Submissions", icon: LucideSearchCode },
 	{ to: "/admin/languages", label: "Languages", icon: LucidePackage },
 	{ to: "/admin/configuration", label: "Configuration", icon: LucideCog },
 ]);

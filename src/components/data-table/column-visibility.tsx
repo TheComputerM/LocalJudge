@@ -1,5 +1,5 @@
 import { Table } from "@tanstack/react-table";
-import { LucideSettings2 } from "lucide-react";
+import { LucideColumns } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "../ui/button";
 import { Select, SelectItem, SelectPopup, SelectTrigger } from "../ui/select";
@@ -32,9 +32,10 @@ export default function DataTableColumnVisibility<TData>({
 		>
 			<SelectTrigger
 				className="min-w-auto w-fit"
+				nativeButton
 				render={
 					<Button variant="outline">
-						<LucideSettings2 />
+						<LucideColumns />
 						Columns
 					</Button>
 				}

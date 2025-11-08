@@ -11,6 +11,7 @@ import {
 	LucideUserLock,
 } from "lucide-react";
 import { Fragment } from "react";
+import { BufferTextBlock } from "@/components/buffer-text-block";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -38,6 +39,14 @@ function Features() {
 						<LucideServer />
 					</CardAction>
 				</CardHeader>
+				<CardPanel>
+					<BufferTextBlock label="shell">
+						{[
+							"git clone https://github.com/TheComputerM/localjudge",
+							"docker compose up -d",
+						].join("\n")}
+					</BufferTextBlock>
+				</CardPanel>
 			</Card>
 			<Card>
 				<CardHeader>

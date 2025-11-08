@@ -21,74 +21,75 @@ export default function DataTablePagination<TData>({
 }: {
 	table: Table<TData>;
 }) {
-	const ranges = useMemo(() => {
-		const totalPages = table.getPageCount();
-		const pageSize = table.getState().pagination.pageSize;
-		return Array.from({ length: totalPages }, (_, i) => ({
-			value: i,
-			label: `${i * pageSize + 1}-${(i + 1) * pageSize}`,
-		}));
-	}, [table]);
+	const pages = useMemo(
+		() =>
+			Array.from({ length: table.getPageCount() }, (_, i) => ({
+				label: i + 1,
+				value: i,
+			})),
+		[table],
+	);
 
 	return (
-		<div className="flex items-center justify-between gap-2">
-			<div className="flex items-center gap-1.5 whitespace-nowrap text-sm">
-				<span className="text-muted-foreground">Viewing</span>
-				<Select
-					value={table.getState().pagination.pageIndex}
-					items={ranges}
-					onValueChange={(value) => {
-						table.setPageIndex(value);
-					}}
-				>
-					<SelectTrigger
-						className="min-w-none w-fit"
-						size="sm"
-						aria-label="Select result range"
+		<Pagination>
+			<PaginationContent className="w-full justify-between gap-2">
+				<PaginationItem>
+					<PaginationPrevious
+						className="sm:*:[svg]:hidden"
+						render={
+							<Button
+								variant="outline"
+								disabled={!table.getCanPreviousPage()}
+								onClick={() => table.previousPage()}
+							/>
+						}
+					/>
+				</PaginationItem>
+				<PaginationItem className="mx-2">
+					<div
+						className="text-sm text-muted-foreground inline-flex items-center gap-1.5"
+						aria-live="polite"
 					>
-						<SelectValue />
-					</SelectTrigger>
-					<SelectPopup>
-						{ranges.map(({ label, value }) => (
-							<SelectItem key={value} value={value}>
-								{label}
-							</SelectItem>
-						))}
-					</SelectPopup>
-				</Select>
-			</div>
-			<div>
-				<Pagination>
-					<PaginationContent className="w-full justify-between gap-2">
-						<PaginationItem>
-							<PaginationPrevious
-								className="sm:*:[svg]:hidden"
-								render={
-									<Button
-										variant="outline"
-										size="sm"
-										disabled={!table.getCanPreviousPage()}
-										onClick={() => table.previousPage()}
-									/>
-								}
+						Page
+						<Select
+							items={pages}
+							value={table.getState().pagination.pageIndex}
+							onValueChange={(value) => {
+								table.setPageIndex(value);
+							}}
+						>
+							<SelectTrigger
+								size="sm"
+								className="min-w-none w-min"
+								aria-label="Select page"
+							>
+								<SelectValue />
+							</SelectTrigger>
+							<SelectPopup>
+								{pages.map(({ value, label }) => (
+									<SelectItem key={value} value={value}>
+										{label}
+									</SelectItem>
+								))}
+							</SelectPopup>
+						</Select>
+						of
+						<span className="text-foreground">{table.getPageCount()}</span>
+					</div>
+				</PaginationItem>
+				<PaginationItem>
+					<PaginationNext
+						className="sm:*:[svg]:hidden"
+						render={
+							<Button
+								variant="outline"
+								disabled={!table.getCanNextPage()}
+								onClick={() => table.nextPage()}
 							/>
-						</PaginationItem>
-						<PaginationItem>
-							<PaginationNext
-								className="sm:*:[svg]:hidden"
-								render={
-									<Button
-										variant="outline"
-										size="sm"
-										disabled={!table.getCanNextPage()}
-										onClick={() => table.nextPage()}
-									/>
-								}
-							/>
-						</PaginationItem>
-					</PaginationContent>
-				</Pagination>
-			</div>
-		</div>
+						}
+					/>
+				</PaginationItem>
+			</PaginationContent>
+		</Pagination>
 	);
 }

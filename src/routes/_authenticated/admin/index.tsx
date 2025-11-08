@@ -57,10 +57,7 @@ function RecentSubmissions() {
 			accessorKey: "user.name",
 			header: "User",
 			cell: ({ row, getValue }) => (
-				<Link
-					to="/admin/participant/$user"
-					params={{ user: row.original.userId }}
-				>
+				<Link to="/admin/user/$user" params={{ user: row.original.userId }}>
 					{getValue<string>()}
 				</Link>
 			),

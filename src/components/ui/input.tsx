@@ -1,21 +1,33 @@
 import { Input as InputPrimitive } from "@base-ui-components/react/input";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
+
+type InputProps = Omit<
+	InputPrimitive.Props & React.RefAttributes<HTMLInputElement>,
+	"size"
+> & {
+	size?: "sm" | "default" | "lg" | number;
+	unstyled?: boolean;
+};
 
 function Input({
 	className,
 	size = "default",
+	unstyled = false,
 	...props
-}: Omit<InputPrimitive.Props, "size"> & {
-	size?: "sm" | "default" | "lg" | number;
-}) {
+}: InputProps) {
 	return (
 		<span
 			data-slot="input-control"
-			className={cn(
-				"relative inline-flex w-full rounded-lg border border-input bg-background bg-clip-padding text-base/5 shadow-xs ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] has-focus-visible:border-ring has-focus-visible:ring-[3px] has-disabled:opacity-64 has-aria-invalid:border-destructive/36 has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 sm:text-sm dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:has-aria-invalid:ring-destructive/24 [&:has(:disabled,:focus-visible,[aria-invalid])]:shadow-none",
-				className,
-			)}
+			data-size={size}
+			className={
+				cn(
+					!unstyled &&
+						"relative inline-flex w-full rounded-lg border border-input bg-background bg-clip-padding text-base/5 shadow-xs ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:not-has-focus-visible:not-has-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] has-focus-visible:border-ring has-focus-visible:ring-[3px] has-disabled:opacity-64 has-aria-invalid:border-destructive/36 has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 has-[:disabled,:focus-visible,[aria-invalid]]:shadow-none sm:text-sm dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:not-has-disabled:not-has-focus-visible:not-has-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:has-aria-invalid:ring-destructive/24",
+					className,
+				) || undefined
+			}
 		>
 			<InputPrimitive
 				data-slot="input"
@@ -36,4 +48,4 @@ function Input({
 	);
 }
 
-export { Input };
+export { Input, type InputProps };

@@ -98,20 +98,28 @@ function RouteComponent() {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{providers.map(([provider, config]) => (
-								<TableRow key={provider}>
-									<TableCell>{provider}</TableCell>
-									<TableCell>
-										<ul>
-											{config.map(([key, value]) => (
-												<li key={key}>
-													{key}: {value}
-												</li>
-											))}
-										</ul>
+							{providers.length > 0 ? (
+								providers.map(([provider, config]) => (
+									<TableRow key={provider}>
+										<TableCell>{provider}</TableCell>
+										<TableCell>
+											<ul>
+												{config.map(([key, value]) => (
+													<li key={key}>
+														{key}: {value}
+													</li>
+												))}
+											</ul>
+										</TableCell>
+									</TableRow>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={2} className="text-center">
+										No authentication providers configured.
 									</TableCell>
 								</TableRow>
-							))}
+							)}
 						</TableBody>
 					</Table>
 				</FramePanel>

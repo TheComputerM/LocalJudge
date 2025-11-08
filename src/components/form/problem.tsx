@@ -1,11 +1,11 @@
-import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { LucideSave } from "lucide-react";
 import { useState } from "react";
+import { Streamdown } from "streamdown";
 import { ProblemModel } from "@/api/contest/problem/model";
-import { TestcaseModel } from "@/api/contest/problem/testcase/model";
 import { FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "../ui/label";
 import { withForm } from "./primitives";
 import {
 	TestcasesFieldGroup,
@@ -38,7 +38,15 @@ export const ProblemForm = withForm({
 					{(field) => <field.TextField label="Title" />}
 				</form.AppField>
 				<form.AppField name="problem.description">
-					{(field) => <field.Textarea label="Description" />}
+					{(field) => (
+						<div className="grid grid-cols-2 gap-2">
+							<field.Textarea label="Description" />
+							<div>
+								<Label>Preview</Label>
+								<Streamdown>{field.state.value}</Streamdown>
+							</div>
+						</div>
+					)}
 				</form.AppField>
 				<div className="grid grid-cols-2 gap-4">
 					<form.AppField name="problem.timeLimit">

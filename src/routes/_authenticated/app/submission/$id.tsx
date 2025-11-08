@@ -1,7 +1,7 @@
 import { Editor } from "@monaco-editor/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { LucideCopy } from "lucide-react";
+import { LucideCheck, LucideCopy } from "lucide-react";
 import { Fragment } from "react";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
@@ -15,8 +15,9 @@ import {
 	AccordionPanel,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { CopyBadge } from "@/components/ui/copy-badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -26,6 +27,7 @@ import {
 	TableHead,
 	TableRow,
 } from "@/components/ui/table";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/app/submission/$id")({
@@ -82,18 +84,19 @@ function TestcaseContent(props: {
 		);
 	}
 
-	if (error) {
+	if (error || data === undefined) {
 		return (
-			<div className="text-red-500 col-span-2">
-				Failed to load testcases: {JSON.stringify(error)}
-			</div>
+			<Alert variant="error">
+				<AlertTitle>Failed to load testcases:</AlertTitle>
+				<AlertDescription>{JSON.stringify(error)}</AlertDescription>
+			</Alert>
 		);
 	}
 
 	return (
 		<Fragment>
-			<BufferTextBlock label="Input">{data?.input}</BufferTextBlock>
-			<BufferTextBlock label="Expected Output">{data?.output}</BufferTextBlock>
+			<BufferTextBlock label="Input">{data.input}</BufferTextBlock>
+			<BufferTextBlock label="Expected Output">{data.output}</BufferTextBlock>
 		</Fragment>
 	);
 }
@@ -163,10 +166,7 @@ function Details() {
 				<TableRow>
 					<TableHead>ID</TableHead>
 					<TableCell>
-						<Badge size="sm">
-							<LucideCopy />
-							{submission.id}
-						</Badge>
+						<CopyBadge size="sm">{submission.id}</CopyBadge>
 					</TableCell>
 				</TableRow>
 				<TableRow>
@@ -200,6 +200,15 @@ function Details() {
 	);
 }
 
+function SourceCopy({ content }: { content: string }) {
+	const [copy, isCopied] = useCopyToClipboard();
+	return (
+		<Button size="icon" variant="ghost" onClick={() => copy(content)}>
+			{isCopied ? <LucideCheck /> : <LucideCopy />}
+		</Button>
+	);
+}
+
 function Source() {
 	const [theme] = useTheme();
 	const submission = Route.useLoaderData({
@@ -211,9 +220,7 @@ function Source() {
 				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
 					Source
 				</h4>
-				<Button size="icon" variant="ghost">
-					<LucideCopy />
-				</Button>
+				<SourceCopy content={submission.content} />
 			</div>
 			<Editor
 				theme={theme === "dark" ? "vs-dark" : "light"}

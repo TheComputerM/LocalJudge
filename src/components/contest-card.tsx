@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { useTime } from "@/hooks/use-time";
 import { Pill, PillIndicator, PillIndicatorProps } from "./kibo-ui/pill";
+import { CopyBadge } from "./ui/copy-badge";
 
 function ContestStatusBadge(props: { startTime: Date; endTime: Date }) {
 	const time = useTime();
@@ -73,7 +74,9 @@ export function ContestCard(props: {
 		<Card>
 			<CardHeader>
 				<CardTitle>{props.name}</CardTitle>
-				<CardDescription>ID: {props.id}</CardDescription>
+				<CardDescription className="inline-flex items-center gap-2">
+					ID: <CopyBadge variant="outline">{props.id}</CopyBadge>
+				</CardDescription>
 				<CardAction>
 					<ContestStatusBadge
 						startTime={props.startTime}

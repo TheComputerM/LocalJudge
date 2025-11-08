@@ -1,17 +1,14 @@
+import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { Compile } from "@sinclair/typemap";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import {
-	ClientOnly,
-	createFileRoute,
-	Link,
-	useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import {
 	ColumnDef,
 	getCoreRowModel,
 	getFilteredRowModel,
 	PaginationState,
+	SortingState,
 	useReactTable,
 	VisibilityState,
 } from "@tanstack/react-table";
@@ -19,40 +16,42 @@ import type { UserWithRole } from "better-auth/plugins";
 import { parse as csvParse } from "csv/browser/esm/sync";
 import {
 	LucideCopy,
-	LucideEdit,
+	LucideEye,
 	LucideFileUp,
 	LucideMoreHorizontal,
 	LucidePlus,
+	LucideSearch,
 	LucideTrash,
 } from "lucide-react";
-import { Suspense, useMemo, useState } from "react";
-import { ParticipantModel } from "@/api/models/participant";
+import { useMemo, useState } from "react";
+import { ConfirmActionDialog } from "@/components/confirm-action";
 import {
 	DataTable,
+	DataTableColumnHeader,
 	DataTableColumnVisibility,
 	DataTablePagination,
 } from "@/components/data-table";
 import { useAppForm } from "@/components/form/primitives";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogClose,
-	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
+	DialogPopup,
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { FieldSet } from "@/components/ui/field";
-import {
-	Frame,
-	FrameFooter,
-	FrameHeader,
-	FramePanel,
-} from "@/components/ui/frame";
 import { Input } from "@/components/ui/input";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "@/components/ui/input-group";
 import {
 	Menu,
 	MenuItem,
@@ -66,17 +65,28 @@ import { toastManager } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth/client";
 import { rejectError } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/admin/participant/")({
+export const Route = createFileRoute("/_authenticated/admin/user/")({
 	component: RouteComponent,
+});
+
+const UserModel = Type.Object({
+	name: Type.String({ title: "Name", examples: ["John Doe"] }),
+	email: Type.String({
+		title: "Email",
+		format: "email",
+		default: "",
+		examples: ["a@example.com"],
+	}),
+	password: Type.String({ title: "Password" }),
 });
 
 function NewParticipantDialog() {
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
 	const form = useAppForm({
-		defaultValues: Value.Create(ParticipantModel.insert),
+		defaultValues: Value.Create(UserModel),
 		validators: {
-			onChange: Compile(ParticipantModel.insert),
+			onChange: Compile(UserModel),
 		},
 		onSubmit: async ({ value }) => {
 			const { error } = await authClient.admin.createUser({
@@ -103,7 +113,7 @@ function NewParticipantDialog() {
 			<DialogTrigger render={<Button variant="outline" />}>
 				New <LucidePlus />
 			</DialogTrigger>
-			<DialogContent>
+			<DialogPopup>
 				<DialogHeader>
 					<DialogTitle>Create New Participant</DialogTitle>
 					<DialogDescription>
@@ -123,9 +133,7 @@ function NewParticipantDialog() {
 							{(field) => (
 								<field.TextField
 									label="Name"
-									placeholder={
-										ParticipantModel.insert.properties.name.examples?.[0]
-									}
+									placeholder={UserModel.properties.name.examples?.[0]}
 								/>
 							)}
 						</form.AppField>
@@ -133,9 +141,7 @@ function NewParticipantDialog() {
 							{(field) => (
 								<field.TextField
 									label="Email"
-									placeholder={
-										ParticipantModel.insert.properties.email.examples?.[0]
-									}
+									placeholder={UserModel.properties.email.examples?.[0]}
 									type="email"
 								/>
 							)}
@@ -151,7 +157,7 @@ function NewParticipantDialog() {
 						<Button type="submit">Create</Button>
 					</DialogFooter>
 				</form>
-			</DialogContent>
+			</DialogPopup>
 		</Dialog>
 	);
 }
@@ -197,7 +203,7 @@ function ImportParticipantsDialog() {
 			<DialogTrigger render={<Button />}>
 				Import <LucideFileUp />
 			</DialogTrigger>
-			<DialogContent>
+			<DialogPopup>
 				<DialogHeader>
 					<DialogTitle>Import Participants</DialogTitle>
 					<DialogDescription>
@@ -214,7 +220,7 @@ function ImportParticipantsDialog() {
 						<Button type="submit">Import</Button>
 					</DialogFooter>
 				</form>
-			</DialogContent>
+			</DialogPopup>
 		</Dialog>
 	);
 }
@@ -224,11 +230,14 @@ function ParticipantsTable() {
 		pageIndex: 0,
 		pageSize: 15,
 	});
-
+	const [search, setSearch] = useState("");
+	const [sorting, setSorting] = useState<SortingState>([
+		{ id: "createdAt", desc: true },
+	]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-	const { data, error } = useQuery({
-		queryKey: ["auth", "users", pagination],
+	const { data, error, isLoading } = useQuery({
+		queryKey: ["users", pagination, search, sorting],
 		placeholderData: keepPreviousData,
 		queryFn: async () =>
 			rejectError(
@@ -236,8 +245,15 @@ function ParticipantsTable() {
 					query: {
 						limit: pagination.pageSize,
 						offset: pagination.pageSize * pagination.pageIndex,
-						sortBy: "createdAt",
-						sortDirection: "desc",
+						searchOperator: "contains",
+						searchValue: search,
+						searchField: "email",
+						sortBy: sorting[0]?.id,
+						sortDirection: sorting[0]
+							? sorting[0].desc
+								? "desc"
+								: "asc"
+							: undefined,
 					},
 				}),
 			),
@@ -246,29 +262,38 @@ function ParticipantsTable() {
 	const columns: ColumnDef<UserWithRole>[] = useMemo(
 		() => [
 			{
-				header: "Name",
 				accessorKey: "name",
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column}>Name</DataTableColumnHeader>
+				),
 			},
 			{
-				header: "Email",
 				accessorKey: "email",
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column}>Email</DataTableColumnHeader>
+				),
 			},
 			{
 				header: "Role",
 				accessorKey: "role",
 				cell: ({ getValue }) => (
-					<Badge>{getValue<UserWithRole["role"]>()?.toLocaleUpperCase()}</Badge>
+					<Badge>{getValue<UserWithRole["role"]>()}</Badge>
 				),
 			},
 			{
-				header: "Onboarded on",
 				accessorKey: "createdAt",
 				cell: ({ getValue }) =>
 					getValue<UserWithRole["createdAt"]>().toLocaleString(),
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column}>
+						Created at
+					</DataTableColumnHeader>
+				),
 			},
 			{
 				id: "actions",
 				enableHiding: false,
+				enableSorting: false,
 				cell: ({ row }) => {
 					const userId = row.original.id;
 					return (
@@ -280,26 +305,34 @@ function ParticipantsTable() {
 								<LucideMoreHorizontal />
 							</MenuTrigger>
 							<MenuPopup align="end">
-								<MenuItem>
+								<MenuItem onClick={() => navigator.clipboard.writeText(userId)}>
 									<LucideCopy /> Copy ID
 								</MenuItem>
 								<MenuItem
 									render={
-										<Link
-											to="/admin/participant/$user"
-											params={{ user: userId }}
-										/>
+										<Link to="/admin/user/$user" params={{ user: userId }} />
 									}
 								>
-									<LucideEdit />
-									Edit
+									<LucideEye />
+									View
 								</MenuItem>
 								<MenuSeparator />
-
-								<MenuItem variant="destructive">
-									<LucideTrash />
-									Delete
-								</MenuItem>
+								<ConfirmActionDialog
+									onConfirm={async () => {
+										await rejectError(
+											authClient.admin.removeUser({
+												userId,
+											}),
+										);
+									}}
+									nativeButton={false}
+									trigger={
+										<MenuItem variant="destructive" closeOnClick={false}>
+											<LucideTrash />
+											Delete
+										</MenuItem>
+									}
+								/>
 							</MenuPopup>
 						</Menu>
 					);
@@ -318,29 +351,52 @@ function ParticipantsTable() {
 		manualPagination: true,
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
+		manualFiltering: true,
+		manualSorting: true,
+		onSortingChange: setSorting,
 		state: {
 			pagination,
 			columnVisibility,
+			sorting,
 		},
 	});
 
-	if (!data) {
-		return null;
+	if (isLoading) {
+		return (
+			<div className="flex justify-center items-center h-64">
+				<Spinner />
+			</div>
+		);
+	}
+
+	if (error || !data) {
+		return (
+			<Alert variant="error">
+				<AlertTitle>Failed to load participants</AlertTitle>
+				<AlertDescription>{JSON.stringify(error)}</AlertDescription>
+			</Alert>
+		);
 	}
 
 	return (
-		<div>
-			<div className="flex items-center justify-end mb-4">
+		<div className="flex flex-col gap-4">
+			<div className="flex items-center justify-between">
+				<InputGroup className="max-w-xs">
+					<InputGroupInput
+						placeholder="Search emails..."
+						className="max-w-xs"
+						value={search}
+						onValueChange={(value) => setSearch(value)}
+					/>
+					<InputGroupAddon>
+						<LucideSearch />
+					</InputGroupAddon>
+				</InputGroup>
 				<DataTableColumnVisibility table={table} />
 			</div>
-			<Frame>
-				<FramePanel>
-					<DataTable table={table} />
-				</FramePanel>
-				<FrameFooter>
-					<DataTablePagination table={table} />
-				</FrameFooter>
-			</Frame>
+			<DataTable table={table} />
+
+			<DataTablePagination table={table} />
 		</div>
 	);
 }
@@ -350,7 +406,7 @@ function RouteComponent() {
 		<>
 			<div className="flex items-center justify-between">
 				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
-					Participants
+					Users
 				</h1>
 				<div className="inline-flex gap-2">
 					<NewParticipantDialog />
@@ -358,11 +414,7 @@ function RouteComponent() {
 				</div>
 			</div>
 			<Separator className="my-6" />
-			<Suspense fallback={<Spinner className="mx-auto" />}>
-				<ClientOnly>
-					<ParticipantsTable />
-				</ClientOnly>
-			</Suspense>
+			<ParticipantsTable />
 		</>
 	);
 }

@@ -1,4 +1,4 @@
-import { and, asc, countDistinct, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, countDistinct, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 
@@ -27,6 +27,13 @@ export namespace AdminService {
 
 	export async function getParticipants(contestId: string) {
 		return db.query.user.findMany({
+			columns: {
+				id: true,
+				image: true,
+				name: true,
+				email: true,
+				banned: true,
+			},
 			where: inArray(
 				table.user.id,
 				db
@@ -34,6 +41,24 @@ export namespace AdminService {
 					.from(table.registration)
 					.where(eq(table.registration.contestId, contestId)),
 			),
+			extras: {
+				submissions: db
+					.$count(
+						table.submission,
+						and(
+							eq(
+								sql.raw(`submission.${table.submission.userId.name}`),
+								table.user.id,
+							),
+							eq(
+								sql.raw(`submission.${table.submission.contestId.name}`),
+								contestId,
+							),
+						),
+					)
+					.mapWith(Number)
+					.as("submissions"),
+			},
 		});
 	}
 

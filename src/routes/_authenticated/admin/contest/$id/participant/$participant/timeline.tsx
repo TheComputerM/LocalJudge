@@ -31,15 +31,15 @@ import { Spinner } from "@/components/ui/spinner";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute(
-	"/_authenticated/admin/contest/$id/timeline/$user",
+	"/_authenticated/admin/contest/$id/participant/$participant/timeline",
 )({
 	loader: async ({ params }) => {
 		const [timeline, problems] = await Promise.all([
 			rejectError(
 				localjudge.admin
 					.contest({ id: params.id })
-					.timeline({ user: params.user })
-					.get(),
+					.participant({ participant: params.participant })
+					.timeline.get(),
 			),
 			rejectError(localjudge.contest({ id: params.id }).problem.get()),
 		]);
@@ -71,8 +71,8 @@ function getPatchChange(patch: Patch): [number, number] {
 }
 
 function PatchAmountBadge({
-	added,
-	removed,
+	added = 0,
+	removed = 0,
 }: {
 	added: number;
 	removed: number;
@@ -80,10 +80,10 @@ function PatchAmountBadge({
 	return (
 		<Fragment>
 			<Badge size="sm" variant="success" className="rounded-e-none">
-				+ {added ?? 0}
+				+ {added}
 			</Badge>
 			<Badge size="sm" variant="error" className="rounded-s-none">
-				- {removed ?? 0}
+				- {removed}
 			</Badge>
 		</Fragment>
 	);
@@ -188,7 +188,6 @@ function DiffViewer() {
 
 	return (
 		<DiffEditor
-			height="90%"
 			theme={theme === "dark" ? "vs-dark" : "light"}
 			original={original}
 			modified={modified}
@@ -325,7 +324,9 @@ function RouteComponent() {
 					<LanguageSelector />
 					<ProblemSelector />
 				</div>
-				<DiffViewer />
+				<div className="grow rounded-md overflow-hidden">
+					<DiffViewer />
+				</div>
 			</div>
 		</div>
 	);

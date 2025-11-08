@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { UAParser } from "ua-parser-js";
 import { ConfirmActionDialog } from "@/components/confirm-action";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,13 +36,11 @@ import { rejectError } from "@/lib/utils";
 
 // TODO: add https://tanstack.com/router/latest/docs/integrations/query
 
-export const Route = createFileRoute("/_authenticated/admin/participant/$user")(
-	{
-		component: RouteComponent,
-	},
-);
+export const Route = createFileRoute("/_authenticated/admin/user/$user")({
+	component: RouteComponent,
+});
 
-function BanUser({ id }: { id: string }) {
+function BanUser() {
 	return (
 		<Item variant="outline">
 			<ItemContent>
@@ -60,7 +59,7 @@ function BanUser({ id }: { id: string }) {
 	);
 }
 
-function UnbanUser({ id }: { id: string }) {
+function UnbanUser() {
 	return (
 		<Item variant="outline">
 			<ItemContent>
@@ -80,7 +79,8 @@ function UnbanUser({ id }: { id: string }) {
 	);
 }
 
-function DeleteUser({ id }: { id: string }) {
+function DeleteUser() {
+	const userId = Route.useParams({ select: ({ user }) => user });
 	const navigate = Route.useNavigate();
 	return (
 		<Item variant="outline" className="border-destructive">
@@ -94,12 +94,8 @@ function DeleteUser({ id }: { id: string }) {
 			<ItemActions>
 				<ConfirmActionDialog
 					onConfirm={async () => {
-						await rejectError(
-							authClient.admin.removeUser({
-								userId: id,
-							}),
-						);
-						navigate({ to: "/admin/participant", replace: true });
+						await rejectError(authClient.admin.removeUser({ userId }));
+						navigate({ to: "/admin/user", replace: true });
 					}}
 					trigger={
 						<Button variant="destructive">
@@ -119,22 +115,26 @@ function getDeviceUserAgent(agent?: string) {
 	return `${browser} (${os.name})`;
 }
 
-function UserSessions({ id }: { id: string }) {
-	const { data, isError, isLoading, refetch } = useQuery({
-		queryKey: ["auth", "user", id, "sessions"],
-		queryFn: async () =>
-			rejectError(authClient.admin.listUserSessions({ userId: id })).then(
-				({ sessions }) => sessions,
-			),
+function UserSessions() {
+	const userId = Route.useParams({ select: ({ user }) => user });
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey: ["user", userId, "sessions"],
+		queryFn: async ({ queryKey }) =>
+			rejectError(
+				authClient.admin.listUserSessions({ userId: queryKey[1] }),
+			).then(({ sessions }) => sessions),
 	});
 
 	if (isLoading) {
 		return <Skeleton className="h-16" />;
 	}
 
-	if (isError || !data) {
+	if (error || data === undefined) {
 		return (
-			<div className="text-destructive-foreground">Error loading sessions</div>
+			<Alert>
+				<AlertTitle>Error loading sessions</AlertTitle>
+				<AlertDescription>{JSON.stringify(error)}</AlertDescription>
+			</Alert>
 		);
 	}
 
@@ -176,11 +176,11 @@ function UserSessions({ id }: { id: string }) {
 function RouteComponent() {
 	const userId = Route.useParams({ select: ({ user }) => user });
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["auth", "participant", userId],
+		queryKey: ["user", userId],
 		queryFn: async ({ queryKey }) =>
 			rejectError(
 				authClient.admin.getUser({
-					query: { id: queryKey[2] },
+					query: { id: queryKey[1] },
 				}),
 			) as Promise<UserWithRole>,
 	});
@@ -235,11 +235,11 @@ function RouteComponent() {
 							<CardDescription>Active sessions for this user.</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<UserSessions id={data.id} />
+							<UserSessions />
 						</CardContent>
 					</Card>
-					{data.banned ? <UnbanUser id={data.id} /> : <BanUser id={data.id} />}
-					<DeleteUser id={data.id} />
+					{data.banned ? <UnbanUser /> : <BanUser />}
+					<DeleteUser />
 				</TabsContent>
 				<TabsContent value="activity">TODO</TabsContent>
 			</div>

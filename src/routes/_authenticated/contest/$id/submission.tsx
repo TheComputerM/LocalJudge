@@ -1,16 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+	ColumnDef,
+	getCoreRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
+import { useMemo } from "react";
 import { localjudge } from "@/api/client";
+import { DataTable } from "@/components/data-table";
 import { SubmissionStatusBadge } from "@/components/submission-status-badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/contest/$id/submission")({
@@ -23,46 +22,61 @@ export const Route = createFileRoute("/_authenticated/contest/$id/submission")({
 	component: RouteComponent,
 });
 
-function Submissions() {
+function Submissionstable() {
 	const submissions = Route.useLoaderData({
 		select: ({ submissions }) => submissions,
 	});
-	return (
-		<>
-			{submissions.map((submission) => (
-				<TableRow key={submission.id}>
-					<TableCell>
-						<Link
-							from={Route.fullPath}
-							to="../problem/$problem"
-							params={{ problem: submission.problemNumber.toString() }}
-						>
-							{submission.problemNumber}. {submission.problem.title}
-						</Link>
-					</TableCell>
-					<TableCell>
-						<SubmissionStatusBadge id={submission.id} />
-					</TableCell>
-					<TableCell>{submission.language}</TableCell>
-					<TableCell>{submission.createdAt.toLocaleString()}</TableCell>
-					<TableCell>
-						<Button
-							variant="link"
-							render={
-								<Link
-									to="/app/submission/$id"
-									params={{ id: submission.id }}
-									target="_blank"
-								/>
-							}
-						>
-							View
-						</Button>
-					</TableCell>
-				</TableRow>
-			))}
-		</>
+
+	const columns: ColumnDef<(typeof submissions)[number]>[] = useMemo(
+		() => [
+			{
+				accessorKey: "problemNumber",
+				header: "Problem",
+				cell: ({ row, getValue }) =>
+					`${getValue<number>()}. ${row.original.problem.title}`,
+			},
+			{
+				id: "status",
+				header: "Status",
+				cell: ({ row }) => <SubmissionStatusBadge id={row.original.id} />,
+			},
+			{
+				accessorKey: "language",
+				header: "Language",
+			},
+			{
+				accessorKey: "createdAt",
+				header: "When",
+				cell: ({ getValue }) => getValue<Date>().toLocaleString(),
+			},
+			{
+				id: "link",
+				cell: ({ row }) => (
+					<Button
+						variant="link"
+						render={
+							<Link
+								to="/app/submission/$id"
+								params={{ id: row.original.id }}
+								target="_blank"
+							/>
+						}
+					>
+						View
+					</Button>
+				),
+			},
+		],
+		[],
 	);
+
+	const table = useReactTable({
+		data: submissions,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+	});
+
+	return <DataTable table={table} />;
 }
 
 function RouteComponent() {
@@ -72,20 +86,7 @@ function RouteComponent() {
 				Your Submissions
 			</h1>
 			<Separator className="my-6" />
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Problem</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Language</TableHead>
-						<TableHead>When</TableHead>
-						<TableHead aria-label="Link" />
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					<Submissions />
-				</TableBody>
-			</Table>
+			<Submissionstable />
 		</div>
 	);
 }

@@ -15,18 +15,20 @@ import { Spinner } from "./ui/spinner";
 import { toastManager } from "./ui/toast";
 
 export function ConfirmActionDialog({
-	trigger,
 	onConfirm,
+	trigger,
+	nativeButton,
 }: {
-	trigger: AlertDialogPrimitive.Trigger.Props["render"];
 	onConfirm?: () => void;
+	trigger: AlertDialogPrimitive.Trigger.Props["render"];
+	nativeButton?: boolean;
 }) {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	return (
 		<AlertDialog open={open} onOpenChange={setOpen}>
-			<AlertDialogTrigger render={trigger} />
+			<AlertDialogTrigger nativeButton={nativeButton} render={trigger} />
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Are you sure?</AlertDialogTitle>

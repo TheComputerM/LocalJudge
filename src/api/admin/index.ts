@@ -44,6 +44,9 @@ export const adminApp = new Elysia({
 			.group(
 				"/:id",
 				{
+					params: t.Object({
+						id: APIParams.contest,
+					}),
 					beforeHandle: async ({ params }) => {
 						if (!(await ContestService.isExists(params.id))) {
 							return status(404, "Contest not found");
@@ -97,24 +100,54 @@ export const adminApp = new Elysia({
 							},
 							{
 								detail: {
-									summary: "Get contest participants",
-									description: "Gwt all the participants of a contest.",
+									summary: "Get participants",
+									description: "Get all the participants of a contest.",
 								},
 							},
 						)
-						.get(
-							"/timeline/:user",
-							async ({ params }) => {
-								return AdminService.timeline(params.user, params.id);
-							},
+						.group(
+							"/participant/:participant",
 							{
-								response: t.Array(ContestModel.timeline),
-								detail: {
-									summary: "Get timeline for a user",
-									description:
-										"Get the edit history timeline for a specific user in a contest.",
-								},
+								params: t.Object({
+									id: APIParams.contest,
+									participant: t.String(),
+								}),
 							},
+							(app) =>
+								app
+									.get(
+										"/",
+										async ({ params }) => {
+											return SubmissionService.getSubmissions({
+												contest: params.id,
+												user: params.participant,
+											});
+										},
+										{
+											detail: {
+												summary: "Get submissions",
+												description:
+													"Get submissions for a specific participant in a contest.",
+											},
+										},
+									)
+									.get(
+										"/timeline",
+										async ({ params }) => {
+											return AdminService.timeline(
+												params.participant,
+												params.id,
+											);
+										},
+										{
+											response: t.Array(ContestModel.timeline),
+											detail: {
+												summary: "Get timeline",
+												description:
+													"Get the edit history timeline for a specific participant in a contest.",
+											},
+										},
+									),
 						),
 			),
 	)
@@ -122,12 +155,19 @@ export const adminApp = new Elysia({
 		"/submission",
 		async ({ query }) => {
 			return SubmissionService.getSubmissions(
-				{},
+				{ contest: query.contest, problem: query.problem, user: query.user },
 				query.pageSize,
 				(query.page! - 1) * query.pageSize!,
 			);
 		},
 		{
-			query: AdminModel.ListQuery,
+			query: t.Partial(
+				t.Object({
+					...AdminModel.PaginationQuery,
+					contest: APIParams.contest,
+					problem: APIParams.problem,
+					user: t.String(),
+				}),
+			),
 		},
 	);
