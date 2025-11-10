@@ -1,4 +1,5 @@
-import { clean, taskRunnerDB } from "./utils";
+import { clean } from "@/db/utils";
+import { taskRunnerDB } from "./utils";
 
 await clean(taskRunnerDB);
 
