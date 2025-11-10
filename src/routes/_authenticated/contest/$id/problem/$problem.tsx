@@ -10,6 +10,7 @@ import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
 import { BufferTextBlock } from "@/components/buffer-text-block";
 import { useTheme } from "@/components/providers/theme";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
 	ResizableHandle,
@@ -38,7 +39,7 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute(
 	"/_authenticated/contest/$id/problem/$problem",
 )({
-	loader: async ({ params, abortController, context }) => {
+	loader: async ({ params, abortController }) => {
 		const [problem, testcases] = await Promise.all([
 			rejectError(
 				localjudge
@@ -64,6 +65,11 @@ function SubmitCode() {
 	const store = useSolutionStore();
 
 	async function handleSubmit() {
+		const toastId = toastManager.add({
+			title: "Submission in progress...",
+			type: "loading",
+		});
+
 		const { data: results, error } = await localjudge
 			.contest({ id })
 			.problem({ problem })
@@ -71,7 +77,7 @@ function SubmitCode() {
 			.post(store.content.state);
 
 		if (error) {
-			toastManager.add({
+			toastManager.update(toastId, {
 				title: "Submission failed",
 				description: JSON.stringify(error),
 				type: "error",
@@ -79,10 +85,6 @@ function SubmitCode() {
 			return;
 		}
 
-		const toastId = toastManager.add({
-			title: "Submission in progress...",
-			type: "info",
-		});
 		let passed = 0;
 		let failed = 0;
 		for await (const { data } of results) {
@@ -103,7 +105,7 @@ function SubmitCode() {
 	}
 
 	return (
-		<Button variant="outline" onClick={handleSubmit}>
+		<Button variant="secondary" onClick={handleSubmit}>
 			<LucideCloudUpload />
 			Submit
 		</Button>
@@ -152,14 +154,20 @@ function TestcaseContent({ number }: { number: number }) {
 	});
 
 	if (isLoading) return <Skeleton className="h-64" />;
-	if (error || !data) return <div>Error: {JSON.stringify(error)}</div>;
+	if (error || data === undefined)
+		return (
+			<Alert>
+				<AlertTitle>Error loading testcase contest</AlertTitle>
+				<AlertDescription>{JSON.stringify(error)}</AlertDescription>
+			</Alert>
+		);
 
 	return (
-		<>
+		<Fragment>
 			<BufferTextBlock label="Input">{data.input}</BufferTextBlock>
 			<Separator className="my-4" />
 			<BufferTextBlock label="Expected Output">{data.output}</BufferTextBlock>
-		</>
+		</Fragment>
 	);
 }
 

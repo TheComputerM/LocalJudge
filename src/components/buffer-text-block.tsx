@@ -1,18 +1,18 @@
 import { LucideCheck, LucideCopy } from "lucide-react";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { cn } from "@/lib/utils";
-import { Separator } from "./ui/separator";
+import { Button } from "./ui/button";
 
 function CopyButton({ content }: { content: string }) {
 	const [copy, isCopied] = useCopyToClipboard();
 	return (
-		<button onClick={() => copy(content)}>
+		<Button size="icon-sm" variant="ghost" onClick={() => copy(content)}>
 			{isCopied ? (
 				<LucideCheck className="size-3" />
 			) : (
 				<LucideCopy className="size-3" />
 			)}
-		</button>
+		</Button>
 	);
 }
 
@@ -26,13 +26,12 @@ export function BufferTextBlock({
 	children: string;
 }) {
 	return (
-		<div className={cn("bg-muted/75 p-4 rounded-md", className)}>
-			<div className="flex justify-between items-center">
+		<div className={cn("bg-muted/75 rounded-md", className)}>
+			<div className="flex justify-between items-center px-4 py-1 border-b border-border">
 				<span className="text-muted-foreground text-xs uppercase">{label}</span>
 				<CopyButton content={children} />
 			</div>
-			<Separator className="my-2" />
-			<pre className="text-sm">{children}</pre>
+			<pre className="text-sm px-4 py-3">{children}</pre>
 		</div>
 	);
 }

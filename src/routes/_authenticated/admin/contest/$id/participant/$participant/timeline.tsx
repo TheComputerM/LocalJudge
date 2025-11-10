@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Store, useStore } from "@tanstack/react-store";
 import { formatDuration, intervalToDuration } from "date-fns";
 import { Patch, patchApply, patchFromText } from "diff-match-patch-es";
+import { isNil, isNotNil } from "es-toolkit";
 import { zip } from "es-toolkit/array";
 import { get } from "es-toolkit/compat";
 import { sum } from "es-toolkit/math";
@@ -105,12 +106,8 @@ const CheckpointItem = ({
 	});
 	const [added, removed] = useMemo(() => {
 		const scores = Object.values(patchset)
-			.map((x) =>
-				Object.values(x)
-					.map((patch) => patch.map(getPatchChange))
-					.flat(),
-			)
-			.flat();
+			.map((x) => Object.values(x).map((patch) => patch.map(getPatchChange)))
+			.flat(2);
 		return zip(...scores).map(sum) as [number, number];
 	}, [patchset]);
 
@@ -210,12 +207,9 @@ function LanguageSelector() {
 
 	const getChangeAmount = useCallback(
 		(language: string) => {
-			const patchset = history.patchsets.at(history.selected);
-			const changes = get(
-				patchset,
-				[language, history.problem],
-				[] as Patch[],
-			).map(getPatchChange);
+			const patchset = history.patchsets.at(history.selected)?.[language];
+			if (isNil(patchset)) return { added: 0, removed: 0 };
+			const changes = Object.values(patchset).flat().map(getPatchChange);
 			const [added, removed] = zip(...changes).map(sum);
 			return { added, removed };
 		},
@@ -260,11 +254,12 @@ function ProblemSelector() {
 	const getChangeAmount = useCallback(
 		(problem: number) => {
 			const patchset = history.patchsets.at(history.selected);
-			const changes = get(
-				patchset,
-				[history.language, problem],
-				[] as Patch[],
-			).map(getPatchChange);
+			if (isNil(patchset)) return { added: 0, removed: 0 };
+			const changes = Object.values(patchset)
+				.map((x) => x[problem])
+				.filter(isNotNil)
+				.flat()
+				.map(getPatchChange);
 			const [added, removed] = zip(...changes).map(sum);
 			return { added, removed };
 		},
@@ -304,8 +299,8 @@ function RouteComponent() {
 	useEffect(() => {
 		historyStore.setState((prev) => ({
 			...prev,
-			patchsets: timeline.map((entry) =>
-				mapValues(entry.patch, (problem) =>
+			patchsets: timeline.map(({ patch }) =>
+				mapValues(patch, (problem) =>
 					mapValues(problem, (patchText) => patchFromText(patchText)),
 				),
 			),

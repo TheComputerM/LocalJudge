@@ -2,6 +2,7 @@ import Elysia, { sse, status, t } from "elysia";
 import { betterAuthPlugin } from "@/api/better-auth";
 import { LocalboxService } from "@/api/localbox/service";
 import { APIParams } from "@/api/models/params";
+import { SubmissionService } from "@/api/submission/service";
 import { ProblemModel } from "./model";
 import { ProblemAdminService, ProblemService } from "./service";
 import { testcaseApp } from "./testcase";
@@ -127,7 +128,7 @@ export const problemApp = new Elysia({
 							params.language,
 							body,
 						);
-						const watcher = LocalboxService.notifier.get(submissionId);
+						const watcher = SubmissionService.notifier.get(submissionId);
 						if (!watcher) {
 							return;
 						}

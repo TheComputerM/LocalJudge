@@ -141,7 +141,7 @@ export const contestApp = new Elysia({
 				.get(
 					"/leaderboard",
 					async ({ params }) => {
-						return ContestService.leaderboard(params.id);
+						return ContestService.getLeaderboard(params.id);
 					},
 					{
 						detail: {
@@ -170,7 +170,7 @@ export const contestApp = new Elysia({
 				.post(
 					"/snapshot",
 					async ({ body, auth, params }) => {
-						await ContestService.snapshot(params.id, auth.user.id, body);
+						await ContestService.createSnapshot(params.id, auth.user.id, body);
 					},
 					{
 						body: ContestModel.snapshot,

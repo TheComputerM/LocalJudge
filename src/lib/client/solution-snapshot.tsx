@@ -1,7 +1,7 @@
 import { useAsyncDebouncer } from "@tanstack/react-pacer/async-debouncer";
 import { useParams } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import { LucideCircleCheckBig, LucideClock } from "lucide-react";
+import { LucideClock, LucideCloudCheck } from "lucide-react";
 import { Fragment, useEffect } from "react";
 import { localjudge } from "@/api/client";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +44,7 @@ export function SolutionSnapshotter() {
 				</Fragment>
 			) : (
 				<Fragment>
-					<LucideCircleCheckBig />
+					<LucideCloudCheck />
 					saved
 				</Fragment>
 			)}

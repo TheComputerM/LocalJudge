@@ -2,8 +2,16 @@ import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import * as table from "@/db/schema";
 import { SubmissionModel } from "./model";
+import { NotificationManager } from "./notification";
 
 export namespace SubmissionService {
+	export type SubmissionNotification = {
+		testcase: number;
+		status: string;
+	};
+
+	export const notifier = new NotificationManager<SubmissionNotification>();
+
 	export async function getSubmission(id: string) {
 		const submission = await db.query.submission.findFirst({
 			where: eq(table.submission.id, id),

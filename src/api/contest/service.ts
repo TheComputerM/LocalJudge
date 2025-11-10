@@ -66,7 +66,7 @@ export namespace ContestService {
 		return registrations;
 	}
 
-	export async function leaderboard(contestId: string) {
+	export async function getLeaderboard(contestId: string) {
 		const firstSubmissions = db
 			.selectDistinctOn([table.submission.problemNumber], {
 				id: table.submission.id,
@@ -144,7 +144,7 @@ export namespace ContestService {
 	}
 
 	/** Updates the snapshot and creates an entry on the timeline */
-	export async function snapshot(
+	export async function createSnapshot(
 		contestId: string,
 		userId: string,
 		content: typeof ContestModel.snapshot.static,

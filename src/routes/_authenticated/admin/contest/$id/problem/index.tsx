@@ -1,11 +1,13 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	LucideChevronDown,
 	LucideChevronUp,
 	LucideCircleQuestionMark,
 	LucideEdit,
+	LucideEllipsis,
 	LucideTrash,
 } from "lucide-react";
+import { Fragment } from "react";
 import { localjudge } from "@/api/client";
 import { ConfirmActionDialog } from "@/components/confirm-action";
 import { Button } from "@/components/ui/button";
@@ -16,7 +18,6 @@ import {
 	EmptyMedia,
 	EmptyTitle,
 } from "@/components/ui/empty";
-import { Group, GroupItem } from "@/components/ui/group";
 import {
 	Item,
 	ItemActions,
@@ -25,6 +26,13 @@ import {
 	ItemMedia,
 	ItemTitle,
 } from "@/components/ui/item";
+import {
+	Menu,
+	MenuItem,
+	MenuPopup,
+	MenuSeparator,
+	MenuTrigger,
+} from "@/components/ui/menu";
 import { Separator } from "@/components/ui/separator";
 import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
@@ -40,58 +48,6 @@ export const Route = createFileRoute(
 	},
 	component: RouteComponent,
 });
-
-function ProblemCard(props: { number: number; title: string }) {
-	const router = useRouter();
-	const contest = Route.useParams({ select: ({ id }) => id });
-	return (
-		<Item variant="muted">
-			<ItemMedia>
-				<Group aria-label="Reorder">
-					<GroupItem
-						render={<Button size="icon" variant="ghost" className="size-6" />}
-					>
-						<LucideChevronUp />
-					</GroupItem>
-					<GroupItem
-						render={<Button size="icon" variant="ghost" className="size-6" />}
-					>
-						<LucideChevronDown />
-					</GroupItem>
-				</Group>
-			</ItemMedia>
-			<ItemContent>
-				<ItemTitle>{props.title}</ItemTitle>
-			</ItemContent>
-			<ItemActions>
-				<Group>
-					<GroupItem
-						render={<Button size="icon-sm" aria-label="Delete Problem" />}
-					>
-						<LucideTrash />
-					</GroupItem>
-					<GroupItem
-						render={
-							<Button
-								render={
-									<Link
-										from={Route.fullPath}
-										to="./$problem"
-										params={{ problem: props.number.toString() }}
-									/>
-								}
-								size="sm"
-								aria-label="Edit Problem"
-							/>
-						}
-					>
-						<LucideEdit />
-					</GroupItem>
-				</Group>
-			</ItemActions>
-		</Item>
-	);
-}
 
 function EmptyProblems() {
 	return (
@@ -110,13 +66,70 @@ function EmptyProblems() {
 }
 
 function RouteComponent() {
+	const contestId = Route.useParams({ select: (p) => p.id });
 	const problems = Route.useLoaderData({ select: ({ problems }) => problems });
 	return (
-		<>
+		<Fragment>
 			{problems.length > 0 ? (
-				<ItemGroup className="gap-3">
-					{problems.map((problem) => (
-						<ProblemCard key={problem.number} {...problem} />
+				<ItemGroup className="gap-2">
+					{problems.map((problem, i) => (
+						<Item key={problem.number} variant="muted">
+							<ItemMedia>{problem.number}.</ItemMedia>
+							<ItemContent>
+								<ItemTitle>{problem.title}</ItemTitle>
+							</ItemContent>
+							<ItemActions>
+								<Menu>
+									<MenuTrigger render={<Button size="icon" variant="ghost" />}>
+										<LucideEllipsis />
+									</MenuTrigger>
+									<MenuPopup>
+										<MenuItem disabled={i === 0}>
+											<LucideChevronUp />
+											Move Up
+										</MenuItem>
+										<MenuItem disabled={i === problems.length - 1}>
+											<LucideChevronDown />
+											Move Down
+										</MenuItem>
+										<MenuItem
+											render={
+												<Link
+													from={Route.fullPath}
+													to="./$problem"
+													params={{ problem: problem.number.toString() }}
+												/>
+											}
+										>
+											<LucideEdit />
+											Edit
+										</MenuItem>
+										<MenuSeparator />
+										<ConfirmActionDialog
+											onConfirm={async () => {
+												await rejectError(
+													localjudge
+														.contest({ id: contestId })
+														.problem({ problem: problem.number })
+														.delete(),
+												);
+												toastManager.add({
+													title: "Problem deleted",
+													type: "success",
+												});
+											}}
+											nativeButton
+											trigger={
+												<MenuItem variant="destructive" closeOnClick={false}>
+													<LucideTrash />
+													Delete
+												</MenuItem>
+											}
+										/>
+									</MenuPopup>
+								</Menu>
+							</ItemActions>
+						</Item>
 					))}
 				</ItemGroup>
 			) : (
@@ -127,8 +140,8 @@ function RouteComponent() {
 				className="w-full"
 				render={<Link from={Route.fullPath} to="./new" />}
 			>
-				Add New Problem
+				Create New Problem
 			</Button>
-		</>
+		</Fragment>
 	);
 }

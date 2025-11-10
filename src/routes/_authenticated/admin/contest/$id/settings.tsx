@@ -6,6 +6,7 @@ import { ContestModel } from "@/api/contest/model";
 import { ContestForm, ContestFormOptions } from "@/components/form/contest";
 import { useAppForm } from "@/components/form/primitives";
 import { Spinner } from "@/components/ui/spinner";
+import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute(
@@ -30,10 +31,14 @@ function RouteComponent() {
 		...ContestFormOptions,
 		defaultValues: Value.Parse(ContestModel.insert, contest),
 		onSubmit: async ({ value }) => {
-			const response = await localjudge
-				.contest({ id: contest.id })
-				.patch(value);
-			console.log(response);
+			toastManager.promise(
+				rejectError(localjudge.contest({ id: contest.id }).patch(value)),
+				{
+					loading: "Updating contest settings...",
+					success: "Contest updated",
+					error: "Contest update failed",
+				},
+			);
 		},
 	});
 

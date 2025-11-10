@@ -1,4 +1,4 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate, useHydrated } from "@tanstack/react-router";
 import {
 	formatDuration,
 	intervalToDuration,
@@ -24,16 +24,17 @@ export const Route = createFileRoute("/_authenticated/contest/$id/")({
 });
 
 function BeforeStart() {
+	const contest = Route.useLoaderData();
 	const time = useTime();
+	const hydrated = useHydrated();
 	const message = useMemo(() => {
+		if (!hydrated) return "-- -- --";
 		const duration = intervalToDuration({
 			start: time,
-			end: new Date(2030, 6, 2),
+			end: contest.startTime,
 		});
-		return formatDuration(duration, {
-			format: ["hours", "minutes", "seconds"],
-		});
-	}, [time]);
+		return formatDuration(duration);
+	}, [time, contest, hydrated]);
 
 	return (
 		<Empty>
@@ -47,23 +48,17 @@ function BeforeStart() {
 	);
 }
 
-function AfterEnd() {
-	return (
-		<Empty>
-			<EmptyHeader>Contest has ended</EmptyHeader>
-		</Empty>
-	);
-}
-
 function RouteComponent() {
 	const contest = Route.useLoaderData();
 	const time = useTime();
 	return (
-		<div className="container mx-auto py-16 flex items-center justify-center">
+		<div className="container mx-auto flex items-center justify-center h-[calc(100svh-6rem)]">
 			{isBefore(time, contest.startTime) ? (
 				<BeforeStart />
 			) : isAfter(time, contest.endTime) ? (
-				<AfterEnd />
+				<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+					Contest has Ended
+				</h3>
 			) : (
 				<Navigate from={Route.fullPath} to="./problem" />
 			)}

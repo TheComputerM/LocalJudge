@@ -1,9 +1,9 @@
 import {
-	ClientOnly,
 	createFileRoute,
 	Link,
 	linkOptions,
 	Outlet,
+	useHydrated,
 } from "@tanstack/react-router";
 import { differenceInSeconds } from "date-fns";
 import {
@@ -71,14 +71,16 @@ const navigationLinks = linkOptions([
 function RemainingTime() {
 	const endTime = Route.useLoaderData({ select: (data) => data.endTime });
 	const time = useTime();
+	const hydrated = useHydrated();
 	const timeLeft = useMemo(() => {
+		if (!hydrated) return "--h:--m:--s";
 		let seconds = differenceInSeconds(endTime, time);
 		let minutes = Math.floor(seconds / 60);
 		let hours = Math.floor(seconds / 3600);
 		minutes %= 60;
 		seconds %= 60;
 		return `${hours}h:${minutes}m:${seconds}s`;
-	}, [endTime, time]);
+	}, [endTime, time, hydrated]);
 	return <span className="text-sm min-w-28 text-center">{timeLeft}</span>;
 }
 
@@ -139,9 +141,7 @@ function Navbar() {
 				<RefreshButton />
 				<ThemeToggle />
 				<Separator orientation="vertical" />
-				<ClientOnly>
-					<RemainingTime />
-				</ClientOnly>
+				<RemainingTime />
 			</div>
 		</header>
 	);
