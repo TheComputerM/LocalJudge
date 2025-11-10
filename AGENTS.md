@@ -71,7 +71,7 @@ LocalJudge is a competitive programming platform built with TanStack Start (Reac
 #### Initial Setup
 ```bash
 bun install
-docker compose pull 
+docker compose pull
 docker compose up -d # Start LocalBox + PostgreSQL
 bun db:migrate       # Run migrations + create admin user
 ```
@@ -79,7 +79,7 @@ bun db:migrate       # Run migrations + create admin user
 #### Subsequent Running
 ```bash
 docker compose start  # Run the pre-existing containers
-bun --bun dev         # Start dev server on :3000
+bun dev         # Start dev server on :3000
 ```
 
 ### Database Tasks
