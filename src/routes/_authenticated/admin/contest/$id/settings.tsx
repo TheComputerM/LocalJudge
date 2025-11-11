@@ -50,7 +50,13 @@ function RouteComponent() {
 				form.handleSubmit();
 			}}
 		>
-			<Suspense fallback={<Spinner className="mx-auto" />}>
+			<Suspense
+				fallback={
+					<div className="h-svh flex items-center justify-center">
+						<Spinner />
+					</div>
+				}
+			>
 				<ContestForm form={form} />
 			</Suspense>
 		</form>
