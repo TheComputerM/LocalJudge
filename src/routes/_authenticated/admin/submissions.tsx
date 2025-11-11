@@ -96,7 +96,9 @@ function ContestSelector() {
 		<Combobox
 			items={data}
 			value={value}
-			onValueChange={(item) => navigate({ search: { contest: item?.value } })}
+			onValueChange={(item) =>
+				navigate({ search: { contest: item?.value, problem: undefined } })
+			}
 		>
 			<InputGroup>
 				<InputGroupAddon>
