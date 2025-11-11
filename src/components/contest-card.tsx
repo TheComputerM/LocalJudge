@@ -4,7 +4,7 @@ import {
 	formatDistanceStrict,
 	isBefore,
 } from "date-fns";
-import { ReactNode, useMemo } from "react";
+import { type ReactNode, useMemo } from "react";
 import {
 	Card,
 	CardAction,
@@ -15,7 +15,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { useTime } from "@/hooks/use-time";
-import { Pill, PillIndicator, PillIndicatorProps } from "./kibo-ui/pill";
+import { Pill, PillIndicator, type PillIndicatorProps } from "./kibo-ui/pill";
 import { CopyBadge } from "./ui/copy-badge";
 
 function ContestStatusBadge(props: { startTime: Date; endTime: Date }) {

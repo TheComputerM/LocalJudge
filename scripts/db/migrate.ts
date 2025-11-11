@@ -1,6 +1,6 @@
-import { setup } from "@/db/utils";
+import { DatabaseUtils } from "@/db/utils";
 import { taskRunnerDB } from "./utils";
 
-await setup(taskRunnerDB);
+await DatabaseUtils.setup(taskRunnerDB);
 
 await taskRunnerDB.$client.end();

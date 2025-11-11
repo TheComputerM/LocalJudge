@@ -1,4 +1,4 @@
-import { Column, SortDirection } from "@tanstack/react-table";
+import type { Column, SortDirection } from "@tanstack/react-table";
 import {
 	LucideChevronDown,
 	LucideChevronsUpDown,

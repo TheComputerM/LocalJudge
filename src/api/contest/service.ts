@@ -165,24 +165,28 @@ export namespace ContestService {
 		const patch = calculatePatch(content, previous);
 
 		// don't update if previous state is the same as the current one
-		if (Object.keys(patch).length === 0) return;
+		if (Object.keys(patch).length === 0) return previous;
 
 		await db.insert(table.timeline).values({ contestId, userId, patch });
+
+		const newContent = toMerged(previous, content);
 		await db
 			.insert(table.snapshot)
-			.values({ contestId, userId, content: toMerged(previous, content) })
+			.values({ contestId, userId, content: newContent })
 			.onConflictDoUpdate({
 				target: [table.snapshot.contestId, table.snapshot.userId],
 				set: {
 					content: sql.raw(`excluded.${table.snapshot.content.name}`),
 				},
 			});
+		return newContent;
 	}
 }
 
 export namespace ContestAdminService {
 	export async function create(contest: typeof ContestModel.insert.static) {
-		return db.insert(table.contest).values(contest).returning();
+		const [output] = await db.insert(table.contest).values(contest).returning();
+		return output;
 	}
 
 	export async function update(

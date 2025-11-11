@@ -1,6 +1,6 @@
-import { clean } from "@/db/utils";
+import { DatabaseUtils } from "@/db/utils";
 import { taskRunnerDB } from "./utils";
 
-await clean(taskRunnerDB);
+await DatabaseUtils.clean(taskRunnerDB);
 
 await taskRunnerDB.$client.close();

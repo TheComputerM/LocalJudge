@@ -170,10 +170,11 @@ export const contestApp = new Elysia({
 				.post(
 					"/snapshot",
 					async ({ body, auth, params }) => {
-						await ContestService.createSnapshot(params.id, auth.user.id, body);
+						return ContestService.createSnapshot(params.id, auth.user.id, body);
 					},
 					{
 						body: ContestModel.snapshot,
+						response: ContestModel.snapshot,
 						detail: {
 							summary: "Snapshot solution",
 							description: "Take a snapshot of the users solution",
