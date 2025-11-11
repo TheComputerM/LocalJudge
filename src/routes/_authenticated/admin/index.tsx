@@ -1,13 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, linkOptions } from "@tanstack/react-router";
 import {
-	type ColumnDef,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
+	LucideBookPlus,
+	LucideChevronRight,
+	LucideFileCode,
+	LucideUsers,
+} from "lucide-react";
+import { Fragment, useMemo } from "react";
 import { localjudge } from "@/api/client";
-import DataTable from "@/components/data-table/table";
-import { SubmissionStatusBadge } from "@/components/submission-status-badge";
-import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardDescription,
@@ -15,147 +14,116 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import {
-	Frame,
-	FrameHeader,
-	FramePanel,
-	FrameTitle,
-} from "@/components/ui/frame";
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemMedia,
+	ItemTitle,
+} from "@/components/ui/item";
 import { rejectError } from "@/lib/utils";
 
-// TODO: refresh route data after 1s repeatedly
 export const Route = createFileRoute("/_authenticated/admin/")({
 	loader: async ({ abortController }) => {
-		const [overview, submissions] = await Promise.all([
-			rejectError(
-				localjudge.admin.overview.get({
-					fetch: {
-						signal: abortController.signal,
-					},
-				}),
-			),
-			rejectError(
-				localjudge.admin.submission.get({
-					query: {
-						page: 1,
-						pageSize: 20,
-					},
-				}),
-			),
-		]);
-		return { overview, submissions };
+		const overview = await rejectError(
+			localjudge.admin.overview.get({
+				fetch: {
+					signal: abortController.signal,
+				},
+			}),
+		);
+		return { overview };
 	},
 	component: RouteComponent,
 });
 
-function RecentSubmissions() {
-	const data = Route.useLoaderData({
-		select: ({ submissions }) => submissions,
-	});
-
-	const columns: ColumnDef<(typeof data)[number]>[] = [
-		{
-			accessorKey: "user.name",
-			header: "User",
-			cell: ({ row, getValue }) => (
-				<Link to="/admin/user/$user" params={{ user: row.original.userId }}>
-					{getValue<string>()}
-				</Link>
-			),
-		},
-		{
-			accessorKey: "contest.name",
-			header: "Contest",
-			cell: ({ row, getValue }) => (
-				<Link to="/admin/contest/$id" params={{ id: row.original.contestId }}>
-					{getValue<string>()}
-				</Link>
-			),
-		},
-		{
-			accessorKey: "problem.title",
-			header: "Problem",
-			cell: ({ row, getValue }) => (
-				<Link
-					to="/admin/contest/$id/problem/$problem"
-					params={{
-						id: row.original.contestId,
-						problem: row.original.problemNumber.toString(),
-					}}
-				>
-					{getValue<string>()}
-				</Link>
-			),
-		},
-		{
-			accessorKey: "language",
-			header: "Language",
-		},
-		{
-			accessorKey: "id",
-			header: "Status",
-			cell: (info) => <SubmissionStatusBadge id={info.getValue() as string} />,
-		},
-		{
-			accessorKey: "createdAt",
-			header: "Time",
-			cell: ({ getValue }) => getValue<Date>().toLocaleString(),
-		},
-		{
-			id: "actions",
-			cell: ({ row }) => (
-				<Button
-					variant="link"
-					render={
-						<Link to="/app/submission/$id" params={{ id: row.original.id }} />
-					}
-				>
-					View
-				</Button>
-			),
-		},
-	];
-
-	const table = useReactTable({
-		data,
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-	});
+function Overview() {
+	const overview = Route.useLoaderData({ select: ({ overview }) => overview });
 
 	return (
-		<Frame>
-			<FrameHeader>
-				<FrameTitle>Recent Submissions</FrameTitle>
-			</FrameHeader>
-			<FramePanel>
-				<DataTable table={table} />
-			</FramePanel>
-		</Frame>
+		<div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+			{Object.entries(overview.statistics).map(([name, value]) => (
+				<Card key={name}>
+					<CardHeader>
+						<CardDescription className="capitalize">{name}</CardDescription>
+						<CardTitle className="text-2xl font-semibold tabular-nums">
+							{value}
+						</CardTitle>
+					</CardHeader>
+				</Card>
+			))}
+		</div>
+	);
+}
+
+function QuickLinks() {
+	const items = useMemo(
+		() => [
+			{
+				icon: LucideBookPlus,
+				title: "Create Contest",
+				description: "Create a new programming contest.",
+				link: linkOptions({
+					to: "/admin/contest/new",
+				}),
+			},
+			{
+				icon: LucideUsers,
+				title: "Manage Users",
+				description: "View and manage all users in the system.",
+				link: linkOptions({
+					to: "/admin/user",
+				}),
+			},
+			{
+				icon: LucideFileCode,
+				title: "View Submissions",
+				description: "Browse and review code submissions from users.",
+				link: linkOptions({
+					to: "/admin/submissions",
+				}),
+			},
+		],
+		[],
+	);
+	return (
+		<div className="grid md:grid-cols-2 gap-4">
+			{items.map((item) => (
+				<Item
+					key={item.title}
+					variant="outline"
+					render={<Link {...item.link} />}
+				>
+					<ItemMedia variant="icon">
+						<item.icon />
+					</ItemMedia>
+					<ItemContent>
+						<ItemTitle>{item.title}</ItemTitle>
+						<ItemDescription>{item.description}</ItemDescription>
+					</ItemContent>
+					<ItemActions>
+						<LucideChevronRight className="size-5" />
+					</ItemActions>
+				</Item>
+			))}
+		</div>
 	);
 }
 
 function RouteComponent() {
-	const overview = Route.useLoaderData({ select: ({ overview }) => overview });
-
 	return (
-		<div>
+		<Fragment>
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
 				Admin Dashboard
 			</h1>
 			<br />
-			<div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-				{Object.entries(overview.statistics).map(([name, value]) => (
-					<Card key={name}>
-						<CardHeader>
-							<CardDescription className="capitalize">{name}</CardDescription>
-							<CardTitle className="text-2xl font-semibold tabular-nums">
-								{value}
-							</CardTitle>
-						</CardHeader>
-					</Card>
-				))}
-			</div>
+			<Overview />
 			<br />
-			<RecentSubmissions />
-		</div>
+			<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+				Quick Links
+			</h2>
+			<br />
+			<QuickLinks />
+		</Fragment>
 	);
 }
