@@ -153,7 +153,7 @@ function Features() {
 					<span className="grow border-y" />
 				</CardPanel>
 			</Card>
-			<Card>
+			{/*<Card>
 				<CardHeader>
 					<CardTitle>Minimal and Fast</CardTitle>
 					<CardDescription>
@@ -217,7 +217,7 @@ function Features() {
 						ShadCN UI
 					</Button>
 				</CardFooter>
-			</Card>
+			</Card>*/}
 		</div>
 	);
 }
