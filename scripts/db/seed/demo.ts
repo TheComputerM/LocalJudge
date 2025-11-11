@@ -37,9 +37,6 @@ async function createContests() {
 	const data: Static<typeof ContestModel.insert>[] = new Array(
 		CONFIG.count.contests,
 	);
-	const languages = Object.entries(await $localbox("@get/engine")).map(
-		([language, { version }]) => `${language}@${version}`,
-	);
 
 	for (let i = 0; i < CONFIG.count.contests; i++) {
 		const startTime = faker.date.between({
@@ -55,9 +52,9 @@ async function createContests() {
 				leaderboard: faker.datatype.boolean(),
 				submissions_limit: faker.number.int({ min: 0, max: 8 }),
 				visible_results: faker.datatype.boolean(),
-				languages: faker.helpers.arrayElements(languages, {
+				languages: faker.helpers.arrayElements(["c", "cpp", "python"], {
 					min: 1,
-					max: languages.length,
+					max: 3,
 				}),
 			},
 		};
