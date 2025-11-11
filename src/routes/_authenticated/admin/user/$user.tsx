@@ -30,6 +30,7 @@ import {
 	ItemTitle,
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth/client";
 import { rejectError } from "@/lib/utils";
@@ -186,11 +187,20 @@ function RouteComponent() {
 	});
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="h-svh flex items-center justify-center">
+				<Spinner />
+			</div>
+		);
 	}
 
-	if (error || !data) {
-		return <div>Error loading user: {JSON.stringify(error)}</div>;
+	if (error || data === undefined) {
+		return (
+			<Alert>
+				<AlertTitle>Error loading user</AlertTitle>
+				<AlertDescription>{JSON.stringify(error)}</AlertDescription>
+			</Alert>
+		);
 	}
 
 	return (
