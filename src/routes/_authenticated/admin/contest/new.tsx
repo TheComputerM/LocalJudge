@@ -19,11 +19,11 @@ function NewContestForm() {
 		onSubmit: async ({ value }) => {
 			const contestData = Value.Parse(ContestModel.insert, value);
 			const { data, error } = await localjudge.contest.post(contestData);
-			if (error || data.length === 0) {
+			if (error) {
 				alert(JSON.stringify(error));
 				return;
 			}
-			navigate({ to: "/admin/contest/$id", params: { id: data[0].id } });
+			navigate({ to: "/admin/contest/$id", params: { id: data.id } });
 		},
 	});
 
