@@ -31,7 +31,7 @@ export function BufferTextBlock({
 				<span className="text-muted-foreground text-xs uppercase">{label}</span>
 				<CopyButton content={children} />
 			</div>
-			<pre className="text-sm px-4 py-3">{children}</pre>
+			<pre className="text-sm px-4 py-3 overflow-auto">{children}</pre>
 		</div>
 	);
 }
