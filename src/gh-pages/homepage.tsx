@@ -6,9 +6,11 @@ import {
 	LucideCode,
 	LucideExternalLink,
 	LucideFolderGit2,
+	LucideGauge,
 	LucideHistory,
 	LucideServer,
 	LucideUserLock,
+	LucideWind,
 } from "lucide-react";
 import { Fragment } from "react";
 import { BufferTextBlock } from "@/components/buffer-text-block";
@@ -22,12 +24,11 @@ import {
 	CardPanel,
 	CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 function Features() {
 	return (
-		<div className="grid grid-cols-3 gap-6">
-			<Card className="col-span-2">
+		<div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 px-4">
+			<Card className="sm:col-span-2 min-w-0">
 				<CardHeader>
 					<CardTitle>Easy to Self-Host</CardTitle>
 					<CardDescription>
@@ -152,6 +153,71 @@ function Features() {
 					<span className="grow border-y" />
 				</CardPanel>
 			</Card>
+			<Card>
+				<CardHeader>
+					<CardTitle>Minimal and Fast</CardTitle>
+					<CardDescription>
+						LocalJudge is built from the ground up to be fast and efficient. It
+						uses{" "}
+						<a href="https://bun.com/" className="text-foreground underline">
+							Bun
+						</a>{" "}
+						for its javascript runtime, which allows it to use technologies like{" "}
+						<a
+							href="https://bun.com/docs/runtime/workers"
+							className="text-foreground underline"
+						>
+							Workers
+						</a>{" "}
+						to perform heavy tasks on separate threads.
+					</CardDescription>
+					<CardAction>
+						<LucideGauge />
+					</CardAction>
+				</CardHeader>
+			</Card>
+			<Card className="sm:col-span-2">
+				<CardHeader>
+					<CardTitle>Modern Technologies</CardTitle>
+					<CardDescription>
+						LocalJudge leverages modern web technologies and tools such as React
+						19, Tanstack Start, ShadCN UI, COSS UI and Monaco Editor (the same
+						editor powering VSCode) to provide a sleek and responsive user
+						interface.
+					</CardDescription>
+					<CardAction>
+						<LucideWind />
+					</CardAction>
+				</CardHeader>
+				<CardFooter className="justify-stretch gap-3 flex-wrap">
+					<Button
+						className="grow"
+						render={
+							<a
+								href="https://github.com/microsoft/monaco-editor"
+								target="_blank"
+							/>
+						}
+					>
+						<LucideExternalLink />
+						Monaco Editor
+					</Button>
+
+					<Button
+						className="grow"
+						render={<a href="https://tanstack.com/start" target="_blank" />}
+					>
+						<LucideExternalLink /> TanStack Start
+					</Button>
+					<Button
+						className="grow"
+						render={<a href="https://ui.shadcn.com/" target="_blank" />}
+					>
+						<LucideExternalLink />
+						ShadCN UI
+					</Button>
+				</CardFooter>
+			</Card>
 		</div>
 	);
 }
@@ -168,15 +234,15 @@ export function HomePage() {
 			</div>
 			<br />
 			<footer className="mt-12 border-t py-4">
-				<div className="container mx-auto flex items-center justify-between">
-					<span className="text-sm text-fore">
-						Made by
-						<Button
-							variant="link"
-							render={<a href="https://thecomputerm.dev" />}
+				<div className="container mx-auto px-4 flex items-center justify-between">
+					<span className="text-sm text-muted-foreground">
+						Made by{" "}
+						<a
+							href="https://thecomputerm.dev"
+							className="font-medium text-foreground hover:underline"
 						>
 							TheComputerM
-						</Button>
+						</a>
 					</span>
 					{new Date().getFullYear()}
 				</div>
