@@ -12,6 +12,11 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import {
+	LucideFileQuestionMark,
+	LucideTableProperties,
+	LucideUser,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
@@ -32,6 +37,11 @@ import {
 	ComboboxList,
 	ComboboxPopup,
 } from "@/components/ui/combobox";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "@/components/ui/input-group";
 import {
 	Item,
 	ItemContent,
@@ -88,7 +98,16 @@ function ContestSelector() {
 			value={value}
 			onValueChange={(item) => navigate({ search: { contest: item?.value } })}
 		>
-			<ComboboxInput placeholder="Select contest..." showClear />
+			<InputGroup>
+				<InputGroupAddon>
+					<LucideTableProperties />
+				</InputGroupAddon>
+				<ComboboxInput
+					placeholder="Select contest..."
+					showClear
+					render={<InputGroupInput />}
+				/>
+			</InputGroup>
 			<ComboboxPopup>
 				<ComboboxEmpty>No contests found.</ComboboxEmpty>
 				<ComboboxList>
@@ -141,7 +160,16 @@ function ProblemSelector() {
 			value={value}
 			onValueChange={(item) => navigate({ search: { problem: item?.value } })}
 		>
-			<ComboboxInput placeholder="Select problem..." showClear />
+			<InputGroup>
+				<InputGroupAddon>
+					<LucideFileQuestionMark />
+				</InputGroupAddon>
+				<ComboboxInput
+					placeholder="Select problem..."
+					showClear
+					render={<InputGroupInput />}
+				/>
+			</InputGroup>
 			<ComboboxPopup>
 				<ComboboxEmpty>No problems found.</ComboboxEmpty>
 				<ComboboxList>
@@ -206,7 +234,16 @@ function UserSelector() {
 			onValueChange={(item) => navigate({ search: { user: item?.value } })}
 			onInputValueChange={(value) => setSearch(value)}
 		>
-			<ComboboxInput placeholder="Select user..." showClear />
+			<InputGroup>
+				<InputGroupAddon>
+					<LucideUser />
+				</InputGroupAddon>
+				<ComboboxInput
+					placeholder="Select user..."
+					showClear
+					render={<InputGroupInput />}
+				/>
+			</InputGroup>
 			<ComboboxPopup>
 				<ComboboxEmpty>No users found.</ComboboxEmpty>
 				<ComboboxList>
