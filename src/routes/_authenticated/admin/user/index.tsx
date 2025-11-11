@@ -89,22 +89,27 @@ function NewParticipantDialog() {
 			onChange: Compile(UserModel),
 		},
 		onSubmit: async ({ value }) => {
-			const { error } = await authClient.admin.createUser({
-				name: value.name,
-				email: value.email,
-				password: value.password,
-				role: "user",
-			});
-			if (error) {
-				toastManager.add({
-					title: "User create failed",
-					description: error.message,
-					type: "error",
-				});
-				return;
-			}
-			await router.invalidate({ filter: (route) => route.id === Route.id });
-			setOpen(false);
+			toastManager.promise(
+				rejectError(
+					authClient.admin.createUser({
+						name: value.name,
+						email: value.email,
+						password: value.password,
+						role: "user",
+					}),
+				).then(() => {
+					router.invalidate({ filter: (route) => route.id === Route.id });
+					setOpen(false);
+				}),
+				{
+					loading: "Creating user...",
+					success: "User created",
+					error: (error) => ({
+						title: "User create failed",
+						description: JSON.stringify(error),
+					}),
+				},
+			);
 		},
 	});
 
