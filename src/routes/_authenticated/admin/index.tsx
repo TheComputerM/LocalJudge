@@ -32,17 +32,17 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 				},
 			}),
 		);
-		return { overview };
+		return overview;
 	},
 	component: RouteComponent,
 });
 
 function Overview() {
-	const overview = Route.useLoaderData({ select: ({ overview }) => overview });
+	const overview = Route.useLoaderData();
 
 	return (
 		<div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-			{Object.entries(overview.statistics).map(([name, value]) => (
+			{Object.entries(overview).map(([name, value]) => (
 				<Card key={name}>
 					<CardHeader>
 						<CardDescription className="capitalize">{name}</CardDescription>

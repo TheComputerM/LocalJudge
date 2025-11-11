@@ -11,17 +11,15 @@ export namespace AdminService {
 		]);
 
 		return {
-			statistics: {
-				contests: _stats[0],
-				participants: _stats[1],
-				submissions: _stats[2],
-			},
+			contests: _stats[0],
+			participants: _stats[1],
+			submissions: _stats[2],
 		};
 	}
 
 	export async function getContests() {
 		return db.query.contest.findMany({
-			orderBy: asc(table.contest.startTime),
+			orderBy: desc(table.contest.endTime),
 		});
 	}
 
