@@ -1,18 +1,52 @@
+c: |
+  #include <stdio.h>
+
+  int main() {
+      int c;
+      while ((c = getchar()) != EOF) {
+          putchar(c);
+      }
+      return 0;
+  }
 cpp: |
   #include <bits/stdc++.h>
   using namespace std;
-  
+
   int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     string s;
-    bool first = true;
-    while (getline(cin, s)) {
-      if (!first) cout << '\n';
-      first = false;
-      cout << s;
-    }
+    cin >> s;
+    cout << s;
     return 0;
   }
-python: |
-  print(input())
+python: print(input())
+julia: print(read(stdin, String))
+dart: |
+  import 'dart:io';
+  import 'dart:convert';
+
+  void main() {
+    stdin.transform(utf8.decoder).listen((data) {
+      stdout.write(data);
+    });
+  }
+java: |
+  import java.io.BufferedReader;
+  import java.io.InputStreamReader;
+  import java.io.IOException;
+
+  public class main {
+      public static void main(String[] args) throws IOException {
+          BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+          String line;
+
+          while ((line = reader.readLine()) != null) {
+              System.out.println(line);
+          }
+      }
+  }
+lua: |
+  local content = io.read("*a")
+  io.write(content)
