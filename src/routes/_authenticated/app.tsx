@@ -24,7 +24,7 @@ function Navbar() {
 	return (
 		<header className="border-b px-4 md:px-6">
 			<div className="flex h-16 items-center justify-between gap-4">
-				<div className="flex-1 inline-flex items-center gap-2 text-primary">
+				<div className="grow inline-flex items-center gap-2 text-primary">
 					<LucideGavel />
 					<Link to="/app" className="font-semibold text-lg max-sm:hidden">
 						LocalJudge
@@ -35,12 +35,9 @@ function Navbar() {
 						<NavClock />
 					</ClientOnly>
 				</div>
-				<div className="flex flex-1 items-center justify-end gap-2">
+				<div className="grow inline-flex items-center justify-end gap-3">
 					<ThemeToggle />
-					<Separator
-						orientation="vertical"
-						className="mr-2 data-[orientation=vertical]:h-4"
-					/>
+					<Separator orientation="vertical" />
 					<UserProfile />
 				</div>
 			</div>
