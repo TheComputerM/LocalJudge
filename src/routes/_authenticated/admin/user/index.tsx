@@ -237,7 +237,7 @@ function ParticipantsTable() {
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
 	const { data, error, isLoading } = useQuery({
-		queryKey: ["users", pagination, search, sorting],
+		queryKey: ["users", search, pagination, sorting],
 		placeholderData: keepPreviousData,
 		queryFn: async () =>
 			rejectError(

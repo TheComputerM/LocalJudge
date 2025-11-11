@@ -32,8 +32,15 @@ import {
 	ComboboxList,
 	ComboboxPopup,
 } from "@/components/ui/combobox";
+import {
+	Item,
+	ItemContent,
+	ItemDescription,
+	ItemTitle,
+} from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { authClient } from "@/lib/auth/client";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/submissions")({
@@ -150,14 +157,70 @@ function ProblemSelector() {
 }
 
 function UserSelector() {
-	const user = Route.useSearch({ select: (params) => params.user });
-	// TODO: fix combobox and add user selector
+	const selected = Route.useSearch({ select: (params) => params.user });
+	const [search, setSearch] = useState("");
+	const { data, isLoading, error } = useQuery({
+		queryKey: ["users", search],
+		queryFn: async () =>
+			rejectError(
+				authClient.admin.listUsers({
+					query: {
+						limit: 10,
+						searchOperator: "contains",
+						searchField: "email",
+						searchValue: search,
+					},
+				}),
+			)
+				.then(({ users }) => users)
+				.then((users) =>
+					users.map((user) => ({
+						label: user.name,
+						value: user.id,
+						email: user.email,
+					})),
+				),
+		placeholderData: keepPreviousData,
+	});
+	const value = useMemo(
+		() => data?.find(({ value }) => value === selected) ?? null,
+		[data, selected],
+	);
+	const navigate = Route.useNavigate();
+
+	if (isLoading) return <Skeleton className="h-8 w-full" />;
+
+	if (error || data === undefined)
+		return (
+			<Alert variant="error">
+				<AlertTitle>Error loading problems</AlertTitle>
+				<AlertDescription>{JSON.stringify(error)}</AlertDescription>
+			</Alert>
+		);
+
 	return (
-		<Combobox items={[]} value={user}>
+		<Combobox
+			items={data}
+			filter={null}
+			value={value}
+			onValueChange={(item) => navigate({ search: { user: item?.value } })}
+			onInputValueChange={(value) => setSearch(value)}
+		>
 			<ComboboxInput placeholder="Select user..." showClear />
 			<ComboboxPopup>
 				<ComboboxEmpty>No users found.</ComboboxEmpty>
-				<ComboboxList></ComboboxList>
+				<ComboboxList>
+					{(item) => (
+						<ComboboxItem key={item.value} value={item}>
+							<Item size="sm" className="w-full p-2">
+								<ItemContent className="gap-0.5">
+									<ItemTitle>{item.label}</ItemTitle>
+									<ItemDescription>{item.email}</ItemDescription>
+								</ItemContent>
+							</Item>
+						</ComboboxItem>
+					)}
+				</ComboboxList>
 			</ComboboxPopup>
 		</Combobox>
 	);
@@ -302,7 +365,7 @@ function SubmissionsTable() {
 			<div>
 				<div className="flex justify-between items-center">
 					<Skeleton className="h-8 w-xs" />
-					<Skeleton className="h-8 w-28" />
+					<Skeleton className="h-8 w-32" />
 				</div>
 				<br />
 				<Skeleton className="h-64" />
