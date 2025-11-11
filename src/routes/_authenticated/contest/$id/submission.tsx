@@ -31,9 +31,11 @@ function Submissionstable() {
 		() => [
 			{
 				accessorKey: "problemNumber",
+				header: "#",
+			},
+			{
+				accessorKey: "problem.title",
 				header: "Problem",
-				cell: ({ row, getValue }) =>
-					`${getValue<number>()}. ${row.original.problem.title}`,
 			},
 			{
 				id: "status",

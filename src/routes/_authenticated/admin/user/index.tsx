@@ -264,7 +264,19 @@ function ParticipantsTable() {
 			{
 				accessorKey: "name",
 				header: ({ column }) => (
-					<DataTableColumnHeader column={column}>Name</DataTableColumnHeader>
+					<DataTableColumnHeader column={column} className="ms-0">
+						Name
+					</DataTableColumnHeader>
+				),
+				cell: ({ getValue, row }) => (
+					<Button
+						variant="link"
+						render={
+							<Link to="/admin/user/$user" params={{ user: row.original.id }} />
+						}
+					>
+						{getValue<string>()}
+					</Button>
 				),
 			},
 			{
