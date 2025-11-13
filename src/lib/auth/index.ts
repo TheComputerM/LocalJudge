@@ -15,10 +15,9 @@ import * as authSchema from "@/db/schema/auth";
 import env from "@/lib/env";
 
 const providersFile = Bun.file("./providers.json");
-let socialProviders: SocialProviders = {};
-if (await providersFile.exists()) {
-	socialProviders = await providersFile.json();
-}
+const socialProviders: SocialProviders = (await providersFile.exists())
+	? await providersFile.json()
+	: {};
 
 export const auth = betterAuth({
 	appName: "LocalJudge",

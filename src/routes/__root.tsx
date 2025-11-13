@@ -57,7 +57,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+				{import.meta.env.DEV && (
+					<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+				)}
 				<HeadContent />
 			</head>
 			<body className="relative">
