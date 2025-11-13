@@ -1,10 +1,14 @@
 import Editor from "@monaco-editor/react";
+import { Type } from "@sinclair/typebox";
+import { Compile } from "@sinclair/typemap";
 import { useThrottledCallback } from "@tanstack/react-pacer/throttler";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
+import { isNil } from "es-toolkit";
+import { get, has } from "es-toolkit/compat";
 import { LucideCloudUpload } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Streamdown } from "streamdown";
 import { localjudge } from "@/api/client";
 import { $localjudge } from "@/api/fetch";
@@ -28,12 +32,12 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsPanel, TabsTrigger } from "@/components/ui/tabs";
-import { toastManager } from "@/components/ui/toast";
-import { SolutionSnapshotter } from "@/lib/client/solution-snapshot";
 import {
-	SolutionStoreProvider,
-	useSolutionStore,
-} from "@/lib/client/solution-store";
+	createSubmission,
+	SolutionSnapshotter,
+	setStoreContent,
+	solutionStore,
+} from "@/lib/client/solution-manager";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute(
@@ -54,58 +58,23 @@ export const Route = createFileRoute(
 					.testcase.get(),
 			),
 		]);
-
 		return { problem, testcases };
 	},
+	validateSearch: Compile(
+		Type.Object({ language: Type.Optional(Type.String()) }),
+	),
 	component: RouteComponent,
 });
 
 function SubmitCode() {
 	const { id, problem } = Route.useParams();
-	const store = useSolutionStore();
-
-	async function handleSubmit() {
-		const toastId = toastManager.add({
-			title: "Submission in progress...",
-			type: "loading",
-		});
-
-		const { data: results, error } = await localjudge
-			.contest({ id })
-			.problem({ problem })
-			.submit({ language: store.selected.state.language })
-			.post(store.content.state);
-
-		if (error) {
-			toastManager.update(toastId, {
-				title: "Submission failed",
-				description: JSON.stringify(error),
-				type: "error",
-			});
-			return;
-		}
-
-		let passed = 0;
-		let failed = 0;
-		for await (const { data } of results) {
-			if (data.status === "CA") {
-				passed += 1;
-			} else {
-				failed += 1;
-			}
-			toastManager.update(toastId, {
-				title: `${passed} / ${passed + failed} testcases till now`,
-				type: "loading",
-			});
-		}
-		toastManager.update(toastId, {
-			title: `${passed} / ${passed + failed} testcases`,
-			type: failed === 0 ? "success" : "error",
-		});
-	}
+	const language = Route.useSearch({ select: (s) => s.language! });
 
 	return (
-		<Button variant="secondary" onClick={handleSubmit}>
+		<Button
+			variant="secondary"
+			onClick={() => createSubmission(id, Number.parseInt(problem), language)}
+		>
 			<LucideCloudUpload />
 			Submit
 		</Button>
@@ -113,19 +82,20 @@ function SubmitCode() {
 }
 
 function LanguageSelect() {
-	const languages = useLoaderData({
-		from: "/_authenticated/contest/$id",
-		select: (data) => data.settings.languages,
+	const languages = Route.useRouteContext({
+		select: (data) => data.contest.settings.languages,
 	});
-	const { selected } = useSolutionStore();
-	const value = useStore(selected, (state) => state.language);
+	const value = Route.useSearch({ select: (s) => s.language! });
+	const navigate = Route.useNavigate();
 
 	return (
 		<Select
 			value={value}
-			onValueChange={(language) =>
-				selected.setState((prev) => ({ ...prev, language }))
-			}
+			onValueChange={(language) => {
+				navigate({
+					search: { language },
+				});
+			}}
 		>
 			<SelectTrigger className="min-w-auto w-min">
 				<SelectValue />
@@ -220,23 +190,46 @@ function ProblemStatement() {
 
 function CodeEditor() {
 	const [theme] = useTheme();
-	const store = useSolutionStore();
-	const language = useStore(store.selected, (state) => state.language);
-	const path = useStore(
-		store.selected,
-		(state) => `${state.problem}/${state.language}`,
+	const { id, problem } = Route.useParams();
+	const language = Route.useSearch({ select: (s) => s.language! });
+	const value = useStore(solutionStore, (state) =>
+		get(state, [language, problem], "Loading..."),
 	);
-	const value = useStore(store.content);
 
-	const throttledUpdate = useThrottledCallback(store.setContent, {
-		wait: 1000,
-	});
+	useEffect(() => {
+		if (!has(solutionStore.state, [language, problem])) {
+			// restore from previous snapshot
+			localjudge
+				.contest({ id })
+				.problem({ problem })
+				.snapshot({ language })
+				.get()
+				.then(({ data, error }) => {
+					if (error) {
+						console.error(error);
+					}
+					setStoreContent(
+						language,
+						Number.parseInt(problem),
+						data ?? "Error loading snapshot",
+					);
+				});
+		}
+	}, [language, problem]);
+
+	const throttledUpdate = useThrottledCallback(
+		(content: string) =>
+			setStoreContent(language, Number.parseInt(problem), content),
+		{
+			wait: 1000,
+		},
+	);
 
 	return (
 		<Editor
 			theme={theme === "dark" ? "vs-dark" : "light"}
 			language={language}
-			path={path}
+			path={`${problem}/${language}`}
 			value={value}
 			onChange={(value) => throttledUpdate(value ?? "")}
 			options={{
@@ -255,8 +248,23 @@ function CodeEditor() {
 }
 
 function RouteComponent() {
+	const languages = Route.useRouteContext({
+		select: (data) => data.contest.settings.languages,
+	});
+	const language = Route.useSearch({ select: (s) => s.language });
+
+	if (isNil(language)) {
+		return (
+			<Navigate
+				from={Route.fullPath}
+				search={{ language: languages[0] }}
+				replace
+			/>
+		);
+	}
+
 	return (
-		<SolutionStoreProvider>
+		<Fragment>
 			<div className="flex shrink-0 h-14 items-center justify-between gap-2 border-b px-4">
 				<div className="inline-flex items-center gap-2">
 					<SidebarTrigger className="-ml-1" />
@@ -288,6 +296,6 @@ function RouteComponent() {
 					<CodeEditor />
 				</ResizablePanel>
 			</ResizablePanelGroup>
-		</SolutionStoreProvider>
+		</Fragment>
 	);
 }
