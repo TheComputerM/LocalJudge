@@ -1,5 +1,5 @@
-import * as path from "node:path";
-import { fromTypes, openapi } from "@elysiajs/openapi";
+import { cors } from "@elysiajs/cors";
+import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { adminApp } from "./admin";
 import { contestApp } from "./contest";
@@ -7,11 +7,9 @@ import { localboxApp } from "./localbox";
 import { submissionApp } from "./submission";
 
 export const baseApp = new Elysia({ prefix: "/api" })
+	.use(cors())
 	.use(
 		openapi({
-			// references: fromTypes("./src/api/index.ts", {
-			// 	tsconfigPath: path.join(process.cwd(), "tsconfig.json"),
-			// }),
 			documentation: {
 				info: {
 					title: "LocalJudge Documentation",
