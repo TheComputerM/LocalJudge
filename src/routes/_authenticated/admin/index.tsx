@@ -24,14 +24,8 @@ import {
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
-	loader: async ({ abortController }) => {
-		const overview = await rejectError(
-			localjudge.admin.overview.get({
-				fetch: {
-					signal: abortController.signal,
-				},
-			}),
-		);
+	loader: async () => {
+		const overview = await rejectError(localjudge.admin.overview.get());
 		return overview;
 	},
 	component: RouteComponent,

@@ -22,14 +22,8 @@ import { toastManager } from "@/components/ui/toast";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/contest/")({
-	loader: async ({ abortController }) => {
-		const contests = await rejectError(
-			localjudge.admin.contest.get({
-				fetch: {
-					signal: abortController.signal,
-				},
-			}),
-		);
+	loader: async () => {
+		const contests = await rejectError(localjudge.admin.contest.get());
 		return contests;
 	},
 	component: RouteComponent,

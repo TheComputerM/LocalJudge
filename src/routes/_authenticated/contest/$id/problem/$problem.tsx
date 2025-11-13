@@ -39,19 +39,19 @@ import { rejectError } from "@/lib/utils";
 export const Route = createFileRoute(
 	"/_authenticated/contest/$id/problem/$problem",
 )({
-	loader: async ({ params, abortController }) => {
+	loader: async ({ params }) => {
 		const [problem, testcases] = await Promise.all([
 			rejectError(
 				localjudge
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
-					.get({ fetch: { signal: abortController.signal } }),
+					.get(),
 			),
 			rejectError(
 				localjudge
 					.contest({ id: params.id })
 					.problem({ problem: params.problem })
-					.testcase.get({ fetch: { signal: abortController.signal } }),
+					.testcase.get(),
 			),
 		]);
 

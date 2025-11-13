@@ -27,16 +27,12 @@ const getProblemCountFn = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/_authenticated/contest/$id/leaderboard")(
 	{
-		loader: async ({ params, abortController, context }) => {
+		loader: async ({ params }) => {
 			const [leaderboard, problemCount] = await Promise.all([
-				rejectError(
-					localjudge
-						.contest({ id: params.id })
-						.leaderboard.get({ fetch: { signal: abortController.signal } }),
-				),
+				rejectError(localjudge.contest({ id: params.id }).leaderboard.get()),
 				getProblemCountFn({ data: params.id }),
 			]);
-			return { leaderboard, problemCount, contest: context.contest };
+			return { leaderboard, problemCount };
 		},
 		component: RouteComponent,
 	},
@@ -60,6 +56,8 @@ function formatDuration(start: Date, end: Date) {
 
 function RouteComponent() {
 	const data = Route.useLoaderData();
+	const contest = Route.useRouteContext({ select: (ctx) => ctx.contest });
+
 	return (
 		<div className="container mx-auto p-4">
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance">
@@ -112,7 +110,7 @@ function RouteComponent() {
 										<div className="w-full text-center">
 											<LucideCheck className="w-full h-4 text-emerald-500" />
 											<span className="text-xs text-muted-foreground">
-												{formatDuration(data.contest.startTime, s.created_at)}
+												{formatDuration(contest.startTime, s.created_at)}
 											</span>
 										</div>
 									)}

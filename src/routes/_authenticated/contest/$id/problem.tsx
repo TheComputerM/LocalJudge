@@ -15,11 +15,9 @@ import {
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/contest/$id/problem")({
-	beforeLoad: async ({ params, abortController }) => {
+	beforeLoad: async ({ params }) => {
 		const problems = await rejectError(
-			localjudge
-				.contest({ id: params.id })
-				.problem.get({ fetch: { signal: abortController.signal } }),
+			localjudge.contest({ id: params.id }).problem.get(),
 		);
 		return { problems };
 	},

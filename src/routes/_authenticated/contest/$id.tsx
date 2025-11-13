@@ -34,11 +34,9 @@ import { useTime } from "@/hooks/use-time";
 import { rejectError } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/contest/$id")({
-	beforeLoad: async ({ params, abortController }) => {
+	beforeLoad: async ({ params }) => {
 		const contest = await rejectError(
-			localjudge.contest({ id: params.id }).get({
-				fetch: { signal: abortController.signal },
-			}),
+			localjudge.contest({ id: params.id }).get(),
 		);
 
 		return { contest };
