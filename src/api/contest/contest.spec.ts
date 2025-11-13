@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, test } from "bun:test";
+import type { UserWithRole } from "better-auth/plugins";
 import { addHours } from "date-fns";
 import { localjudge } from "@/api/client";
 import { db } from "@/db";
@@ -10,7 +11,8 @@ import { ContestAdminService } from "./service";
 
 describe("Snapshots", () => {
 	let contest: typeof table.contest.$inferSelect;
-	let user: Awaited<ReturnType<typeof TestUtils.createTestUser>>;
+	let user: { cookie: string; data: UserWithRole };
+
 	beforeAll(async () => {
 		await DatabaseUtils.reset(db);
 		contest = await ContestAdminService.create({
