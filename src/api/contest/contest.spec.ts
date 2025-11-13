@@ -25,10 +25,9 @@ describe("Snapshots", () => {
 			},
 		});
 		user = await TestUtils.createTestUser();
-		await localjudge.contest.register.post(
-			{ code: contest.id },
-			{ headers: { cookie: user.cookie } },
-		);
+		await localjudge.contest.register.post(contest.id, {
+			headers: { cookie: user.cookie },
+		});
 	});
 
 	test("initial snapshot", async () => {

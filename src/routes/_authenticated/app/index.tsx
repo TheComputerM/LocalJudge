@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { LucideChartNoAxesGantt, LucideDoorOpen } from "lucide-react";
-import { useState } from "react";
 import { localjudge } from "@/api/client";
 import { ContestCard } from "@/components/contest-card";
 import { Button } from "@/components/ui/button";
@@ -29,37 +28,31 @@ export const Route = createFileRoute("/_authenticated/app/")({
 });
 
 function RegisterForm() {
-	const [code, setCode] = useState("");
 	const router = useRouter();
 
 	return (
 		<form
 			className="flex gap-2"
-			onSubmit={async (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				const { error } = await localjudge.contest.register.post({ code });
-				if (error) {
-					toastManager.add({
-						title: "Failed to register for contest",
-						type: "error",
-					});
-				} else {
-					toastManager.add({
-						title: "Registered successfully",
-						type: "success",
-					});
-				}
-				await router.invalidate({
-					filter: (d) => d.fullPath === Route.fullPath,
-				});
+			action={async (formdata) => {
+				const code = formdata.get("code") as string;
+				toastManager.promise(
+					rejectError(localjudge.contest.register.post(code)).then(() => {
+						router.invalidate({
+							filter: (r) => r.id === Route.id,
+						});
+					}),
+					{
+						loading: "Registering for contest...",
+						success: "Registered successfully",
+						error: (error) => ({
+							title: "Failed to register",
+							description: JSON.stringify(error),
+						}),
+					},
+				);
 			}}
 		>
-			<Input
-				placeholder="Contest Code"
-				value={code}
-				onChange={(e) => setCode(e.target.value)}
-			/>
+			<Input placeholder="Contest Code" name="code" />
 			<Button type="submit">Register</Button>
 		</form>
 	);

@@ -45,13 +45,11 @@ export const contestApp = new Elysia({
 	.post(
 		"/register",
 		async ({ auth, body }) => {
-			await ContestService.register(body.code, auth.user.id);
+			await ContestService.register(body, auth.user.id);
 			return status(201, "Successfully registered for the contest");
 		},
 		{
-			body: t.Object({
-				code: t.String({ description: "Contest ID" }),
-			}),
+			body: t.String({ description: "Contest ID" }),
 			detail: {
 				summary: "Register for contest",
 				description:
