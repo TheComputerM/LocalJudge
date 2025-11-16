@@ -31,7 +31,19 @@ function RouteComponent() {
 			{
 				accessorKey: "name",
 				header: ({ column }) => (
-					<DataTableColumnHeader column={column}>Name</DataTableColumnHeader>
+					<DataTableColumnHeader className="ms-0" column={column}>
+						Name
+					</DataTableColumnHeader>
+				),
+				cell: ({ row, getValue }) => (
+					<Button
+						variant="link"
+						render={
+							<Link to="/admin/user/$user" params={{ user: row.original.id }} />
+						}
+					>
+						{getValue<string>()}
+					</Button>
 				),
 			},
 			{
@@ -82,21 +94,6 @@ function RouteComponent() {
 						}
 					>
 						Timeline
-					</Button>
-				),
-			},
-			{
-				id: "profile",
-				enableHiding: false,
-				enableSorting: false,
-				cell: ({ row }) => (
-					<Button
-						variant="link"
-						render={
-							<Link to="/admin/user/$user" params={{ user: row.original.id }} />
-						}
-					>
-						Profile
 					</Button>
 				),
 			},
