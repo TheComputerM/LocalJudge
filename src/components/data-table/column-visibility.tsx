@@ -40,7 +40,7 @@ export default function DataTableColumnVisibility<TData>({
 					</Button>
 				}
 			/>
-			<SelectPopup alignItemWithTrigger={false} align="end">
+			<SelectPopup alignItemWithTrigger={false}>
 				{columns.map((column) => (
 					<SelectItem key={column.id} value={column.id} className="capitalize">
 						{column.id}

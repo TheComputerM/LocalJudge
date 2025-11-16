@@ -1,3 +1,5 @@
+"use client";
+
 import { PreviewCard as PreviewCardPrimitive } from "@base-ui-components/react/preview-card";
 
 import { cn } from "@/lib/utils";

@@ -17,7 +17,7 @@ function ScrollArea({
 			<ScrollAreaPrimitive.Viewport
 				data-slot="scroll-area-viewport"
 				className={cn(
-					"size-full overscroll-contain rounded-[inherit] transition-shadow outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+					"size-full overscroll-contain rounded-[inherit] transition-[box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
 					className,
 				)}
 			>

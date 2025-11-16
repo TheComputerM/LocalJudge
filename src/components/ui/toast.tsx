@@ -1,3 +1,5 @@
+"use client";
+
 import { Toast } from "@base-ui-components/react/toast";
 import {
 	CircleAlertIcon,
@@ -53,7 +55,7 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
 		<Toast.Portal data-slot="toast-portal">
 			<Toast.Viewport
 				className={cn(
-					"fixed z-75 mx-auto flex w-[calc(100%-var(--toast-inset)*2)] max-w-90 [--toast-inset:--spacing(4)] sm:[--toast-inset:--spacing(8)]",
+					"fixed z-50 mx-auto flex w-[calc(100%-var(--toast-inset)*2)] max-w-90 [--toast-inset:--spacing(4)] sm:[--toast-inset:--spacing(8)]",
 					// Vertical positioning
 					"data-[position*=top]:top-(--toast-inset)",
 					"data-[position*=bottom]:bottom-(--toast-inset)",

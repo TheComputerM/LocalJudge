@@ -1,3 +1,5 @@
+"use client";
+
 import { NumberField as NumberFieldPrimitive } from "@base-ui-components/react/number-field";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import * as React from "react";
@@ -91,7 +93,7 @@ function NumberFieldInput({
 	return (
 		<NumberFieldPrimitive.Input
 			className={cn(
-				"min-w-0 flex-1 bg-transparent px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)] text-center tabular-nums outline-none in-data-[size=lg]:py-[calc(--spacing(2)-1px)] in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] in-data-[size=sm]:py-[calc(--spacing(1)-1px)]",
+				"w-full min-w-0 flex-1 bg-transparent px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)] text-center tabular-nums outline-none in-data-[size=lg]:py-[calc(--spacing(2)-1px)] in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] in-data-[size=sm]:py-[calc(--spacing(1)-1px)]",
 				className,
 			)}
 			data-slot="number-field-input"

@@ -7,7 +7,6 @@ import { addHours, addMinutes } from "date-fns";
 import { LucideSave } from "lucide-react";
 import { localjudge } from "@/api/client";
 import { ContestModel } from "@/api/contest/model";
-import { $localjudge } from "@/api/fetch";
 import { withForm } from "@/components/form/primitives";
 import { FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
