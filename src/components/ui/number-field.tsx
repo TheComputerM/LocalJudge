@@ -24,10 +24,10 @@ function NumberField({
 	return (
 		<NumberFieldContext.Provider value={{ fieldId }}>
 			<NumberFieldPrimitive.Root
-				id={fieldId}
 				className={cn("flex w-full flex-col items-start gap-2", className)}
-				data-slot="number-field"
 				data-size={size}
+				data-slot="number-field"
+				id={fieldId}
 				{...props}
 			/>
 		</NumberFieldContext.Provider>
@@ -41,7 +41,7 @@ function NumberFieldGroup({
 	return (
 		<NumberFieldPrimitive.Group
 			className={cn(
-				"relative flex w-full justify-between rounded-lg border border-input bg-background bg-clip-padding text-sm shadow-xs ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-data-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:border-ring focus-within:ring-[3px] has-aria-invalid:border-destructive/36 focus-within:has-aria-invalid:border-destructive/64 focus-within:has-aria-invalid:ring-destructive/48 data-disabled:pointer-events-none data-disabled:opacity-64 dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:not-data-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:has-aria-invalid:ring-destructive/24 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&:is([data-disabled],:focus-within,[aria-invalid])]:shadow-none",
+				"relative flex w-full justify-between rounded-lg border border-input bg-background bg-clip-padding text-sm shadow-xs ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-data-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:border-ring focus-within:ring-[3px] has-aria-invalid:border-destructive/36 focus-within:has-aria-invalid:border-destructive/64 focus-within:has-aria-invalid:ring-destructive/48 data-disabled:pointer-events-none data-disabled:opacity-64 dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:has-aria-invalid:ring-destructive/24 dark:not-data-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 [[data-disabled],:focus-within,[aria-invalid]]:shadow-none",
 				className,
 			)}
 			data-slot="number-field-group"
@@ -57,7 +57,7 @@ function NumberFieldDecrement({
 	return (
 		<NumberFieldPrimitive.Decrement
 			className={cn(
-				"relative flex shrink-0 cursor-pointer items-center justify-center rounded-s-[calc(var(--radius-lg)-1px)] px-[calc(--spacing(3)-1px)] transition-colors hover:bg-accent in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
+				"relative flex shrink-0 cursor-pointer items-center justify-center rounded-s-[calc(var(--radius-lg)-1px)] in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] px-[calc(--spacing(3)-1px)] transition-colors pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 hover:bg-accent",
 				className,
 			)}
 			data-slot="number-field-decrement"
@@ -75,7 +75,7 @@ function NumberFieldIncrement({
 	return (
 		<NumberFieldPrimitive.Increment
 			className={cn(
-				"relative flex shrink-0 cursor-pointer items-center justify-center rounded-e-[calc(var(--radius-lg)-1px)] px-[calc(--spacing(3)-1px)] transition-colors hover:bg-accent in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11",
+				"relative flex shrink-0 cursor-pointer items-center justify-center rounded-e-[calc(var(--radius-lg)-1px)] in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] px-[calc(--spacing(3)-1px)] transition-colors pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 hover:bg-accent",
 				className,
 			)}
 			data-slot="number-field-increment"
@@ -93,7 +93,7 @@ function NumberFieldInput({
 	return (
 		<NumberFieldPrimitive.Input
 			className={cn(
-				"w-full min-w-0 flex-1 bg-transparent px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)] text-center tabular-nums outline-none in-data-[size=lg]:py-[calc(--spacing(2)-1px)] in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] in-data-[size=sm]:py-[calc(--spacing(1)-1px)]",
+				"w-full min-w-0 flex-1 bg-transparent in-data-[size=sm]:px-[calc(--spacing(2.5)-1px)] px-[calc(--spacing(3)-1px)] in-data-[size=lg]:py-[calc(--spacing(2)-1px)] in-data-[size=sm]:py-[calc(--spacing(1)-1px)] py-[calc(--spacing(1.5)-1px)] text-center tabular-nums outline-none",
 				className,
 			)}
 			data-slot="number-field-input"
@@ -123,7 +123,7 @@ function NumberFieldScrubArea({
 			data-slot="number-field-scrub-area"
 			{...props}
 		>
-			<Label htmlFor={context.fieldId} className="cursor-ew-resize">
+			<Label className="cursor-ew-resize" htmlFor={context.fieldId}>
 				{label}
 			</Label>
 			<NumberFieldPrimitive.ScrubAreaCursor className="drop-shadow-[0_1px_1px_#0008] filter">
@@ -136,11 +136,11 @@ function NumberFieldScrubArea({
 function CursorGrowIcon(props: React.ComponentProps<"svg">) {
 	return (
 		<svg
-			width="26"
-			height="14"
-			viewBox="0 0 24 14"
 			fill="black"
+			height="14"
 			stroke="white"
+			viewBox="0 0 24 14"
+			width="26"
 			xmlns="http://www.w3.org/2000/svg"
 			{...props}
 		>

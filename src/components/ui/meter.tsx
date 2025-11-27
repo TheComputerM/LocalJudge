@@ -1,3 +1,5 @@
+"use client";
+
 import { Meter as MeterPrimitive } from "@base-ui-components/react/meter";
 
 import { cn } from "@/lib/utils";
@@ -22,8 +24,8 @@ function Meter({ className, children, ...props }: MeterPrimitive.Root.Props) {
 function MeterLabel({ className, ...props }: MeterPrimitive.Label.Props) {
 	return (
 		<MeterPrimitive.Label
+			className={cn("font-medium text-sm", className)}
 			data-slot="meter-label"
-			className={cn("text-sm font-medium", className)}
 			{...props}
 		/>
 	);
@@ -32,8 +34,8 @@ function MeterLabel({ className, ...props }: MeterPrimitive.Label.Props) {
 function MeterTrack({ className, ...props }: MeterPrimitive.Track.Props) {
 	return (
 		<MeterPrimitive.Track
-			data-slot="meter-track"
 			className={cn("block h-2 w-full overflow-hidden bg-input", className)}
+			data-slot="meter-track"
 			{...props}
 		/>
 	);
@@ -45,8 +47,8 @@ function MeterIndicator({
 }: MeterPrimitive.Indicator.Props) {
 	return (
 		<MeterPrimitive.Indicator
-			data-slot="meter-indicator"
 			className={cn("bg-primary transition-all duration-500", className)}
+			data-slot="meter-indicator"
 			{...props}
 		/>
 	);
@@ -55,8 +57,8 @@ function MeterIndicator({
 function MeterValue({ className, ...props }: MeterPrimitive.Value.Props) {
 	return (
 		<MeterPrimitive.Value
-			data-slot="meter-value"
 			className={cn("text-sm tabular-nums", className)}
+			data-slot="meter-value"
 			{...props}
 		/>
 	);

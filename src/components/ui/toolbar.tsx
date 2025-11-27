@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
 function Toolbar({ className, ...props }: ToolbarPrimitive.Root.Props) {
 	return (
 		<ToolbarPrimitive.Root
-			data-slot="toolbar"
 			className={cn(
 				"relative flex gap-2 rounded-xl border bg-card bg-clip-padding p-1 text-card-foreground",
 				className,
 			)}
+			data-slot="toolbar"
 			{...props}
 		/>
 	);
@@ -20,8 +20,8 @@ function Toolbar({ className, ...props }: ToolbarPrimitive.Root.Props) {
 function ToolbarButton({ className, ...props }: ToolbarPrimitive.Button.Props) {
 	return (
 		<ToolbarPrimitive.Button
-			data-slot="toolbar-button"
 			className={cn(className)}
+			data-slot="toolbar-button"
 			{...props}
 		/>
 	);
@@ -30,8 +30,8 @@ function ToolbarButton({ className, ...props }: ToolbarPrimitive.Button.Props) {
 function ToolbarLink({ className, ...props }: ToolbarPrimitive.Link.Props) {
 	return (
 		<ToolbarPrimitive.Link
-			data-slot="toolbar-link"
 			className={cn(className)}
+			data-slot="toolbar-link"
 			{...props}
 		/>
 	);
@@ -40,8 +40,8 @@ function ToolbarLink({ className, ...props }: ToolbarPrimitive.Link.Props) {
 function ToolbarInput({ className, ...props }: ToolbarPrimitive.Input.Props) {
 	return (
 		<ToolbarPrimitive.Input
-			data-slot="toolbar-input"
 			className={cn(className)}
+			data-slot="toolbar-input"
 			{...props}
 		/>
 	);
@@ -50,8 +50,8 @@ function ToolbarInput({ className, ...props }: ToolbarPrimitive.Input.Props) {
 function ToolbarGroup({ className, ...props }: ToolbarPrimitive.Group.Props) {
 	return (
 		<ToolbarPrimitive.Group
-			data-slot="toolbar-group"
 			className={cn("flex items-center gap-1", className)}
+			data-slot="toolbar-group"
 			{...props}
 		/>
 	);
@@ -63,11 +63,11 @@ function ToolbarSeparator({
 }: ToolbarPrimitive.Separator.Props) {
 	return (
 		<ToolbarPrimitive.Separator
-			data-slot="toolbar-separator"
 			className={cn(
-				"shrink-0 bg-border data-[orientation=horizontal]:my-0.5 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:my-1.5 data-[orientation=vertical]:w-px data-[orientation=vertical]:not-[[class^='h-']]:not-[[class*='_h-']]:self-stretch",
+				"shrink-0 bg-border data-[orientation=horizontal]:my-0.5 data-[orientation=vertical]:my-1.5 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px data-[orientation=vertical]:not-[[class^='h-']]:not-[[class*='_h-']]:self-stretch",
 				className,
 			)}
+			data-slot="toolbar-separator"
 			{...props}
 		/>
 	);

@@ -5,11 +5,10 @@ import { LucideCalendar } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Popover, PopoverPopup, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
 /**
@@ -122,7 +121,9 @@ export function DateTimePicker(props: { label: string }) {
 					</div>
 				</PopoverPopup>
 			</Popover>
-			<FieldInfo field={field} />
+			<FieldError match={!field.state.meta.isValid}>
+				{field.state.meta.errors.map(({ message }) => message).join(",")}
+			</FieldError>
 		</Field>
 	);
 }

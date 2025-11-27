@@ -3,9 +3,9 @@ import { LucideSave } from "lucide-react";
 import { useState } from "react";
 import { Streamdown } from "streamdown";
 import { ProblemModel } from "@/api/contest/problem/model";
-import { FieldLegend, FieldSet } from "@/components/ui/field";
+import { Fieldset, FieldsetLegend } from "@/components/ui/fieldset";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Label } from "../ui/label";
 import { withForm } from "./primitives";
 import {
 	TestcasesFieldGroup,
@@ -32,8 +32,10 @@ export const ProblemForm = withForm({
 	render: function Render({ form }) {
 		const [testcasesDiff, setTestcasesDiff] = useState<TestcaseDiff[]>([]);
 		return (
-			<FieldSet>
-				<FieldLegend>Problem Details</FieldLegend>
+			<div className="flex flex-col gap-6">
+				<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+					Problem Details
+				</h3>
 				<form.AppField name="problem.title">
 					{(field) => <field.TextField label="Title" />}
 				</form.AppField>
@@ -69,19 +71,19 @@ export const ProblemForm = withForm({
 					</form.AppField>
 				</div>
 				<Separator />
-				<FieldSet>
-					<FieldLegend>Testcases</FieldLegend>
-					<TestcasesFieldGroup
-						form={form}
-						fields={{ testcases: "testcases" }}
-						onAdd={() => {
-							setTestcasesDiff((prev) => [...prev, { op: "+" }]);
-						}}
-						onDelete={(i) => {
-							setTestcasesDiff((prev) => [...prev, { op: "-", number: i + 1 }]);
-						}}
-					/>
-				</FieldSet>
+				<h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+					Testcases
+				</h4>
+				<TestcasesFieldGroup
+					form={form}
+					fields={{ testcases: "testcases" }}
+					onAdd={() => {
+						setTestcasesDiff((prev) => [...prev, { op: "+" }]);
+					}}
+					onDelete={(i) => {
+						setTestcasesDiff((prev) => [...prev, { op: "-", number: i + 1 }]);
+					}}
+				/>
 				<Separator />
 				<form.AppForm>
 					<form.SubmitButton
@@ -90,7 +92,7 @@ export const ProblemForm = withForm({
 						Save <LucideSave />
 					</form.SubmitButton>
 				</form.AppForm>
-			</FieldSet>
+			</div>
 		);
 	},
 });

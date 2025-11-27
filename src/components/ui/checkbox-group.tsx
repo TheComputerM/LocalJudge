@@ -1,3 +1,5 @@
+"use client";
+
 import { CheckboxGroup as CheckboxGroupPrimitive } from "@base-ui-components/react/checkbox-group";
 
 import { cn } from "@/lib/utils";

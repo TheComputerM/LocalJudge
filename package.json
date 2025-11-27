@@ -19,7 +19,7 @@
 		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
-		"@base-ui-components/react": "^1.0.0-beta.4",
+		"@base-ui-components/react": "^1.0.0-beta.6",
 		"@better-fetch/fetch": "^1.1.18",
 		"@elysiajs/cors": "^1.4.0",
 		"@elysiajs/eden": "^1.4.5",

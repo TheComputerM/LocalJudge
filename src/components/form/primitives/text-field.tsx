@@ -1,6 +1,10 @@
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+	Field,
+	FieldDescription,
+	FieldError,
+	FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
 interface TextFieldProps extends React.ComponentProps<"input"> {
@@ -12,18 +16,23 @@ export function TextField({ label, description, ...props }: TextFieldProps) {
 	const field = useFieldContext<string>();
 
 	return (
-		<Field>
-			{label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
+		<Field
+			name={field.name}
+			invalid={!field.state.meta.isValid}
+			dirty={field.state.meta.isDirty}
+			touched={field.state.meta.isTouched}
+		>
+			{label && <FieldLabel>{label}</FieldLabel>}
 			<Input
-				id={field.name}
-				name={field.name}
 				value={field.state.value}
 				onBlur={field.handleBlur}
-				onChange={(e) => field.handleChange(e.target.value)}
+				onValueChange={field.handleChange}
 				{...props}
 			/>
 			{description && <FieldDescription>{description}</FieldDescription>}
-			<FieldInfo field={field} />
+			<FieldError match={!field.state.meta.isValid}>
+				{field.state.meta.errors.map(({ message }) => message).join(",")}
+			</FieldError>
 		</Field>
 	);
 }

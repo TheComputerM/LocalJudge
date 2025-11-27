@@ -5,10 +5,11 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useBlocker } from "@tanstack/react-router";
 import { addHours, addMinutes } from "date-fns";
 import { LucideSave } from "lucide-react";
+import { Fragment } from "react";
 import { localjudge } from "@/api/client";
 import { ContestModel } from "@/api/contest/model";
 import { withForm } from "@/components/form/primitives";
-import { FieldLegend, FieldSet } from "@/components/ui/field";
+import { Fieldset, FieldsetLegend } from "@/components/ui/fieldset";
 import { Separator } from "@/components/ui/separator";
 import { rejectError } from "@/lib/utils";
 
@@ -49,8 +50,10 @@ export const ContestForm = withForm({
 		});
 
 		return (
-			<FieldSet>
-				<FieldLegend>Contest Details</FieldLegend>
+			<div className="flex flex-col gap-6">
+				<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+					Contest Details
+				</h3>
 				<form.AppField name="name">
 					{(field) => (
 						<field.TextField
@@ -118,7 +121,7 @@ export const ContestForm = withForm({
 						Save <LucideSave />
 					</form.SubmitButton>
 				</form.AppForm>
-			</FieldSet>
+			</div>
 		);
 	},
 });

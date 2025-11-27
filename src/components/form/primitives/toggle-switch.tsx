@@ -1,12 +1,10 @@
 import {
 	Field,
-	FieldContent,
 	FieldDescription,
+	FieldError,
 	FieldLabel,
 } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
-import { FieldInfo } from "./field-info";
 import { useFieldContext } from "./form-context";
 
 export function ToggleSwitch({
@@ -17,31 +15,29 @@ export function ToggleSwitch({
 	description?: string;
 }) {
 	const field = useFieldContext<boolean>();
-	// TODO: replace with coss ui particle
+
 	return (
-		<div
-			className={cn(
-				"relative flex w-full items-center gap-2 rounded-md p-4 outline-none border-input has-data-[state=checked]:border-primary/50 border shadow-xs",
-			)}
+		<Field
+			name={field.name}
+			invalid={!field.state.meta.isValid}
+			dirty={field.state.meta.isDirty}
+			touched={field.state.meta.isTouched}
+			className="flex-row items-center justify-between gap-6 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50"
 		>
-			<Field orientation="horizontal">
-				<FieldContent>
-					<FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-					{description && (
-						<FieldDescription id={`${field.name}-description`}>
-							{description}
-						</FieldDescription>
-					)}
-					<FieldInfo field={field} />
-				</FieldContent>
-				<Switch
-					id={field.name}
-					aria-describedby={`${field.name}-description`}
-					checked={field.state.value}
-					onCheckedChange={field.handleChange}
-					onBlur={field.handleBlur}
-				/>
-			</Field>
-		</div>
+			<div className="flex flex-col gap-2">
+				<FieldLabel>{label}</FieldLabel>
+				<FieldDescription>{description}</FieldDescription>
+				<FieldError match={!field.state.meta.isValid}>
+					{field.state.meta.errors.map(({ message }) => message).join(",")}
+				</FieldError>
+			</div>
+			<Switch
+				id={field.name}
+				aria-describedby={`${field.name}-description`}
+				checked={field.state.value}
+				onCheckedChange={field.handleChange}
+				onBlur={field.handleBlur}
+			/>
+		</Field>
 	);
 }

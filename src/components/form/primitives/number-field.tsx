@@ -1,6 +1,16 @@
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { FieldInfo } from "./field-info";
+import {
+	Field,
+	FieldDescription,
+	FieldError,
+	FieldLabel,
+} from "@/components/ui/field";
+import {
+	NumberField as BaseNumberField,
+	NumberFieldDecrement,
+	NumberFieldGroup,
+	NumberFieldIncrement,
+	NumberFieldInput,
+} from "@/components/ui/number-field";
 import { useFieldContext } from "./form-context";
 
 interface NumberFieldProps extends React.ComponentProps<"input"> {
@@ -16,19 +26,28 @@ export function NumberField({
 	const field = useFieldContext<number>();
 
 	return (
-		<Field>
-			{label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
-			<Input
-				id={field.name}
-				name={field.name}
+		<Field
+			name={field.name}
+			invalid={!field.state.meta.isValid}
+			dirty={field.state.meta.isDirty}
+			touched={field.state.meta.isTouched}
+		>
+			{label && <FieldLabel>{label}</FieldLabel>}
+			<BaseNumberField
 				value={field.state.value}
+				onValueChange={(v) => v !== null && field.handleChange(v)}
 				onBlur={field.handleBlur}
-				onChange={(e) => field.handleChange(Number.parseInt(e.target.value))}
-				type="number"
-				{...props}
-			/>
+			>
+				<NumberFieldGroup>
+					<NumberFieldDecrement />
+					<NumberFieldInput {...props} />
+					<NumberFieldIncrement />
+				</NumberFieldGroup>
+			</BaseNumberField>
 			{description && <FieldDescription>{description}</FieldDescription>}
-			<FieldInfo field={field} />
+			<FieldError match={!field.state.meta.isValid}>
+				{field.state.meta.errors.map(({ message }) => message).join(",")}
+			</FieldError>
 		</Field>
 	);
 }

@@ -9,8 +9,12 @@ import {
 	ComboboxPopup,
 	ComboboxValue,
 } from "@/components/ui/combobox";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { FieldInfo } from "./field-info";
+import {
+	Field,
+	FieldDescription,
+	FieldError,
+	FieldLabel,
+} from "@/components/ui/field";
 import { useFieldContext } from "./form-context";
 
 interface TagsFieldProps {
@@ -28,13 +32,18 @@ export function TagsField({
 }: TagsFieldProps) {
 	const field = useFieldContext<string[]>();
 	return (
-		<Field>
+		<Field
+			name={field.name}
+			invalid={!field.state.meta.isValid}
+			dirty={field.state.meta.isDirty}
+			touched={field.state.meta.isTouched}
+		>
 			{label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
 			<Combobox
 				items={items}
 				multiple
 				value={field.state.value}
-				onValueChange={(value) => field.handleChange(value)}
+				onValueChange={field.handleChange}
 			>
 				<ComboboxChips>
 					<ComboboxValue>
@@ -64,7 +73,9 @@ export function TagsField({
 				</ComboboxPopup>
 			</Combobox>
 			{description && <FieldDescription>{description}</FieldDescription>}
-			<FieldInfo field={field} />
+			<FieldError match={!field.state.meta.isValid}>
+				{field.state.meta.errors.map(({ message }) => message).join(",")}
+			</FieldError>
 		</Field>
 	);
 }

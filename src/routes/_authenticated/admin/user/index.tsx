@@ -45,7 +45,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { FieldSet } from "@/components/ui/field";
+import { Fieldset } from "@/components/ui/fieldset";
 import { Input } from "@/components/ui/input";
 import {
 	InputGroup,
@@ -133,7 +133,7 @@ function NewParticipantDialog() {
 						form.handleSubmit();
 					}}
 				>
-					<FieldSet>
+					<Fieldset>
 						<form.AppField name="name">
 							{(field) => (
 								<field.TextField
@@ -154,7 +154,7 @@ function NewParticipantDialog() {
 						<form.AppField name="password">
 							{(field) => <field.TextField label="Password" type="password" />}
 						</form.AppField>
-					</FieldSet>
+					</Fieldset>
 					<DialogFooter>
 						<DialogClose render={<Button variant="outline" />}>
 							Close

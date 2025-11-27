@@ -234,7 +234,7 @@ function UserSelector() {
 			filter={null}
 			value={value}
 			onValueChange={(item) => navigate({ search: { user: item?.value } })}
-			onInputValueChange={(value) => setSearch(value)}
+			onInputValueChange={(value: string) => setSearch(value)}
 		>
 			<InputGroup>
 				<InputGroupAddon>
