@@ -8,8 +8,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
-import { reactStartCookies } from "better-auth/react-start";
 import { type SocialProviders } from "better-auth/social-providers";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { db } from "@/db";
 import * as authSchema from "@/db/schema/auth";
 import env from "@/lib/env";
@@ -32,5 +32,5 @@ export const auth = betterAuth({
 		provider: "pg",
 	}),
 	socialProviders,
-	plugins: [admin(), reactStartCookies()],
+	plugins: [admin(), tanstackStartCookies()],
 });
